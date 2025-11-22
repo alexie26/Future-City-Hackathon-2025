@@ -30,6 +30,10 @@ function App() {
     parcels: { enabled: false }
   });
 
+  const [insights, setInsights] = useState(null);
+  const [insightsLoading, setInsightsLoading] = useState(false);
+  const [insightsError, setInsightsError] = useState(null);
+
   React.useEffect(() => {
     // Fetch all stations on load
     const fetchStations = async () => {
@@ -129,11 +133,35 @@ function App() {
     }
   };
 
+  const handleLoadInsights = async () => {
+    setInsightsLoading(true);
+    setInsightsError(null);
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/insights/summary`,
+        {
+          timeout: 10000
+        }
+      );
+      setInsights(res.data);
+    } catch (err) {
+      console.error('Failed to load insights', err);
+      setInsightsError('Failed to load planning insights. Please try again.');
+    } finally {
+      setInsightsLoading(false);
+    }
+  };
+
   return (
     <div className="h-screen w-screen relative font-sans overflow-hidden">
       {/* Full Screen Map */}
       <div className="absolute inset-0 z-0">
-        <MapView userLocation={userLocation} stationLocation={stationLocation} allStations={allStations} />
+        <MapView
+          userLocation={userLocation}
+          stationLocation={stationLocation}
+          allStations={allStations}
+          heatmapEnabled={layers.heatmap.enabled}
+        />
       </div>
 
       {/* Overlay Menu (Left) */}
@@ -142,6 +170,10 @@ function App() {
         result={result}
         loading={loading}
         error={error}
+        insights={insights}
+        insightsLoading={insightsLoading}
+        insightsError={insightsError}
+        onLoadInsights={handleLoadInsights}
       />
 
       {/* Layers Menu (Right) */}

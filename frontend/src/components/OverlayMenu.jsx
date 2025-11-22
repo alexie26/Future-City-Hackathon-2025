@@ -5,7 +5,7 @@ import Hero from './Hero';
 import InputCard from './InputCard';
 import ResultCard from './ResultCard';
 
-const OverlayMenu = ({ onCheck, result, loading, error }) => {
+const OverlayMenu = ({ onCheck, result, loading, error, insights, insightsLoading, insightsError, onLoadInsights }) => {
     const [address, setAddress] = useState('');
     const [kw, setKw] = useState('');
     const [type, setType] = useState('load'); // 'load' or 'feed_in'
