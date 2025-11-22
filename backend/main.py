@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, validator
-from typing import Literal
+from typing import Literal, List, Optional, Dict, Any
 import pandas as pd
 import math
 import logging
@@ -87,8 +87,10 @@ class FeasibilityResponse(BaseModel):
     station_id: str
     distance_km: float
     recommendation: str
-    station_lat: float = None
-    station_lon: float = None
+    station_lat: Optional[float] = None
+    station_lon: Optional[float] = None
+    eco_score: Optional[int] = None
+    recommendations: Optional[List[Dict[str, Any]]] = None
 
 def calculate_distance(lat1, lon1, lat2, lon2):
     """Calculate distance in km between two coordinates"""
@@ -143,66 +145,32 @@ async def check_feasibility(request: FeasibilityRequest):
         
         logger.info(f"Checking feasibility for: {request.lat}, {request.lon} with {request.kw_requested} kW")
         
-        # Find nearest station
-        stations_df['distance'] = stations_df.apply(
-            lambda row: calculate_distance(
-                request.lat, request.lon,
-                float(row['Breitengrad']), float(row['Längengrad'])
-            ), axis=1
-        )
+        # Use grid_manager to get comprehensive data including recommendations
+        grid_data = grid_manager.get_station_data(request.lat, request.lon, request.kw_requested)
         
-        # Get nearest station
-        nearest_idx = stations_df['distance'].idxmin()
-        nearest_station = stations_df.loc[nearest_idx]
+        if not grid_data:
+            raise HTTPException(
+                status_code=404,
+                detail="No nearby station found for this location"
+            )
         
-        station_id = str(nearest_station['Stationsnummer'])
-        distance_km = float(nearest_station['distance'])
-        station_lat = float(nearest_station['Breitengrad'])
-        station_lon = float(nearest_station['Längengrad'])
-        
-        logger.info(f"Nearest station: {station_id} at {distance_km:.2f} km")
-        
-        # Determine voltage level and capacity
-        voltage_level = determine_voltage_level(station_id)
-        max_capacity = CAPACITY_LIMITS[voltage_level]
-        safe_capacity = max_capacity * SAFETY_MARGIN
-        
-        # Calculate current load (simulated)
-        current_load = calculate_current_load(station_id)
-        remaining_capacity = max_capacity - current_load
-        remaining_safe = safe_capacity - current_load
-        
-        # Traffic light logic
-        if request.kw_requested <= remaining_safe * 0.5:
-            # Green: Request is well within safe limits
-            status = "green"
-            message = "✅ Connection likely feasible"
-            recommendation = f"Your {request.technology} with {request.kw_requested} kW can likely be connected without issues. Proceed with standard application."
-        
-        elif request.kw_requested <= remaining_safe:
-            # Yellow: Request possible but needs review
-            status = "yellow"
-            message = "⚠️ Further technical review needed"
-            recommendation = f"Your request is within technical limits but requires detailed assessment. Our team will review your application within 5 business days."
-        
-        else:
-            # Red: Request exceeds safe capacity
-            status = "red"
-            message = "❌ Grid expansion required"
-            recommendation = f"Your requested {request.kw_requested} kW exceeds available capacity ({round(remaining_safe)} kW). Alternative solutions: grid reinforcement, connection to medium voltage network, or phased installation. Please contact our planning department."
-        
+        # Build response from grid_data
         return FeasibilityResponse(
-            status=status,
-            message=message,
+            status=grid_data["traffic_light"],
+            message=grid_data["message"],
             kw_requested=request.kw_requested,
-            remaining_safe=max(0, remaining_safe),
-            station_id=station_id,
-            distance_km=round(distance_km, 2),
-            recommendation=recommendation,
-            station_lat=station_lat,
-            station_lon=station_lon
+            remaining_safe=grid_data.get("remaining_safe", 0),
+            station_id=grid_data["nearest_station_id"],
+            distance_km=round(grid_data["distance_meters"] / 1000, 2),
+            recommendation=grid_data.get("message", ""),
+            station_lat=grid_data.get("station_lat"),
+            station_lon=grid_data.get("station_lon"),
+            eco_score=grid_data.get("eco_score"),
+            recommendations=grid_data.get("recommendations", [])
         )
     
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Unexpected error processing request: {str(e)}", exc_info=True)
         raise HTTPException(

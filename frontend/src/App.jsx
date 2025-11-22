@@ -84,7 +84,10 @@ function App() {
       
       setUserLocation([lat, lon]);
 
-      // 2. Call Backend with updated endpoint
+      // 2. Map frontend type to backend type
+      const backendType = type === 'consumer' ? 'load' : 'feed_in';
+
+      // 3. Call Backend with updated endpoint
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
       console.log(`Calling API: ${apiUrl}/check-feasibility`);
       
@@ -93,7 +96,7 @@ function App() {
         lat,
         lon,
         kw_requested: kw,
-        type,
+        type: backendType,
         technology
       }, {
         timeout: 10000 // 10 second timeout
