@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Search, Zap, Sun, Loader2, CheckCircle, AlertCircle, ChevronDown, ChevronUp, MapPin } from 'lucide-react';
 import axios from 'axios';
 
-const OverlayMenu = ({ onCheck, result, loading, error }) => {
+const OverlayMenu = ({ onCheck, result, loading, error, insights, insightsLoading, insightsError, onLoadInsights }) => {
     const [address, setAddress] = useState('');
     const [kw, setKw] = useState('');
     const [type, setType] = useState('load'); // 'load' or 'feed_in'
@@ -283,6 +283,37 @@ const OverlayMenu = ({ onCheck, result, loading, error }) => {
                                 <span className="font-bold text-gray-900">{Math.round(result.remaining_safe)} kW</span>
                             </div>
                         </div>
+
+                        {onLoadInsights && (
+                            <div className="mt-2 w-full">
+                                <button
+                                    type="button"
+                                    onClick={onLoadInsights}
+                                    disabled={insightsLoading}
+                                    className="w-full py-2 rounded-lg text-sm font-medium border border-blue-200 text-blue-700 hover:bg-blue-50 disabled:opacity-60 disabled:cursor-not-allowed"
+                                >
+                                    {insightsLoading ? 'Loading anonymous planning insights…' : 'Show anonymous planning insights'}
+                                </button>
+                                {insightsError && (
+                                    <p className="mt-2 text-xs text-red-500">
+                                        {insightsError}
+                                    </p>
+                                )}
+                                {insights && (
+                                    <div className="mt-3 text-left text-xs text-gray-600 bg-white border border-gray-200 rounded-lg p-3 space-y-1">
+                                        <p className="font-semibold text-gray-800">
+                                            City planning insights (anonymous)
+                                        </p>
+                                        <p>Total checks: {insights.total_checks}</p>
+                                        {insights.peak_day_of_week && insights.peak_hour_utc !== null && (
+                                            <p>
+                                                Peak interest: {insights.peak_day_of_week} at {insights.peak_hour_utc}:00 (UTC)
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         {/* Technical Details Toggle */}
                         <button
