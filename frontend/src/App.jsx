@@ -39,11 +39,17 @@ function App() {
       const geoRes = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address + ', Heilbronn')}`);
 
       if (geoRes.data.length === 0) {
-        throw new Error("Address not found in Heilbronn area.");
+        throw new Error("Address not found in Heilbronn area. Please check the address and try again.");
       }
 
       const lat = parseFloat(geoRes.data[0].lat);
       const lon = parseFloat(geoRes.data[0].lon);
+      
+      // Validate coordinates are in reasonable range for Heilbronn
+      if (lat < 48 || lat > 50 || lon < 8 || lon > 10) {
+        throw new Error("The address appears to be outside the Heilbronn service area.");
+      }
+      
       setUserLocation([lat, lon]);
 
       // 2. Call Backend with timeout
@@ -67,15 +73,38 @@ function App() {
       }
 
     } catch (err) {
-      console.error(err);
+      console.error("Error details:", err);
+      
       if (err.code === 'ECONNABORTED') {
-        setError("Request timed out. Please check if the backend server is running.");
+        setError("Request timed out. The backend server may be slow or unavailable. Please try again.");
       } else if (err.response) {
-        setError(err.response.data.detail || "Server error occurred.");
+        // Server responded with error
+        const errorData = err.response.data;
+        
+        if (errorData.detail && typeof errorData.detail === 'object') {
+          // Structured error from backend
+          switch(errorData.detail.error) {
+            case 'NO_STATION_FOUND':
+              setError("No electrical station found near this location. This area may not be covered by our service. Please try a different address in Heilbronn.");
+              break;
+            case 'VALIDATION_ERROR':
+              setError(`Invalid input: ${errorData.detail.message}`);
+              break;
+            case 'INTERNAL_ERROR':
+              setError("A server error occurred. Our team has been notified. Please try again later.");
+              break;
+            default:
+              setError(errorData.detail.message || "An error occurred while checking feasibility.");
+          }
+        } else if (typeof errorData.detail === 'string') {
+          setError(errorData.detail);
+        } else {
+          setError("Server error occurred. Please try again.");
+        }
       } else if (err.request) {
-        setError("Cannot connect to backend server. Please ensure it's running on http://localhost:8000");
+        setError("Cannot connect to backend server. Please ensure the backend is running at " + import.meta.env.VITE_API_URL);
       } else {
-        setError(err.message || "An error occurred while checking feasibility.");
+        setError(err.message || "An unexpected error occurred. Please try again.");
       }
     } finally {
       setLoading(false);
