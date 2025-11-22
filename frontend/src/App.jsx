@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import OverlayMenu from './components/OverlayMenu';
+import LayersMenu from './components/LayersMenu';
 import MapView from './components/MapView';
 import { CheckCircle, XCircle, ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -12,6 +13,22 @@ function App() {
   const [stationLocation, setStationLocation] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [allStations, setAllStations] = useState([]);
+  const [layers, setLayers] = useState({
+    lv: { enabled: false },
+    mv: { enabled: false },
+    hv: { enabled: false },
+    assets: { enabled: false },
+    reservations: { enabled: false },
+    routing: { enabled: false },
+    heatmap: {
+      enabled: true,
+      settings: {
+        voltageLevel: 'MV',
+        type: 'Loads'
+      }
+    },
+    parcels: { enabled: false }
+  });
 
   React.useEffect(() => {
     // Fetch all stations on load
@@ -26,7 +43,16 @@ function App() {
     fetchStations();
   }, []);
 
-  const handleCheck = async ({ address, type, kw }) => {
+  const handleLayerChange = (layerId, enabled, settings = null) => {
+    setLayers(prev => ({
+      ...prev,
+      [layerId]: settings
+        ? { enabled, settings }
+        : { ...prev[layerId], enabled }
+    }));
+  };
+
+  const handleCheck = async ({ address, type, kw, coordinates }) => {
     setLoading(true);
     setError(null);
     setResult(null);
@@ -34,31 +60,45 @@ function App() {
     setStationLocation(null);
 
     try {
-      // 1. Geocode address (Mocking for now as per instructions, or using Nominatim)
-      // Using Nominatim for better experience
-      const geoRes = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address + ', Heilbronn')}`);
+      let lat, lon;
 
-      if (geoRes.data.length === 0) {
-        throw new Error("Address not found in Heilbronn area. Please check the address and try again.");
+      // If coordinates provided from autocomplete, use them directly
+      if (coordinates) {
+        lat = coordinates.lat;
+        lon = coordinates.lon;
+        setUserLocation([lat, lon]);
+      } else {
+        // Otherwise, geocode the address
+        const geoRes = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address + ', Heilbronn')}`);
+
+        if (geoRes.data.length === 0) {
+          throw new Error("Address not found in Heilbronn area. Please check the address and try again.");
+        }
+
+        lat = parseFloat(geoRes.data[0].lat);
+        lon = parseFloat(geoRes.data[0].lon);
+
+        // Validate coordinates are in reasonable range for Heilbronn
+        if (lat < 48 || lat > 50 || lon < 8 || lon > 10) {
+          throw new Error("The address appears to be outside the Heilbronn service area.");
+        }
+
+        setUserLocation([lat, lon]);
       }
 
-      const lat = parseFloat(geoRes.data[0].lat);
-      const lon = parseFloat(geoRes.data[0].lon);
-
-      // Validate coordinates are in reasonable range for Heilbronn
-      if (lat < 48 || lat > 50 || lon < 8 || lon > 10) {
-        throw new Error("The address appears to be outside the Heilbronn service area.");
-      }
-
-      setUserLocation([lat, lon]);
-
-      // 2. Call Backend
-      const apiRes = await axios.post(`${import.meta.env.VITE_API_URL}/check-feasibility`, {
-        lat,
-        lon,
-        kw_requested: kw,
-        type
-      });
+      // 2. Call Backend with timeout
+      const apiRes = await axios.post(
+        `${import.meta.env.VITE_API_URL}/check-feasibility`,
+        {
+          lat,
+          lon,
+          kw_requested: kw,
+          type: type === 'load' ? 'consumer' : 'producer'  // Map frontend values to backend values
+        },
+        {
+          timeout: 10000 // 10 second timeout
+        }
+      );
 
       setResult({ ...apiRes.data, kw_requested: kw });
 
@@ -66,9 +106,9 @@ function App() {
         setStationLocation([apiRes.data.station_lat, apiRes.data.station_lon]);
       }
 
-      // Assuming station location is not returned by backend explicitly in lat/lon, 
-      // but we need it for the map. 
-      // Wait, the backend returns `nearest_station_id`. 
+      // Assuming station location is not returned by backend explicitly in lat/lon,
+      // but we need it for the map.
+      // Wait, the backend returns `nearest_station_id`.
       // I should probably return station lat/lon from backend to plot it.
       // Let's assume for now I can't plot the station exactly unless I update backend.
       // I'll update backend to return station lat/lon.
@@ -128,12 +168,18 @@ function App() {
         <MapView userLocation={userLocation} stationLocation={stationLocation} allStations={allStations} />
       </div>
 
-      {/* New Overlay Menu */}
+      {/* Overlay Menu (Left) */}
       <OverlayMenu
         onCheck={handleCheck}
         result={result}
         loading={loading}
         error={error}
+      />
+
+      {/* Layers Menu (Right) */}
+      <LayersMenu
+        layers={layers}
+        onLayerChange={handleLayerChange}
       />
     </div>
   );

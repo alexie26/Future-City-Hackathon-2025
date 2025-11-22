@@ -309,32 +309,7 @@ class GridDataManager:
             return None
 
     def get_all_stations(self):
-        try:
-            if self.locations_df is None or self.locations_df.empty:
-                logger.error("Locations dataframe is not loaded or empty")
-                return []
-            
-            stations = []
-            for index, row in self.locations_df.iterrows():
-                if pd.notna(row['Breitengrad']) and pd.notna(row['Längengrad']):
-                    lat = row['Breitengrad']
-                    lon = row['Längengrad']
-                    
-                    if lat < 15 and lon > 45:
-                        lat, lon = lon, lat
-
-                    stations.append({
-                        "id": row['Stationsnummer'],
-                        "lat": lat,
-                        "lon": lon
-                    })
-            
-            logger.debug(f"Returning {len(stations)} stations")
-            return stations
-            
-        except Exception as e:
-            logger.error(f"Error getting all stations: {str(e)}", exc_info=True)
-        # Return a list of all stations with their coordinates
+        # Return a list of all stations with their coordinates and capacity
         stations = []
         for index, row in self.stations_df.iterrows():
             if pd.notna(row['Breitengrad']) and pd.notna(row['Längengrad']):

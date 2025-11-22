@@ -1,11 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Zap, Sun, Loader2, CheckCircle, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, Zap, Sun, Loader2, CheckCircle, AlertCircle, ChevronDown, ChevronUp, MapPin } from 'lucide-react';
+import axios from 'axios';
 
 const OverlayMenu = ({ onCheck, result, loading, error }) => {
     const [address, setAddress] = useState('');
     const [kw, setKw] = useState('');
     const [type, setType] = useState('load'); // 'load' or 'feed_in'
     const [expanded, setExpanded] = useState(false);
+    const [suggestions, setSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [searchLoading, setSearchLoading] = useState(false);
+    const [selectedCoordinates, setSelectedCoordinates] = useState(null);
+    const searchTimeout = useRef(null);
+    const suggestionsRef = useRef(null);
 
     // Auto-expand when result arrives
     useEffect(() => {
@@ -14,11 +21,97 @@ const OverlayMenu = ({ onCheck, result, loading, error }) => {
         }
     }, [result]);
 
+    // Close suggestions when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
+                setShowSuggestions(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Debounced address search
+    useEffect(() => {
+        if (address.length < 1) {
+            setSuggestions([]);
+            setShowSuggestions(false);
+            return;
+        }
+
+        // Clear previous timeout
+        if (searchTimeout.current) {
+            clearTimeout(searchTimeout.current);
+        }
+
+        // Set new timeout
+        searchTimeout.current = setTimeout(async () => {
+            setSearchLoading(true);
+            try {
+                // Using Photon API - better for autocomplete
+                const response = await axios.get(
+                    `https://photon.komoot.io/api/`,
+                    {
+                        params: {
+                            q: address,
+                            limit: 10,
+                            lang: 'de',
+                            lat: 49.142,
+                            lon: 9.219,
+                            location_bias_scale: 0.5
+                        }
+                    }
+                );
+
+                // Filter only Heilbronn results
+                const heilbronnResults = response.data.features.filter(feature => {
+                    const props = feature.properties;
+                    return props.city === 'Heilbronn' || props.county === 'Heilbronn';
+                });
+
+                setSuggestions(heilbronnResults);
+                setShowSuggestions(heilbronnResults.length > 0);
+            } catch (err) {
+                console.error('Address search failed:', err);
+                setSuggestions([]);
+            } finally {
+                setSearchLoading(false);
+            }
+        }, 150); // 150ms debounce - faster response
+
+        return () => {
+            if (searchTimeout.current) {
+                clearTimeout(searchTimeout.current);
+            }
+        };
+    }, [address]);
+
+    const handleSuggestionClick = (suggestion) => {
+        // Photon returns GeoJSON format with coordinates
+        const props = suggestion.properties;
+        const coords = suggestion.geometry.coordinates; // [lon, lat]
+
+        const displayName = [props.name, props.street, props.city, props.country]
+            .filter(Boolean)
+            .join(', ');
+        setAddress(displayName);
+        setSelectedCoordinates({ lat: coords[1], lon: coords[0] }); // Store coordinates
+        setShowSuggestions(false);
+        setSuggestions([]);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         if (address && kw) {
-            onCheck({ address, type, kw: parseFloat(kw) });
+            onCheck({ address, type, kw: parseFloat(kw), coordinates: selectedCoordinates });
+            setShowSuggestions(false);
         }
+    };
+
+    const handleAddressChange = (e) => {
+        setAddress(e.target.value);
+        setSelectedCoordinates(null); // Clear stored coordinates when manually typing
     };
 
     return (
@@ -37,17 +130,54 @@ const OverlayMenu = ({ onCheck, result, loading, error }) => {
 
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
 
-                {/* Address Input */}
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                {/* Address Input with Autocomplete */}
+                <div className="relative" ref={suggestionsRef}>
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
+                    {searchLoading && (
+                        <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-4 h-4 animate-spin z-10" />
+                    )}
                     <input
                         type="text"
-                        placeholder="Search Address..."
+                        placeholder="Search Address in Heilbronn..."
                         value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        onChange={handleAddressChange}
+                        onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+                        className="w-full pl-10 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                         required
+                        autoComplete="off"
                     />
+
+                    {/* Autocomplete Dropdown */}
+                    {showSuggestions && suggestions.length > 0 && (
+                        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto z-50">
+                            {suggestions.map((suggestion, index) => {
+                                const props = suggestion.properties;
+                                const name = props.name || props.street || '';
+                                const fullAddress = [props.street, props.housenumber, props.postcode, props.city]
+                                    .filter(Boolean)
+                                    .join(' ');
+
+                                return (
+                                    <button
+                                        key={index}
+                                        type="button"
+                                        onClick={() => handleSuggestionClick(suggestion)}
+                                        className="w-full px-4 py-3 text-left hover:bg-blue-50 flex items-start gap-2 border-b border-gray-100 last:border-0 transition-colors"
+                                    >
+                                        <MapPin className="w-4 h-4 text-blue-500 mt-1 flex-shrink-0" />
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-900 truncate">
+                                                {name}
+                                            </p>
+                                            <p className="text-xs text-gray-500 truncate">
+                                                {fullAddress}
+                                            </p>
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
 
                 {/* Mode Toggle */}
@@ -56,8 +186,8 @@ const OverlayMenu = ({ onCheck, result, loading, error }) => {
                         type="button"
                         onClick={() => setType('load')}
                         className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all ${type === 'load'
-                                ? 'bg-white text-blue-600 shadow-sm'
-                                : 'text-gray-500 hover:text-gray-700'
+                            ? 'bg-white text-blue-600 shadow-sm'
+                            : 'text-gray-500 hover:text-gray-700'
                             }`}
                     >
                         <Zap className="w-4 h-4" />
@@ -67,8 +197,8 @@ const OverlayMenu = ({ onCheck, result, loading, error }) => {
                         type="button"
                         onClick={() => setType('feed_in')}
                         className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all ${type === 'feed_in'
-                                ? 'bg-white text-orange-500 shadow-sm'
-                                : 'text-gray-500 hover:text-gray-700'
+                            ? 'bg-white text-orange-500 shadow-sm'
+                            : 'text-gray-500 hover:text-gray-700'
                             }`}
                     >
                         <Sun className="w-4 h-4" />

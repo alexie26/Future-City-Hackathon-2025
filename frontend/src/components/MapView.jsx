@@ -35,39 +35,52 @@ const MapView = ({ userLocation, stationLocation, allStations = [] }) => {
 
     // Calculate Voronoi Polygons
     const voronoiPolygons = useMemo(() => {
-        if (!allStations.length) return null;
-
-        // Filter out duplicate coordinates to prevent Voronoi errors
-        const seen = new Set();
-        const uniqueStations = allStations.filter(s => {
-            const key = `${s.lat},${s.lon}`;
-            if (seen.has(key)) return false;
-            seen.add(key);
-            return true;
-        });
-
-        // Create FeatureCollection of points
-        const points = turf.featureCollection(
-            uniqueStations.map(station => turf.point([station.lon, station.lat], { ...station }))
-        );
-
-        // Create Bounding Box (Heilbronn area approx)
-        const bbox = [9.0, 49.0, 9.4, 49.3]; // [minX, minY, maxX, maxY]
-
-        // Generate Voronoi
         try {
+            if (!allStations || !allStations.length) {
+                console.log("No stations data available for Voronoi");
+                return null;
+            }
+
+            // Filter out duplicate coordinates to prevent Voronoi errors
+            const seen = new Set();
+            const uniqueStations = allStations.filter(s => {
+                if (!s || !s.lat || !s.lon || !s.remaining_capacity) {
+                    console.warn("Invalid station data:", s);
+                    return false;
+                }
+                const key = `${s.lat},${s.lon}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+
+            if (uniqueStations.length < 3) {
+                console.log("Not enough stations for Voronoi (need at least 3)");
+                return null;
+            }
+
+            // Create FeatureCollection of points
+            const points = turf.featureCollection(
+                uniqueStations.map(station => turf.point([station.lon, station.lat], { ...station }))
+            );
+
+            // Create Bounding Box (Heilbronn area approx)
+            const bbox = [9.0, 49.0, 9.4, 49.3]; // [minX, minY, maxX, maxY]
+
+            // Generate Voronoi
             const voronoi = turf.voronoi(points, { bbox });
 
             // IMPORTANT: Map properties back to polygons!
             // Turf.voronoi preserves the order, so index i corresponds to points.features[i]
-            if (voronoi) {
+            if (voronoi && voronoi.features) {
                 voronoi.features.forEach((feature, i) => {
-                    if (feature) {
+                    if (feature && points.features[i]) {
                         feature.properties = points.features[i].properties;
                     }
                 });
             }
 
+            console.log(`Voronoi generated successfully with ${voronoi?.features?.length || 0} polygons`);
             return voronoi;
         } catch (e) {
             console.error("Voronoi generation failed:", e);
@@ -143,9 +156,9 @@ const MapView = ({ userLocation, stationLocation, allStations = [] }) => {
             )}
 
             {/* All Stations (Small dots on top) */}
-            {allStations.map((station) => (
+            {allStations.map((station, index) => (
                 <CircleMarker
-                    key={station.id}
+                    key={`station-${index}-${station.lat}-${station.lon}`}
                     center={[station.lat, station.lon]}
                     pathOptions={{
                         color: 'black',
