@@ -114,6 +114,42 @@ const OverlayMenu = ({ onCheck, result, loading, error }) => {
         setSelectedCoordinates(null); // Clear stored coordinates when manually typing
     };
 
+    // Get traffic light color and icon
+    const getStatusDisplay = () => {
+        if (!result) return null;
+
+        const statusConfig = {
+            green: {
+                bgColor: 'bg-green-50',
+                borderColor: 'border-green-200',
+                iconBg: 'bg-green-100',
+                iconColor: 'text-green-600',
+                textColor: 'text-green-700',
+                icon: CheckCircle
+            },
+            yellow: {
+                bgColor: 'bg-yellow-50',
+                borderColor: 'border-yellow-200',
+                iconBg: 'bg-yellow-100',
+                iconColor: 'text-yellow-600',
+                textColor: 'text-yellow-700',
+                icon: AlertCircle
+            },
+            red: {
+                bgColor: 'bg-red-50',
+                borderColor: 'border-red-200',
+                iconBg: 'bg-red-100',
+                iconColor: 'text-red-600',
+                textColor: 'text-red-700',
+                icon: AlertCircle
+            }
+        };
+
+        return statusConfig[result.status] || statusConfig.yellow;
+    };
+
+    const statusDisplay = getStatusDisplay();
+
     return (
         <div className="absolute z-[1000] 
                     top-auto bottom-0 left-0 right-0 
@@ -255,39 +291,62 @@ const OverlayMenu = ({ onCheck, result, loading, error }) => {
                 </button>
             </form>
 
-            {/* Result Expansion */}
-            {result && (
-                <div className={`border-t border-gray-100 bg-gray-50 transition-all duration-500 ease-in-out overflow-hidden ${expanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+            {/* Traffic Light Result */}
+            {result && statusDisplay && (
+                <div className={`border-t ${statusDisplay.borderColor} ${statusDisplay.bgColor} transition-all duration-500 ease-in-out overflow-hidden ${expanded ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className="p-6">
+                        {/* Status Icon and Message */}
                         <div className="flex flex-col items-center text-center mb-6">
-                            {result.kw_requested <= result.remaining_safe ? (
-                                <>
-                                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
-                                        <CheckCircle className="w-10 h-10 text-green-600" />
-                                    </div>
-                                    <h3 className="text-xl font-bold text-gray-900">Approved</h3>
-                                    <p className="text-green-600 font-medium">Grid capacity available</p>
-                                </>
-                            ) : (
-                                <>
-                                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-3">
-                                        <AlertCircle className="w-10 h-10 text-red-600" />
-                                    </div>
-                                    <h3 className="text-xl font-bold text-gray-900">Grid Expansion Needed</h3>
-                                    <p className="text-red-600 font-medium">Capacity exceeded</p>
-                                </>
-                            )}
+                            <div className={`w-20 h-20 ${statusDisplay.iconBg} rounded-full flex items-center justify-center mb-4 animate-pulse`}>
+                                <statusDisplay.icon className={`w-12 h-12 ${statusDisplay.iconColor}`} />
+                            </div>
+                            <h3 className="text-2xl font-bold text-gray-900 mb-2">{result.message}</h3>
 
-                            <div className="mt-4 bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
-                                <span className="text-gray-500 text-sm mr-2">Available:</span>
-                                <span className="font-bold text-gray-900">{Math.round(result.remaining_safe)} kW</span>
+                            {/* Capacity Information */}
+                            <div className="mt-4 space-y-2 w-full">
+                                <div className="flex justify-between items-center px-4 py-2 bg-white rounded-lg border border-gray-200">
+                                    <span className="text-gray-600 text-sm">Your Request:</span>
+                                    <span className="font-bold text-gray-900">{result.kw_requested} kW</span>
+                                </div>
+                                <div className="flex justify-between items-center px-4 py-2 bg-white rounded-lg border border-gray-200">
+                                    <span className="text-gray-600 text-sm">Available Capacity:</span>
+                                    <span className="font-bold text-gray-900">{Math.round(result.remaining_safe)} kW</span>
+                                </div>
+                                <div className="flex justify-between items-center px-4 py-2 bg-white rounded-lg border border-gray-200">
+                                    <span className="text-gray-600 text-sm">Distance to Grid:</span>
+                                    <span className="font-bold text-gray-900">{result.distance_km} km</span>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Technical Details Toggle */}
+                        {/* Recommendation */}
+                        <div className={`${statusDisplay.bgColor} border ${statusDisplay.borderColor} rounded-lg p-4 mb-4`}>
+                            <h4 className={`font-semibold ${statusDisplay.textColor} mb-2`}>📋 Next Steps</h4>
+                            <p className="text-sm text-gray-700 leading-relaxed">{result.recommendation}</p>
+                        </div>
+
+                        {/* Capacity Bar */}
+                        <div className="mb-4">
+                            <div className="flex justify-between text-xs text-gray-600 mb-1">
+                                <span>Grid Usage</span>
+                                <span>{Math.round((result.kw_requested / result.remaining_safe) * 100)}%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                                <div
+                                    className={`h-full transition-all duration-500 ${
+                                        result.status === 'green' ? 'bg-green-500' :
+                                            result.status === 'yellow' ? 'bg-yellow-500' :
+                                                'bg-red-500'
+                                    }`}
+                                    style={{ width: `${Math.min(100, (result.kw_requested / result.remaining_safe) * 100)}%` }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Action Button */}
                         <button
                             onClick={() => setExpanded(!expanded)}
-                            className="w-full text-xs text-gray-400 hover:text-gray-600 flex items-center justify-center gap-1 pb-2"
+                            className="w-full text-xs text-gray-400 hover:text-gray-600 flex items-center justify-center gap-1 pt-2"
                         >
                             Hide Details <ChevronUp className="w-3 h-3" />
                         </button>
