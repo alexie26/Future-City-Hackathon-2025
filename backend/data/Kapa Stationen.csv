@@ -1,0 +1,4 @@
+ONS,Breitengrad,Längengrad,Installierte Trafoleistung,PV-Leistung an ONS,Übrige Trafokapazität,"Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7",Umspannwerk
+01TS0257,49.1426929,9.2108798,630,154.12,245.88,292.11,UW_Heilbronn_Sued
+01TS0258,49.1400000,9.2200000,400,50.00,350.00,300.00,UW_Heilbronn_Sued
+01TS0259,49.1500000,9.2000000,1000,200.00,800.00,700.00,UW_Heilbronn_Nord
