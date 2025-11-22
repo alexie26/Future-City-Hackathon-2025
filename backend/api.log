@@ -1,0 +1,32 @@
+2025-11-22 23:27:10,473 - main - WARNING - Removed 1073 stations with invalid/missing coordinates
+2025-11-22 23:27:10,473 - main - ERROR - ❌ Data validation error: No valid stations found after filtering
+2025-11-22 23:27:10,587 - grid_data - INFO - Loading stations from /home/hichem/Future-City-Hackathon-2025/backend/data/Kapa Stationen.csv
+2025-11-22 23:27:10,594 - grid_data - INFO - Loading substations from /home/hichem/Future-City-Hackathon-2025/backend/data/Kapa Umspannwerke.csv
+2025-11-22 23:27:10,597 - grid_data - INFO - Loading locations from /home/hichem/Future-City-Hackathon-2025/backend/data/tabelle1.csv
+2025-11-22 23:27:10,604 - grid_data - INFO - Loading topology from /home/hichem/Future-City-Hackathon-2025/backend/data/tabelle3.csv
+2025-11-22 23:27:10,610 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-22 23:27:10,611 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-22 23:27:41,595 - main - INFO - Retrieved 649 stations
+2025-11-22 23:27:41,684 - main - INFO - Retrieved 649 stations
+2025-11-22 23:29:21,886 - main - INFO - Retrieved 649 stations
+2025-11-22 23:29:21,968 - main - INFO - Retrieved 649 stations
+2025-11-22 23:29:25,561 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-22 23:29:25,563 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-22 23:29:25,699 - grid_data - INFO - Loading stations from /home/hichem/Future-City-Hackathon-2025/backend/data/Kapa Stationen.csv
+2025-11-22 23:29:25,703 - grid_data - INFO - Loading substations from /home/hichem/Future-City-Hackathon-2025/backend/data/Kapa Umspannwerke.csv
+2025-11-22 23:29:25,704 - grid_data - INFO - Loading locations from /home/hichem/Future-City-Hackathon-2025/backend/data/tabelle1.csv
+2025-11-22 23:29:25,708 - grid_data - INFO - Loading topology from /home/hichem/Future-City-Hackathon-2025/backend/data/tabelle3.csv
+2025-11-22 23:29:25,712 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-22 23:29:25,712 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-22 23:29:34,739 - main - INFO - Retrieved 649 stations
+2025-11-22 23:29:34,789 - main - INFO - Retrieved 649 stations
+2025-11-23 00:17:16,367 - main - INFO - Retrieved 649 stations
+2025-11-23 00:17:16,443 - main - INFO - Retrieved 649 stations
+2025-11-23 00:17:27,970 - main - INFO - Retrieved 649 stations
+2025-11-23 00:17:28,053 - main - INFO - Retrieved 649 stations
+2025-11-23 00:17:30,257 - main - INFO - Retrieved 649 stations
+2025-11-23 00:17:30,327 - main - INFO - Retrieved 649 stations
+2025-11-23 00:19:21,712 - main - INFO - Retrieved 649 stations
+2025-11-23 00:19:21,780 - main - INFO - Retrieved 649 stations
+2025-11-23 00:19:47,316 - main - INFO - Retrieved 649 stations
+2025-11-23 00:19:47,376 - main - INFO - Retrieved 649 stations
