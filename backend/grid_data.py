@@ -39,7 +39,14 @@ class GridDataManager:
             if pd.isna(row['Breitengrad']) or pd.isna(row['Längengrad']):
                 continue
                 
-            station_loc = (row['Breitengrad'], row['Längengrad'])
+            lat_val = row['Breitengrad']
+            lon_val = row['Längengrad']
+
+            # Simple heuristic: If Lat is small (e.g. 9) and Lon is large (e.g. 49), swap them
+            if lat_val < 15 and lon_val > 45:
+                lat_val, lon_val = lon_val, lat_val
+
+            station_loc = (lat_val, lon_val)
             user_loc = (lat, lon)
             try:
                 dist = geodesic(user_loc, station_loc).meters
@@ -91,3 +98,23 @@ class GridDataManager:
                 result["current_load_pv"] = 0 # Not provided for UW
 
         return result
+
+    def get_all_stations(self):
+        # Return a list of all stations with their coordinates
+        stations = []
+        for index, row in self.stations_df.iterrows():
+            if pd.notna(row['Breitengrad']) and pd.notna(row['Längengrad']):
+                # Check if coordinates are swapped (Heilbronn is approx Lat 49, Lon 9)
+                lat = row['Breitengrad']
+                lon = row['Längengrad']
+                
+                # Simple heuristic: If Lat is small (e.g. 9) and Lon is large (e.g. 49), swap them
+                if lat < 15 and lon > 45:
+                    lat, lon = lon, lat
+
+                stations.append({
+                    "id": row['ONS'],
+                    "lat": lat,
+                    "lon": lon
+                })
+        return stations

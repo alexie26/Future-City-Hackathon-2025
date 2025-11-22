@@ -12,6 +12,20 @@ function App() {
   const [userLocation, setUserLocation] = useState(null);
   const [stationLocation, setStationLocation] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
+  const [allStations, setAllStations] = useState([]);
+
+  React.useEffect(() => {
+    // Fetch all stations on load
+    const fetchStations = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/stations`);
+        setAllStations(res.data);
+      } catch (err) {
+        console.error("Failed to fetch stations:", err);
+      }
+    };
+    fetchStations();
+  }, []);
 
   const handleCheck = async ({ address, type, kw }) => {
     setLoading(true);
@@ -156,7 +170,7 @@ function App() {
 
         {/* Right Side: Map */}
         <div className="w-full md:w-2/3 h-[500px] md:h-auto">
-          <MapView userLocation={userLocation} stationLocation={stationLocation} />
+          <MapView userLocation={userLocation} stationLocation={stationLocation} allStations={allStations} />
         </div>
       </main>
     </div>

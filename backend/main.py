@@ -32,6 +32,10 @@ def check_feasibility(request: FeasibilityRequest):
         
     return data
 
+@app.get("/stations")
+def get_stations():
+    return grid_manager.get_all_stations()
+
 @app.get("/")
 def read_root():
     return {"message": "Electrify Heilbronn API is running"}
