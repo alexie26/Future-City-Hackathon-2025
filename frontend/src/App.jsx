@@ -44,12 +44,12 @@ function App() {
 
       const lat = parseFloat(geoRes.data[0].lat);
       const lon = parseFloat(geoRes.data[0].lon);
-      
+
       // Validate coordinates are in reasonable range for Heilbronn
       if (lat < 48 || lat > 50 || lon < 8 || lon > 10) {
         throw new Error("The address appears to be outside the Heilbronn service area.");
       }
-      
+
       setUserLocation([lat, lon]);
 
       // 2. Call Backend
@@ -83,18 +83,17 @@ function App() {
       // Let's check `grid_data.py` again. It has the coords.
 
     } catch (err) {
-<<<<<<< HEAD
       console.error("Error details:", err);
-      
+
       if (err.code === 'ECONNABORTED') {
         setError("Request timed out. The backend server may be slow or unavailable. Please try again.");
       } else if (err.response) {
         // Server responded with error
         const errorData = err.response.data;
-        
+
         if (errorData.detail && typeof errorData.detail === 'object') {
           // Structured error from backend
-          switch(errorData.detail.error) {
+          switch (errorData.detail.error) {
             case 'NO_STATION_FOUND':
               setError("No electrical station found near this location. This area may not be covered by our service. Please try a different address in Heilbronn.");
               break;
@@ -117,10 +116,6 @@ function App() {
       } else {
         setError(err.message || "An unexpected error occurred. Please try again.");
       }
-=======
-      console.error(err);
-      setError(err.message || "An error occurred while checking feasibility.");
->>>>>>> 3bc322e3eba6679ff007f165683504e1d54e2e51
     } finally {
       setLoading(false);
     }

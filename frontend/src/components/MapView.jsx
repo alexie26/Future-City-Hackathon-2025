@@ -55,19 +55,24 @@ const MapView = ({ userLocation, stationLocation, allStations = [] }) => {
         const bbox = [9.0, 49.0, 9.4, 49.3]; // [minX, minY, maxX, maxY]
 
         // Generate Voronoi
-        const voronoi = turf.voronoi(points, { bbox });
+        try {
+            const voronoi = turf.voronoi(points, { bbox });
 
-        // IMPORTANT: Map properties back to polygons!
-        // Turf.voronoi preserves the order, so index i corresponds to points.features[i]
-        if (voronoi) {
-            voronoi.features.forEach((feature, i) => {
-                if (feature) {
-                    feature.properties = points.features[i].properties;
-                }
-            });
+            // IMPORTANT: Map properties back to polygons!
+            // Turf.voronoi preserves the order, so index i corresponds to points.features[i]
+            if (voronoi) {
+                voronoi.features.forEach((feature, i) => {
+                    if (feature) {
+                        feature.properties = points.features[i].properties;
+                    }
+                });
+            }
+
+            return voronoi;
+        } catch (e) {
+            console.error("Voronoi generation failed:", e);
+            return null;
         }
-
-        return voronoi;
     }, [allStations]);
 
     const onEachFeature = (feature, layer) => {
