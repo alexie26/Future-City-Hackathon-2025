@@ -32,6 +32,29 @@ const MapView = ({ userLocation, stationLocation, allStations = [] }) => {
     const center = userLocation || defaultCenter;
     const zoom = userLocation ? 15 : 13;
 
+    // Filter stations to show only nearby ones (within 2km) when user location is set
+    const getDistance = (lat1, lon1, lat2, lon2) => {
+        const R = 6371e3; // Earth's radius in meters
+        const φ1 = lat1 * Math.PI / 180;
+        const φ2 = lat2 * Math.PI / 180;
+        const Δφ = (lat2 - lat1) * Math.PI / 180;
+        const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ/2) * Math.sin(Δλ/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        return R * c; // Distance in meters
+    };
+
+    const visibleStations = userLocation 
+        ? allStations.filter(station => {
+            const distance = getDistance(userLocation[0], userLocation[1], station.lat, station.lon);
+            return distance <= 2000; // Only show stations within 2km
+        })
+        : allStations.slice(0, 50); // Show only first 50 stations when no user location
+
     return (
         <MapContainer center={defaultCenter} zoom={13} className="h-full w-full rounded-xl z-0">
             <ChangeView center={center} zoom={zoom} />
@@ -40,8 +63,8 @@ const MapView = ({ userLocation, stationLocation, allStations = [] }) => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
-            {/* All Stations (Red dots) */}
-            {allStations.map((station) => (
+            {/* Nearby Stations (Red dots) */}
+            {visibleStations.map((station) => (
                 <CircleMarker
                     key={station.id}
                     center={[station.lat, station.lon]}
