@@ -36,9 +36,6 @@ const ResultCard = ({ result }) => {
                     <h3 className={`${config.color} font-bold text-lg`}>
                         {result.message}
                     </h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                        Station: {result.station_id} • Distance: {result.distance_km} km
-                    </p>
                 </div>
             </div>
 

@@ -13,22 +13,7 @@ function App() {
   const [stationLocation, setStationLocation] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [allStations, setAllStations] = useState([]);
-  const [layers, setLayers] = useState({
-    lv: { enabled: false },
-    mv: { enabled: false },
-    hv: { enabled: false },
-    assets: { enabled: false },
-    reservations: { enabled: false },
-    routing: { enabled: false },
-    heatmap: {
-      enabled: true,
-      settings: {
-        voltageLevel: 'MV',
-        type: 'Loads'
-      }
-    },
-    parcels: { enabled: false }
-  });
+  const [activeLayer, setActiveLayer] = useState(null); // No layer active by default
 
   const [insights, setInsights] = useState(null);
   const [insightsLoading, setInsightsLoading] = useState(false);
@@ -47,13 +32,8 @@ function App() {
     fetchStations();
   }, []);
 
-  const handleLayerChange = (layerId, enabled, settings = null) => {
-    setLayers(prev => ({
-      ...prev,
-      [layerId]: settings
-        ? { enabled, settings }
-        : { ...prev[layerId], enabled }
-    }));
+  const handleLayerChange = (layerId) => {
+    setActiveLayer(layerId);
   };
 
   const handleCheck = async ({ address, type, kw, technology = "Other" }) => {
@@ -78,14 +58,14 @@ function App() {
 
       const lat = parseFloat(geoRes.data[0].lat);
       const lon = parseFloat(geoRes.data[0].lon);
-      
+
       console.log(`Geocoded address: ${address} -> (${lat}, ${lon})`);
-      
+
       // Validate coordinates are in reasonable range for Heilbronn area
       if (lat < 48.5 || lat > 50 || lon < 8.5 || lon > 10) {
         throw new Error("The address appears to be outside the Heilbronn service area. Please enter an address in Heilbronn.");
       }
-      
+
       setUserLocation([lat, lon]);
 
       // 2. Map frontend type to backend type
@@ -94,7 +74,7 @@ function App() {
       // 3. Call Backend with updated endpoint
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
       console.log(`Calling API: ${apiUrl}/check-feasibility`);
-      
+
       const apiRes = await axios.post(`${apiUrl}/check-feasibility`, {
         address,
         lat,
@@ -116,12 +96,12 @@ function App() {
 
     } catch (err) {
       console.error("Error details:", err);
-      
+
       if (err.code === 'ECONNABORTED') {
         setError("Request timed out. The backend server may be slow or unavailable. Please try again.");
       } else if (err.response?.data?.detail) {
-        setError(typeof err.response.data.detail === 'string' 
-          ? err.response.data.detail 
+        setError(typeof err.response.data.detail === 'string'
+          ? err.response.data.detail
           : JSON.stringify(err.response.data.detail));
       } else if (err.request) {
         setError(`Cannot connect to backend server at ${import.meta.env.VITE_API_URL || 'http://localhost:8000'}. Please ensure the backend is running.`);
@@ -160,7 +140,7 @@ function App() {
           userLocation={userLocation}
           stationLocation={stationLocation}
           allStations={allStations}
-          heatmapEnabled={layers.heatmap.enabled}
+          activeLayer={activeLayer}
         />
       </div>
 
@@ -178,7 +158,7 @@ function App() {
 
       {/* Layers Menu (Right) */}
       <LayersMenu
-        layers={layers}
+        activeLayer={activeLayer}
         onLayerChange={handleLayerChange}
       />
     </div>

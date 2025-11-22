@@ -27,7 +27,7 @@ function ChangeView({ center, zoom }) {
     return null;
 }
 
-const MapView = ({ userLocation, stationLocation, allStations = [] }) => {
+const MapView = ({ userLocation, stationLocation, allStations = [], activeLayer = 'mv' }) => {
     // Default center (Heilbronn)
     const defaultCenter = [49.1427, 9.2109];
     const center = userLocation || defaultCenter;
@@ -86,7 +86,7 @@ const MapView = ({ userLocation, stationLocation, allStations = [] }) => {
             console.error("Voronoi generation failed:", e);
             return null;
         }
-    }, [allStations]);
+    }, [allStations, activeLayer]); // Re-calculate when activeLayer changes
 
     const onEachFeature = (feature, layer) => {
         if (feature.properties) {
@@ -118,15 +118,22 @@ const MapView = ({ userLocation, stationLocation, allStations = [] }) => {
 
     const getStyle = (feature) => {
         const capacity = feature.properties.remaining_capacity;
-        let color = '#10b981'; // Emerald Green
-        let opacity = 0.2;
 
-        if (capacity < 50) {
-            color = '#ef4444'; // Red
+        // Color logic: Red = Strong/High capacity, Yellow = Medium, Green = Weak/Low capacity
+        let color, opacity;
+
+        if (capacity >= 150) {
+            // High capacity - RED (Strong)
+            color = '#ef4444';
+            opacity = 0.4;
+        } else if (capacity >= 50) {
+            // Medium capacity - YELLOW
+            color = '#f59e0b';
             opacity = 0.3;
-        } else if (capacity < 150) {
-            color = '#f59e0b'; // Amber
-            opacity = 0.2;
+        } else {
+            // Low capacity - GREEN (Weak)
+            color = '#10b981';
+            opacity = 0.3;
         }
 
         return {
@@ -146,17 +153,18 @@ const MapView = ({ userLocation, stationLocation, allStations = [] }) => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
-            {/* Voronoi Overlay */}
-            {voronoiPolygons && (
+            {/* Voronoi Overlay - DISABLED FOR NOW */}
+            {/* {voronoiPolygons && activeLayer && (
                 <GeoJSON
+                    key={activeLayer}
                     data={voronoiPolygons}
                     style={getStyle}
                     onEachFeature={onEachFeature}
                 />
-            )}
+            )} */}
 
-            {/* All Stations (Small dots on top) */}
-            {allStations.map((station, index) => (
+            {/* All Stations (Small dots) - DISABLED FOR NOW */}
+            {/* {allStations.map((station, index) => (
                 <CircleMarker
                     key={`station-${index}-${station.lat}-${station.lon}`}
                     center={[station.lat, station.lon]}
@@ -168,7 +176,7 @@ const MapView = ({ userLocation, stationLocation, allStations = [] }) => {
                     }}
                     radius={2}
                 />
-            ))}
+            ))} */}
 
             {/* User Location (Green dot) */}
             {userLocation && (
