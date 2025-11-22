@@ -2,7 +2,7 @@ import React from 'react';
 import { CheckCircle, XCircle, AlertCircle, Leaf } from 'lucide-react';
 import RecommendationCard from './RecommendationCard';
 
-const ResultCard = ({ result }) => {
+const ResultCard = ({ result, lang = 'en' }) => {
     const statusConfig = {
         green: {
             icon: CheckCircle,
@@ -37,7 +37,7 @@ const ResultCard = ({ result }) => {
                         {result.message}
                     </h3>
                     <p className="text-sm text-gray-600 mt-1">
-                        Station: {result.station_id} • Distance: {result.distance_km} km
+                        {lang === 'de' ? 'Station' : 'Station'}: {result.station_id} • {lang === 'de' ? 'Entfernung' : 'Distance'}: {result.distance_km} km
                     </p>
                 </div>
             </div>
@@ -48,7 +48,9 @@ const ResultCard = ({ result }) => {
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                             <Leaf className="w-5 h-5 text-green-600" />
-                            <span className="font-semibold text-gray-900">Eco-Friendliness Score</span>
+                            <span className="font-semibold text-gray-900">
+                                {lang === 'de' ? 'Öko-Freundlichkeits-Score' : 'Eco-Friendliness Score'}
+                            </span>
                         </div>
                         <span className="text-2xl font-bold text-green-600">
                             {result.eco_score}/100
@@ -76,11 +78,11 @@ const ResultCard = ({ result }) => {
                     <div className="flex items-center gap-2 mb-3">
                         <Leaf className="w-5 h-5 text-green-600" />
                         <h4 className="font-bold text-gray-900">
-                            Personalized Green Recommendations
+                            {lang === 'de' ? 'Personalisierte grüne Empfehlungen' : 'Personalized Green Recommendations'}
                         </h4>
                     </div>
                     {result.recommendations.map((rec, idx) => (
-                        <RecommendationCard key={idx} recommendation={rec} />
+                        <RecommendationCard key={idx} recommendation={rec} lang={lang} />
                     ))}
                 </div>
             )}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Layers, ChevronDown, ChevronUp } from 'lucide-react';
 
-const LayersMenu = ({ layers, onLayerChange }) => {
+const LayersMenu = ({ layers, onLayerChange, lang = 'en' }) => {
     const [isExpanded, setIsExpanded] = useState(true);
     const [showHeatmapSettings, setShowHeatmapSettings] = useState(true);
 
@@ -22,7 +22,7 @@ const LayersMenu = ({ layers, onLayerChange }) => {
             >
                 <div className="flex items-center gap-2">
                     <Layers className="w-5 h-5 text-gray-700" />
-                    <h2 className="font-bold text-gray-900">Map Layers</h2>
+                    <h2 className="font-bold text-gray-900">{lang === 'de' ? 'Kartenebenen' : 'Map Layers'}</h2>
                 </div>
                 {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-500" />}
             </button>
@@ -32,42 +32,42 @@ const LayersMenu = ({ layers, onLayerChange }) => {
                 <div className="p-4 space-y-3 overflow-y-auto">
                     {/* Low Voltage */}
                     <LayerToggle
-                        label="Low voltage (LV)"
+                        label={lang === 'de' ? 'Niederspannung (NS)' : 'Low voltage (LV)'}
                         enabled={layers.lv.enabled}
                         onToggle={() => toggleLayer('lv')}
                     />
 
                     {/* Medium Voltage */}
                     <LayerToggle
-                        label="Medium voltage (MV)"
+                        label={lang === 'de' ? 'Mittelspannung (MS)' : 'Medium voltage (MV)'}
                         enabled={layers.mv.enabled}
                         onToggle={() => toggleLayer('mv')}
                     />
 
                     {/* High Voltage */}
                     <LayerToggle
-                        label="High voltage (HV)"
+                        label={lang === 'de' ? 'Hochspannung (HS)' : 'High voltage (HV)'}
                         enabled={layers.hv.enabled}
                         onToggle={() => toggleLayer('hv')}
                     />
 
                     {/* Assets */}
                     <LayerToggle
-                        label="Assets"
+                        label={lang === 'de' ? 'Anlagen' : 'Assets'}
                         enabled={layers.assets.enabled}
                         onToggle={() => toggleLayer('assets')}
                     />
 
                     {/* Reservations */}
                     <LayerToggle
-                        label="Reservations"
+                        label={lang === 'de' ? 'Reservierungen' : 'Reservations'}
                         enabled={layers.reservations.enabled}
                         onToggle={() => toggleLayer('reservations')}
                     />
 
                     {/* Routing */}
                     <LayerToggle
-                        label="Routing"
+                        label={lang === 'de' ? 'Routen' : 'Routing'}
                         enabled={layers.routing.enabled}
                         onToggle={() => toggleLayer('routing')}
                     />
@@ -75,7 +75,7 @@ const LayersMenu = ({ layers, onLayerChange }) => {
                     {/* Hosting Capacity Heatmap with Settings */}
                     <div className="border border-teal-200 rounded-lg p-3 bg-teal-50">
                         <LayerToggle
-                            label="Hosting Capacity Heatmap"
+                            label={lang === 'de' ? 'Hosting-Kapazitäts-Heatmap' : 'Hosting Capacity Heatmap'}
                             enabled={layers.heatmap.enabled}
                             onToggle={() => toggleLayer('heatmap')}
                             activeColor="teal"
@@ -86,7 +86,9 @@ const LayersMenu = ({ layers, onLayerChange }) => {
                             <div className="mt-3 space-y-2 pl-2 border-l-2 border-teal-300">
                                 {/* Voltage Level Setting */}
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-600 mb-1">Voltage Level</label>
+                                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                                        {lang === 'de' ? 'Spannungsebene' : 'Voltage Level'}
+                                    </label>
                                     <div className="flex gap-2">
                                         {['LV', 'MV', 'HV'].map((level) => (
                                             <button
@@ -105,7 +107,9 @@ const LayersMenu = ({ layers, onLayerChange }) => {
 
                                 {/* Type Setting */}
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-600 mb-1">Type</label>
+                                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                                        {lang === 'de' ? 'Typ' : 'Type'}
+                                    </label>
                                     <div className="flex gap-2">
                                         {['Loads', 'Generators'].map((type) => (
                                             <button
@@ -116,7 +120,7 @@ const LayersMenu = ({ layers, onLayerChange }) => {
                                                         : 'bg-white text-gray-600 hover:bg-gray-100'
                                                     }`}
                                             >
-                                                {type}
+                                                {lang === 'de' ? (type === 'Loads' ? 'Lasten' : 'Erzeuger') : type}
                                             </button>
                                         ))}
                                     </div>
@@ -127,7 +131,7 @@ const LayersMenu = ({ layers, onLayerChange }) => {
 
                     {/* Parcel Boundaries */}
                     <LayerToggle
-                        label="Parcel Boundaries"
+                        label={lang === 'de' ? 'Flurstücke' : 'Parcel Boundaries'}
                         enabled={layers.parcels.enabled}
                         onToggle={() => toggleLayer('parcels')}
                     />

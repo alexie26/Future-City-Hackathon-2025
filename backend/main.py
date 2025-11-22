@@ -6,6 +6,8 @@ import pandas as pd
 import math
 import logging
 import os
+from collections import Counter
+from datetime import datetime
 
 # Configure logging
 logging.basicConfig(
@@ -56,6 +58,9 @@ except Exception as e:
 from grid_data import GridDataManager
 grid_manager = GridDataManager()
 
+# In-memory store for anonymous usage events (reset on restart)
+usage_events: List[Dict[str, Any]] = []
+
 # Capacity limits (kW) based on TAB MS regulations
 CAPACITY_LIMITS = {
     "NS": 200,      # Low voltage (Niederspannung) - typical limit
@@ -72,6 +77,7 @@ class FeasibilityRequest(BaseModel):
     kw_requested: float = Field(..., gt=0, le=10000, description="Power must be positive and <= 10000 kW")
     type: Literal["load", "feed_in"] = Field(..., description="Must be 'load' or 'feed_in'")
     technology: str = "Other"
+    lang: Literal["en", "de"] = "en"
     
     @validator('type')
     def validate_type(cls, v):
@@ -139,23 +145,31 @@ async def check_feasibility(request: FeasibilityRequest):
     try:
         if stations_df.empty:
             raise HTTPException(
-                status_code=500, 
+                status_code=500,
                 detail="Station data not loaded. Please check server logs."
             )
-        
-        logger.info(f"Checking feasibility for: {request.lat}, {request.lon} with {request.kw_requested} kW")
-        
+
+        logger.info(
+            f"Checking feasibility for: {request.lat}, {request.lon} "
+            f"with {request.kw_requested} kW, type={request.type}, tech={request.technology}"
+        )
+
         # Use grid_manager to get comprehensive data including recommendations
-        grid_data = grid_manager.get_station_data(request.lat, request.lon, request.kw_requested)
-        
+        grid_data = grid_manager.get_station_data(
+            request.lat,
+            request.lon,
+            request.kw_requested,
+            lang=request.lang,
+        )
+
         if not grid_data:
             raise HTTPException(
                 status_code=404,
                 detail="No nearby station found for this location"
             )
-        
+
         # Build response from grid_data
-        return FeasibilityResponse(
+        response = FeasibilityResponse(
             status=grid_data["traffic_light"],
             message=grid_data["message"],
             kw_requested=request.kw_requested,
@@ -168,17 +182,34 @@ async def check_feasibility(request: FeasibilityRequest):
             eco_score=grid_data.get("eco_score"),
             recommendations=grid_data.get("recommendations", [])
         )
-    
+
+        # Record anonymous usage event for planning insights (non-blocking)
+        try:
+            event = {
+                "station_id": grid_data.get("nearest_station_id"),
+                "grid_level": grid_data.get("grid_level"),
+                "traffic_light": grid_data.get("traffic_light"),
+                "kw_requested": request.kw_requested,
+                "type": request.type,
+                "technology": request.technology,
+                "timestamp": datetime.utcnow().isoformat(),
+            }
+            usage_events.append(event)
+        except Exception as log_err:
+            logger.error(f"Failed to record anonymous usage event: {log_err}", exc_info=True)
+
+        return response
+
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Unexpected error processing request: {str(e)}", exc_info=True)
         raise HTTPException(
-            status_code=500, 
+            status_code=500,
             detail={
                 "error": "INTERNAL_ERROR",
-                "message": "An unexpected error occurred while processing your request. Please try again."
-            }
+                "message": "An unexpected error occurred while processing your request. Please try again.",
+            },
         )
 
 @app.get("/stations")
@@ -195,6 +226,81 @@ def get_stations():
                 "error": "INTERNAL_ERROR",
                 "message": "Failed to retrieve station data"
             }
+        )
+
+
+@app.get("/insights/summary")
+def get_insights_summary():
+    """Return anonymous aggregated planning insights from recorded pre-checks."""
+    try:
+        total = len(usage_events)
+        if total == 0:
+            return {
+                "total_checks": 0,
+                "by_traffic_light": {},
+                "by_type": {},
+                "by_technology": {},
+                "by_grid_level": {},
+                "top_stations": [],
+                "peak_hour_utc": None,
+                "peak_day_of_week": None,
+            }
+
+        by_traffic_light = Counter(
+            e.get("traffic_light") for e in usage_events if e.get("traffic_light")
+        )
+        by_type = Counter(e.get("type") for e in usage_events if e.get("type"))
+        by_technology = Counter(
+            e.get("technology") for e in usage_events if e.get("technology")
+        )
+        by_grid_level = Counter(
+            e.get("grid_level") for e in usage_events if e.get("grid_level")
+        )
+
+        station_counts = Counter(
+            e.get("station_id") for e in usage_events if e.get("station_id")
+        )
+        top_stations = [
+            {"station_id": sid, "checks": count}
+            for sid, count in station_counts.most_common(5)
+        ]
+
+        hour_counts: Counter = Counter()
+        day_counts: Counter = Counter()
+        for e in usage_events:
+            ts = e.get("timestamp")
+            if not ts:
+                continue
+            try:
+                dt = datetime.fromisoformat(ts)
+            except ValueError:
+                continue
+            hour_counts[dt.hour] += 1
+            day_counts[dt.weekday()] += 1
+
+        peak_hour = hour_counts.most_common(1)[0][0] if hour_counts else None
+        peak_day_index = day_counts.most_common(1)[0][0] if day_counts else None
+        day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        peak_day = day_names[peak_day_index] if peak_day_index is not None else None
+
+        return {
+            "total_checks": total,
+            "by_traffic_light": dict(by_traffic_light),
+            "by_type": dict(by_type),
+            "by_technology": dict(by_technology),
+            "by_grid_level": dict(by_grid_level),
+            "top_stations": top_stations,
+            "peak_hour_utc": peak_hour,
+            "peak_day_of_week": peak_day,
+        }
+    except Exception as e:
+        logger.error(f"Error building insights summary: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "error": "INTERNAL_ERROR",
+                "message": "Failed to build insights summary",
+            },
         )
 
 @app.get("/health")

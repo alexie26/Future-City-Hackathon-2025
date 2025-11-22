@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Zap, Sun, Loader2, CheckCircle, AlertCircle, ChevronDown, ChevronUp, MapPin } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import axios from 'axios';
 import Hero from './Hero';
 import InputCard from './InputCard';
 import ResultCard from './ResultCard';
 
-const OverlayMenu = ({ onCheck, result, loading, error, insights, insightsLoading, insightsError, onLoadInsights }) => {
+const OverlayMenu = ({ onCheck, result, loading, error, insights, insightsLoading, insightsError, onLoadInsights, lang = 'en', onToggleLang }) => {
     const [address, setAddress] = useState('');
     const [kw, setKw] = useState('');
     const [type, setType] = useState('load'); // 'load' or 'feed_in'
@@ -119,15 +119,17 @@ const OverlayMenu = ({ onCheck, result, loading, error, insights, insightsLoadin
 
     return (
         <div className="absolute top-0 left-0 w-96 max-h-screen overflow-y-auto bg-white shadow-2xl z-10 rounded-r-2xl">
-            <Hero />
+            <Hero lang={lang} onToggleLang={onToggleLang} />
             
             <div className="p-6 space-y-6">
-                <InputCard onCheck={onCheck} />
+                <InputCard onCheck={onCheck} lang={lang} />
 
                 {loading && (
                     <div className="flex items-center justify-center p-8">
                         <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-                        <span className="ml-3 text-gray-600">Analyzing grid capacity...</span>
+                        <span className="ml-3 text-gray-600">
+                            {lang === 'de' ? 'Analysiere Netzkapazität…' : 'Analyzing grid capacity...'}
+                        </span>
                     </div>
                 )}
 
@@ -135,14 +137,56 @@ const OverlayMenu = ({ onCheck, result, loading, error, insights, insightsLoadin
                     <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
                         <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                         <div>
-                            <h4 className="font-semibold text-red-900 mb-1">Error</h4>
+                            <h4 className="font-semibold text-red-900 mb-1">
+                                {lang === 'de' ? 'Fehler' : 'Error'}
+                            </h4>
                             <p className="text-sm text-red-700">{error}</p>
                         </div>
                     </div>
                 )}
 
                 {result && !loading && !error && (
-                    <ResultCard result={result} />
+                    <>
+                        <ResultCard result={result} lang={lang} />
+
+                        {onLoadInsights && (
+                            <div className="mt-4">
+                                <button
+                                    type="button"
+                                    onClick={onLoadInsights}
+                                    disabled={insightsLoading}
+                                    className="w-full py-2 rounded-lg text-sm font-medium border border-blue-200 text-blue-700 hover:bg-blue-50 disabled:opacity-60 disabled:cursor-not-allowed"
+                                >
+                                    {insightsLoading
+                                        ? (lang === 'de' ? 'Lade anonyme Planungs-Insights…' : 'Loading anonymous planning insights…')
+                                        : (lang === 'de' ? 'Anonyme Planungs-Insights anzeigen' : 'Show anonymous planning insights')}
+                                </button>
+
+                                {insightsError && (
+                                    <p className="mt-2 text-xs text-red-500">
+                                        {insightsError}
+                                    </p>
+                                )}
+
+                                {insights && (
+                                    <div className="mt-3 text-left text-xs text-gray-700 bg-white border border-gray-200 rounded-lg p-3 space-y-1">
+                                        <p className="font-semibold text-gray-900">
+                                            {lang === 'de' ? 'Stadtplanungs-Insights (anonym)' : 'City planning insights (anonymous)'}
+                                        </p>
+                                        <p>
+                                            {lang === 'de' ? 'Anzahl Prüfungen' : 'Total checks'}: {insights.total_checks}
+                                        </p>
+                                        {insights.peak_day_of_week && insights.peak_hour_utc !== null && (
+                                            <p>
+                                                {lang === 'de' ? 'Höchstes Interesse:' : 'Peak interest:'}{' '}
+                                                {insights.peak_day_of_week} {lang === 'de' ? 'um' : 'at'} {insights.peak_hour_utc}:00 (UTC)
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
         </div>

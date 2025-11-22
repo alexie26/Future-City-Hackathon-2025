@@ -30,6 +30,8 @@ function App() {
     parcels: { enabled: false }
   });
 
+  const [lang, setLang] = useState('en');
+
   const [insights, setInsights] = useState(null);
   const [insightsLoading, setInsightsLoading] = useState(false);
   const [insightsError, setInsightsError] = useState(null);
@@ -46,6 +48,10 @@ function App() {
     };
     fetchStations();
   }, []);
+
+  const toggleLang = () => {
+    setLang(prev => (prev === 'en' ? 'de' : 'en'));
+  };
 
   const handleLayerChange = (layerId, enabled, settings = null) => {
     setLayers(prev => ({
@@ -101,7 +107,8 @@ function App() {
         lon,
         kw_requested: kw,
         type: backendType,
-        technology
+        technology,
+        lang,
       }, {
         timeout: 10000 // 10 second timeout
       });
@@ -118,15 +125,22 @@ function App() {
       console.error("Error details:", err);
       
       if (err.code === 'ECONNABORTED') {
-        setError("Request timed out. The backend server may be slow or unavailable. Please try again.");
+        setError(lang === 'de'
+          ? 'Zeitüberschreitung. Der Backend-Server ist langsam oder nicht erreichbar. Bitte später erneut versuchen.'
+          : 'Request timed out. The backend server may be slow or unavailable. Please try again.');
       } else if (err.response?.data?.detail) {
         setError(typeof err.response.data.detail === 'string' 
           ? err.response.data.detail 
           : JSON.stringify(err.response.data.detail));
       } else if (err.request) {
-        setError(`Cannot connect to backend server at ${import.meta.env.VITE_API_URL || 'http://localhost:8000'}. Please ensure the backend is running.`);
+        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        setError(lang === 'de'
+          ? `Keine Verbindung zum Backend-Server unter ${baseUrl}. Bitte prüfen, ob der Server läuft.`
+          : `Cannot connect to backend server at ${baseUrl}. Please ensure the backend is running.`);
       } else {
-        setError(err.message || "An unexpected error occurred. Please try again.");
+        setError(err.message || (lang === 'de'
+          ? 'Ein unerwarteter Fehler ist aufgetreten. Bitte später erneut versuchen.'
+          : 'An unexpected error occurred. Please try again.'));
       }
     } finally {
       setLoading(false);
@@ -161,9 +175,9 @@ function App() {
           stationLocation={stationLocation}
           allStations={allStations}
           heatmapEnabled={layers.heatmap.enabled}
+          lang={lang}
         />
       </div>
-
       {/* Overlay Menu (Left) */}
       <OverlayMenu
         onCheck={handleCheck}
@@ -174,12 +188,15 @@ function App() {
         insightsLoading={insightsLoading}
         insightsError={insightsError}
         onLoadInsights={handleLoadInsights}
+        lang={lang}
+        onToggleLang={toggleLang}
       />
 
       {/* Layers Menu (Right) */}
       <LayersMenu
         layers={layers}
         onLayerChange={handleLayerChange}
+        lang={lang}
       />
     </div>
   );

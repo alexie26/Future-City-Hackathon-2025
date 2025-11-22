@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { Search, Home, Sun, BatteryCharging } from 'lucide-react';
 
-const InputCard = ({ onCheck }) => {
+const InputCard = ({ onCheck, lang = 'en' }) => {
     const [address, setAddress] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -114,13 +114,15 @@ const InputCard = ({ onCheck }) => {
     return (
         <div className="bg-white rounded-xl shadow-lg p-6 space-y-6">
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {lang === 'de' ? 'Adresse' : 'Address'}
+                </label>
                 <div className="relative">
                     <input
                         ref={inputRef}
                         type="text"
                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                        placeholder="Enter address in Heilbronn..."
+                        placeholder={lang === 'de' ? 'Adresse in Heilbronn eingeben...' : 'Enter address in Heilbronn...'}
                         value={address}
                         onChange={handleAddressChange}
                         onFocus={handleFocus}
@@ -160,7 +162,9 @@ const InputCard = ({ onCheck }) => {
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Connection Type</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {lang === 'de' ? 'Anschlussart' : 'Connection Type'}
+                </label>
                 <div className="grid grid-cols-2 gap-3">
                     <button
                         type="button"
@@ -171,8 +175,8 @@ const InputCard = ({ onCheck }) => {
                             }`}
                     >
                         <BatteryCharging className="w-6 h-6 mb-1" />
-                        <span className="text-sm font-medium">Consumer</span>
-                        <span className="text-xs text-gray-500">EV, Heat Pump</span>
+                        <span className="text-sm font-medium">{lang === 'de' ? 'Verbraucher' : 'Consumer'}</span>
+                        <span className="text-xs text-gray-500">{lang === 'de' ? 'E-Auto, Wärmepumpe' : 'EV, Heat Pump'}</span>
                     </button>
                     <button
                         type="button"
@@ -183,7 +187,7 @@ const InputCard = ({ onCheck }) => {
                             }`}
                     >
                         <Sun className="w-6 h-6 mb-1" />
-                        <span className="text-sm font-medium">Producer</span>
+                        <span className="text-sm font-medium">{lang === 'de' ? 'Erzeuger' : 'Producer'}</span>
                         <span className="text-xs text-gray-500">Solar PV</span>
                     </button>
                 </div>
@@ -191,8 +195,12 @@ const InputCard = ({ onCheck }) => {
 
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Expected Power (kW)
-                    <span className="text-xs text-gray-500 ml-2">e.g., 11 kW for home EV charger</span>
+                    {lang === 'de' ? 'Erwartete Leistung (kW)' : 'Expected Power (kW)'}
+                    <span className="text-xs text-gray-500 ml-2">
+                        {lang === 'de'
+                            ? 'z.B. 11 kW für eine Heim-E-Ladestation'
+                            : 'e.g., 11 kW for home EV charger'}
+                    </span>
                 </label>
                 <input
                     type="number"
@@ -207,7 +215,7 @@ const InputCard = ({ onCheck }) => {
                 onClick={handleSubmit}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md hover:shadow-lg transform active:scale-95"
             >
-                Get Eco Recommendations
+                {lang === 'de' ? 'Öko-Empfehlungen abrufen' : 'Get Eco Recommendations'}
             </button>
         </div>
     );
