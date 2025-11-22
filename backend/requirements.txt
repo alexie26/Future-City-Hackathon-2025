@@ -2,3 +2,5 @@ fastapi
 uvicorn
 pandas
 geopy
+python-multipart
+pydantic
