@@ -13,7 +13,8 @@ const InputCard = ({ onCheck }) => {
 
     // Fetch suggestions from Nominatim
     const fetchSuggestions = async (query) => {
-        if (!query) {
+        // Only fetch if query has at least 3 characters
+        if (!query || query.length < 3) {
             setSuggestions([]);
             return;
         }
@@ -53,8 +54,14 @@ const InputCard = ({ onCheck }) => {
     const handleAddressChange = (e) => {
         const value = e.target.value;
         setAddress(value);
-        setShowSuggestions(true);
-        fetchSuggestions(value);
+        // Show suggestions dropdown when we have results
+        if (value.length >= 3) {
+            setShowSuggestions(true);
+            fetchSuggestions(value);
+        } else {
+            setShowSuggestions(false);
+            setSuggestions([]);
+        }
     };
 
     const handleSuggestionClick = (suggestion) => {
@@ -74,7 +81,10 @@ const InputCard = ({ onCheck }) => {
     };
 
     const handleBlur = () => {
-        setTimeout(() => setShowSuggestions(false), 200); // Increased delay to allow click
+        // Hide suggestions after a delay to allow clicks
+        setTimeout(() => {
+            setShowSuggestions(false);
+        }, 150);
     };
 
     const handleSubmit = (e) => {
