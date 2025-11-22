@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Zap, Sun, Loader2, CheckCircle, AlertCircle, ChevronDown, ChevronUp, MapPin } from 'lucide-react';
 import axios from 'axios';
+import Hero from './Hero';
+import InputCard from './InputCard';
+import ResultCard from './ResultCard';
 
 const OverlayMenu = ({ onCheck, result, loading, error, insights, insightsLoading, insightsError, onLoadInsights }) => {
     const [address, setAddress] = useState('');
@@ -115,216 +118,33 @@ const OverlayMenu = ({ onCheck, result, loading, error, insights, insightsLoadin
     };
 
     return (
-        <div className="absolute z-[1000] 
-                    top-auto bottom-0 left-0 right-0 
-                    md:top-4 md:left-4 md:bottom-auto md:right-auto md:w-96
-                    bg-white rounded-t-2xl md:rounded-2xl shadow-xl 
-                    flex flex-col transition-all duration-300 ease-in-out
-                    max-h-[90vh] overflow-y-auto">
+        <div className="absolute top-0 left-0 w-96 max-h-screen overflow-y-auto bg-white shadow-2xl z-10 rounded-r-2xl">
+            <Hero />
+            
+            <div className="p-6 space-y-6">
+                <InputCard onCheck={onCheck} />
 
-            {/* Header */}
-            <div className="p-6 border-b border-gray-100">
-                <h1 className="text-xl font-bold text-gray-900">Grid Check</h1>
-                <p className="text-sm text-gray-500">Heilbronn</p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-6 space-y-6">
-
-                {/* Address Input with Autocomplete */}
-                <div className="relative" ref={suggestionsRef}>
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
-                    {searchLoading && (
-                        <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-4 h-4 animate-spin z-10" />
-                    )}
-                    <input
-                        type="text"
-                        placeholder="Search Address in Heilbronn..."
-                        value={address}
-                        onChange={handleAddressChange}
-                        onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-                        className="w-full pl-10 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                        required
-                        autoComplete="off"
-                    />
-
-                    {/* Autocomplete Dropdown */}
-                    {showSuggestions && suggestions.length > 0 && (
-                        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto z-50">
-                            {suggestions.map((suggestion, index) => {
-                                const props = suggestion.properties;
-                                const name = props.name || props.street || '';
-                                const fullAddress = [props.street, props.housenumber, props.postcode, props.city]
-                                    .filter(Boolean)
-                                    .join(' ');
-
-                                return (
-                                    <button
-                                        key={index}
-                                        type="button"
-                                        onClick={() => handleSuggestionClick(suggestion)}
-                                        className="w-full px-4 py-3 text-left hover:bg-blue-50 flex items-start gap-2 border-b border-gray-100 last:border-0 transition-colors"
-                                    >
-                                        <MapPin className="w-4 h-4 text-blue-500 mt-1 flex-shrink-0" />
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-gray-900 truncate">
-                                                {name}
-                                            </p>
-                                            <p className="text-xs text-gray-500 truncate">
-                                                {fullAddress}
-                                            </p>
-                                        </div>
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    )}
-                </div>
-
-                {/* Mode Toggle */}
-                <div className="bg-gray-100 p-1 rounded-xl flex">
-                    <button
-                        type="button"
-                        onClick={() => setType('load')}
-                        className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all ${type === 'load'
-                            ? 'bg-white text-blue-600 shadow-sm'
-                            : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                    >
-                        <Zap className="w-4 h-4" />
-                        Charge / Load
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setType('feed_in')}
-                        className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all ${type === 'feed_in'
-                            ? 'bg-white text-orange-500 shadow-sm'
-                            : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                    >
-                        <Sun className="w-4 h-4" />
-                        Feed-in / Solar
-                    </button>
-                </div>
-
-                {/* Power Input */}
-                <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                        Required Capacity
-                    </label>
-                    <div className="relative">
-                        <input
-                            type="number"
-                            placeholder="50"
-                            value={kw}
-                            onChange={(e) => setKw(e.target.value)}
-                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg font-semibold"
-                            required
-                            min="1"
-                        />
-                        <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 font-medium">
-                            kW
-                        </span>
-                    </div>
-                </div>
-
-                {/* Error Message */}
-                {error && (
-                    <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg flex items-start gap-2">
-                        <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                        <span>{error}</span>
+                {loading && (
+                    <div className="flex items-center justify-center p-8">
+                        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                        <span className="ml-3 text-gray-600">Analyzing grid capacity...</span>
                     </div>
                 )}
 
-                {/* Action Button */}
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className={`w-full py-4 rounded-xl font-bold text-white shadow-lg transition-all transform active:scale-[0.98] flex items-center justify-center gap-2
-            ${type === 'load' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-orange-500 hover:bg-orange-600'}
-            ${loading ? 'opacity-80 cursor-not-allowed' : ''}
-          `}
-                >
-                    {loading ? (
-                        <>
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                            Checking...
-                        </>
-                    ) : (
-                        'Check Feasibility'
-                    )}
-                </button>
-            </form>
-
-            {/* Result Expansion */}
-            {result && (
-                <div className={`border-t border-gray-100 bg-gray-50 transition-all duration-500 ease-in-out overflow-hidden ${expanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                    <div className="p-6">
-                        <div className="flex flex-col items-center text-center mb-6">
-                            {result.kw_requested <= result.remaining_safe ? (
-                                <>
-                                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
-                                        <CheckCircle className="w-10 h-10 text-green-600" />
-                                    </div>
-                                    <h3 className="text-xl font-bold text-gray-900">Approved</h3>
-                                    <p className="text-green-600 font-medium">Grid capacity available</p>
-                                </>
-                            ) : (
-                                <>
-                                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-3">
-                                        <AlertCircle className="w-10 h-10 text-red-600" />
-                                    </div>
-                                    <h3 className="text-xl font-bold text-gray-900">Grid Expansion Needed</h3>
-                                    <p className="text-red-600 font-medium">Capacity exceeded</p>
-                                </>
-                            )}
-
-                            <div className="mt-4 bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
-                                <span className="text-gray-500 text-sm mr-2">Available:</span>
-                                <span className="font-bold text-gray-900">{Math.round(result.remaining_safe)} kW</span>
-                            </div>
+                {error && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                            <h4 className="font-semibold text-red-900 mb-1">Error</h4>
+                            <p className="text-sm text-red-700">{error}</p>
                         </div>
-
-                        {onLoadInsights && (
-                            <div className="mt-2 w-full">
-                                <button
-                                    type="button"
-                                    onClick={onLoadInsights}
-                                    disabled={insightsLoading}
-                                    className="w-full py-2 rounded-lg text-sm font-medium border border-blue-200 text-blue-700 hover:bg-blue-50 disabled:opacity-60 disabled:cursor-not-allowed"
-                                >
-                                    {insightsLoading ? 'Loading anonymous planning insights…' : 'Show anonymous planning insights'}
-                                </button>
-                                {insightsError && (
-                                    <p className="mt-2 text-xs text-red-500">
-                                        {insightsError}
-                                    </p>
-                                )}
-                                {insights && (
-                                    <div className="mt-3 text-left text-xs text-gray-600 bg-white border border-gray-200 rounded-lg p-3 space-y-1">
-                                        <p className="font-semibold text-gray-800">
-                                            City planning insights (anonymous)
-                                        </p>
-                                        <p>Total checks: {insights.total_checks}</p>
-                                        {insights.peak_day_of_week && insights.peak_hour_utc !== null && (
-                                            <p>
-                                                Peak interest: {insights.peak_day_of_week} at {insights.peak_hour_utc}:00 (UTC)
-                                            </p>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {/* Technical Details Toggle */}
-                        <button
-                            onClick={() => setExpanded(!expanded)}
-                            className="w-full text-xs text-gray-400 hover:text-gray-600 flex items-center justify-center gap-1 pb-2"
-                        >
-                            Hide Details <ChevronUp className="w-3 h-3" />
-                        </button>
                     </div>
-                </div>
-            )}
+                )}
+
+                {result && !loading && !error && (
+                    <ResultCard result={result} />
+                )}
+            </div>
         </div>
     );
 };

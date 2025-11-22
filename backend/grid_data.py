@@ -140,17 +140,19 @@ class GridDataManager:
             recommendations.append({
                 "type": "solar",
                 "icon": "sun",
-                "title": "Ideal for Solar PV Installation",
+                "title": "🌞 Ideal for Solar PV Installation",
                 "description": "This location has excellent grid capacity for solar energy. Consider installing solar panels to reduce energy costs and support renewable energy.",
-                "priority": "high"
+                "priority": "high",
+                "benefits": ["Reduce electricity bills by up to 70%", "Contribute to climate goals", "Fast grid connection approval"]
             })
         elif capacity_ratio > 1.5:
             recommendations.append({
                 "type": "solar",
                 "icon": "sun",
-                "title": "Good Solar PV Potential",
+                "title": "☀️ Good Solar PV Potential",
                 "description": "Solar installation is viable here. Smart inverters recommended for optimal grid integration.",
-                "priority": "medium"
+                "priority": "medium",
+                "benefits": ["Support renewable energy", "Smart grid integration available"]
             })
         
         # Battery storage recommendations
@@ -158,17 +160,19 @@ class GridDataManager:
             recommendations.append({
                 "type": "battery",
                 "icon": "battery",
-                "title": "Battery Storage Recommended",
+                "title": "🔋 Battery Storage Recommended",
                 "description": "Adding battery storage would help reduce grid stress and provide backup power. This area would benefit from load balancing.",
-                "priority": "high" if traffic_light == "red" else "medium"
+                "priority": "high" if traffic_light == "red" else "medium",
+                "benefits": ["Reduce grid stress", "Store excess solar energy", "Backup power during outages", "Time-of-use optimization"]
             })
         elif capacity_ratio > 2:
             recommendations.append({
                 "type": "battery",
                 "icon": "battery",
-                "title": "Battery Storage Optional",
+                "title": "🔋 Battery Storage Optional",
                 "description": "Grid capacity is good, but battery storage can still maximize your solar investment and provide energy independence.",
-                "priority": "low"
+                "priority": "low",
+                "benefits": ["Energy independence", "Maximize solar ROI"]
             })
         
         # EV charging recommendations
@@ -176,17 +180,19 @@ class GridDataManager:
             recommendations.append({
                 "type": "ev",
                 "icon": "car",
-                "title": "EV Charging Suitable",
-                "description": "This location supports EV charging infrastructure. Smart charging systems recommended to optimize grid usage.",
-                "priority": "high"
+                "title": "🚗 EV Charging Suitable",
+                "description": "This location supports EV charging infrastructure. Smart charging systems recommended to optimize grid usage during off-peak hours.",
+                "priority": "high",
+                "benefits": ["Fast charging ready", "Smart charging available", "Grid-friendly charging schedules"]
             })
         elif capacity_ratio > 1:
             recommendations.append({
                 "type": "ev",
                 "icon": "car",
-                "title": "Smart EV Charging Recommended",
+                "title": "⚡ Smart EV Charging Recommended",
                 "description": "EV charging is possible with smart charging technology to balance grid load during off-peak hours.",
-                "priority": "medium"
+                "priority": "medium",
+                "benefits": ["Off-peak charging discounts", "Reduced grid impact"]
             })
         
         # Heat pump recommendations
@@ -194,9 +200,10 @@ class GridDataManager:
             recommendations.append({
                 "type": "heatpump",
                 "icon": "thermometer",
-                "title": "Heat Pump Suitable",
+                "title": "🌡️ Heat Pump Suitable",
                 "description": "High efficiency expected for heat pump installation. This is an excellent alternative to fossil fuel heating.",
-                "priority": "high"
+                "priority": "high",
+                "benefits": ["Replace gas/oil heating", "Lower running costs", "Reduce CO2 emissions by 60%"]
             })
         
         # Grid-friendly behavior suggestions
@@ -204,9 +211,21 @@ class GridDataManager:
             recommendations.append({
                 "type": "behavior",
                 "icon": "leaf",
-                "title": "Grid-Friendly Consumption Patterns",
+                "title": "🌿 Grid-Friendly Consumption Patterns",
                 "description": "Consider time-of-use optimization and load shifting to off-peak hours to support grid stability.",
-                "priority": "medium"
+                "priority": "medium",
+                "benefits": ["Lower electricity rates during off-peak", "Support grid stability", "Environmental benefits"]
+            })
+        
+        # Community energy recommendations
+        if capacity_ratio > 2.5:
+            recommendations.append({
+                "type": "community",
+                "icon": "users",
+                "title": "👥 Community Energy Potential",
+                "description": "This area is ideal for community solar or shared energy projects. Consider joining or starting a local energy initiative.",
+                "priority": "low",
+                "benefits": ["Share renewable energy", "Community cost savings", "Local energy resilience"]
             })
         
         return recommendations
