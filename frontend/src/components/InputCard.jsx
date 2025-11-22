@@ -74,7 +74,7 @@ const InputCard = ({ onCheck }) => {
     };
 
     const handleBlur = () => {
-        setTimeout(() => setShowSuggestions(false), 100); // Delay to allow click
+        setTimeout(() => setShowSuggestions(false), 200); // Increased delay to allow click
     };
 
     const handleSubmit = (e) => {
@@ -117,8 +117,11 @@ const InputCard = ({ onCheck }) => {
                                 return (
                                     <li
                                         key={s.place_id}
-                                        className="px-4 py-2 hover:bg-blue-100 cursor-pointer text-sm"
-                                        onMouseDown={() => handleSuggestionClick(s)}
+                                        className="px-4 py-2 hover:bg-blue-100 cursor-pointer text-sm transition-colors"
+                                        onMouseDown={(e) => {
+                                            e.preventDefault();
+                                            handleSuggestionClick(s);
+                                        }}
                                     >
                                         {main}
                                     </li>
