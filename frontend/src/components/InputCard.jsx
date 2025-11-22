@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { Search, Home, Sun, BatteryCharging } from 'lucide-react';
 
@@ -9,6 +9,7 @@ const InputCard = ({ onCheck }) => {
     const inputRef = useRef(null);
     const [type, setType] = useState('consumer');
     const [kw, setKw] = useState('');
+    const debounceTimer = useRef(null);
 
 
     // Fetch suggestions from Nominatim
@@ -54,10 +55,19 @@ const InputCard = ({ onCheck }) => {
     const handleAddressChange = (e) => {
         const value = e.target.value;
         setAddress(value);
+        
+        // Clear previous timer
+        if (debounceTimer.current) {
+            clearTimeout(debounceTimer.current);
+        }
+        
         // Show suggestions dropdown when we have results
         if (value.length >= 3) {
             setShowSuggestions(true);
-            fetchSuggestions(value);
+            // Debounce the API call by 300ms
+            debounceTimer.current = setTimeout(() => {
+                fetchSuggestions(value);
+            }, 300);
         } else {
             setShowSuggestions(false);
             setSuggestions([]);
