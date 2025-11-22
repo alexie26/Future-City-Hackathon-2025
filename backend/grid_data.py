@@ -35,13 +35,20 @@ class GridDataManager:
         nearest_station = None
 
         for index, row in self.stations_df.iterrows():
+            # Skip rows with missing coordinates
+            if pd.isna(row['Breitengrad']) or pd.isna(row['Längengrad']):
+                continue
+                
             station_loc = (row['Breitengrad'], row['Längengrad'])
             user_loc = (lat, lon)
-            dist = geodesic(user_loc, station_loc).meters
-            
-            if dist < min_dist:
-                min_dist = dist
-                nearest_station = row
+            try:
+                dist = geodesic(user_loc, station_loc).meters
+                
+                if dist < min_dist:
+                    min_dist = dist
+                    nearest_station = row
+            except ValueError:
+                continue
 
         return nearest_station, min_dist
 

@@ -143,6 +143,10 @@ function App() {
                       <span className="text-gray-500">Remaining (Safe):</span>
                       <span className="font-medium">{result.remaining_safe} kW</span>
                     </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Remaining (Raw):</span>
+                      <span className="font-medium">{result.remaining_raw} kW</span>
+                    </div>
                   </div>
                 )}
               </div>
