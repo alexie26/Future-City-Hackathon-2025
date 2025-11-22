@@ -30,7 +30,7 @@ const InputCard = ({ onCheck }) => {
                     q: searchQuery,
                     format: 'json',
                     addressdetails: 1,
-                    limit: 10,
+                    limit: 15, // Increased limit for more street options
                 },
                 headers: {
                     'Accept-Language': 'de',
@@ -47,6 +47,7 @@ const InputCard = ({ onCheck }) => {
                 );
             });
             setSuggestions(filtered);
+            setShowSuggestions(true); // Keep visible after fetching
         } catch (err) {
             setSuggestions([]);
         }
@@ -61,13 +62,13 @@ const InputCard = ({ onCheck }) => {
             clearTimeout(debounceTimer.current);
         }
         
-        // Show suggestions dropdown when we have results
+        // Show suggestions dropdown when we have 3+ characters
         if (value.length >= 3) {
-            setShowSuggestions(true);
-            // Debounce the API call by 300ms
+            setShowSuggestions(true); // Show immediately
+            // Debounce the API call by 250ms for smoother typing
             debounceTimer.current = setTimeout(() => {
                 fetchSuggestions(value);
-            }, 300);
+            }, 250);
         } else {
             setShowSuggestions(false);
             setSuggestions([]);
@@ -87,14 +88,20 @@ const InputCard = ({ onCheck }) => {
         setAddress(main);
         setShowSuggestions(false);
         setSuggestions([]);
-        inputRef.current.blur();
     };
 
     const handleBlur = () => {
-        // Hide suggestions after a delay to allow clicks
+        // Longer delay to ensure clicking a suggestion works
         setTimeout(() => {
             setShowSuggestions(false);
-        }, 150);
+        }, 250);
+    };
+
+    const handleFocus = () => {
+        // Show suggestions if we already have some from previous search
+        if (address.length >= 3 && suggestions.length > 0) {
+            setShowSuggestions(true);
+        }
     };
 
     const handleSubmit = (e) => {
@@ -116,13 +123,13 @@ const InputCard = ({ onCheck }) => {
                         placeholder="Enter address in Heilbronn..."
                         value={address}
                         onChange={handleAddressChange}
-                        onFocus={() => setShowSuggestions(true)}
+                        onFocus={handleFocus}
                         onBlur={handleBlur}
                         autoComplete="off"
                     />
                     <Search className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
                     {showSuggestions && suggestions.length > 0 && (
-                        <ul className="absolute z-10 left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 max-h-56 overflow-y-auto shadow-lg">
+                        <ul className="absolute z-10 left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-lg">
                             {suggestions.map((s) => {
                                 const addr = s.address || {};
                                 // Compose a readable address: street + house_number + city
@@ -164,7 +171,8 @@ const InputCard = ({ onCheck }) => {
                             }`}
                     >
                         <BatteryCharging className="w-6 h-6 mb-1" />
-                        <span className="text-sm font-medium">Consume</span>
+                        <span className="text-sm font-medium">Consumer</span>
+                        <span className="text-xs text-gray-500">EV, Heat Pump</span>
                     </button>
                     <button
                         type="button"
@@ -175,13 +183,17 @@ const InputCard = ({ onCheck }) => {
                             }`}
                     >
                         <Sun className="w-6 h-6 mb-1" />
-                        <span className="text-sm font-medium">Feed-in</span>
+                        <span className="text-sm font-medium">Producer</span>
+                        <span className="text-xs text-gray-500">Solar PV</span>
                     </button>
                 </div>
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Power Need (kW)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Expected Power (kW)
+                    <span className="text-xs text-gray-500 ml-2">e.g., 11 kW for home EV charger</span>
+                </label>
                 <input
                     type="number"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
@@ -195,7 +207,7 @@ const InputCard = ({ onCheck }) => {
                 onClick={handleSubmit}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md hover:shadow-lg transform active:scale-95"
             >
-                Check Feasibility
+                Get Eco Recommendations
             </button>
         </div>
     );
