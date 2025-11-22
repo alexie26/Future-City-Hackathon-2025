@@ -14,12 +14,12 @@ const retryRequest = async (fn, maxRetries = 3, delay = 1000) => {
       return await fn();
     } catch (error) {
       if (i === maxRetries - 1) throw error;
-      
+
       // Don't retry on 4xx errors (client errors)
       if (error.response && error.response.status >= 400 && error.response.status < 500) {
         throw error;
       }
-      
+
       console.warn(`Request failed, retrying (${i + 1}/${maxRetries})...`);
       await sleep(delay * (i + 1)); // Exponential backoff
     }
@@ -34,22 +34,7 @@ function App() {
   const [stationLocation, setStationLocation] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [allStations, setAllStations] = useState([]);
-  const [layers, setLayers] = useState({
-    lv: { enabled: false },
-    mv: { enabled: false },
-    hv: { enabled: false },
-    assets: { enabled: false },
-    reservations: { enabled: false },
-    routing: { enabled: false },
-    heatmap: {
-      enabled: true,
-      settings: {
-        voltageLevel: 'MV',
-        type: 'Loads'
-      }
-    },
-    parcels: { enabled: false }
-  });
+  const [activeLayer, setActiveLayer] = useState(null); // No layer active by default
 
   const [insights, setInsights] = useState(null);
   const [insightsLoading, setInsightsLoading] = useState(false);
@@ -60,35 +45,30 @@ function App() {
     // Fetch all stations on load with retry logic
     const fetchStations = async () => {
       try {
-        const res = await retryRequest(() => 
+        const res = await retryRequest(() =>
           axios.get(`${import.meta.env.VITE_API_URL}/stations`, { timeout: 10000 })
         );
-        
+
         if (!res.data || !Array.isArray(res.data)) {
           throw new Error('Invalid response format from stations endpoint');
         }
-        
+
         setAllStations(res.data);
         setApiError(null);
       } catch (err) {
         console.error("Failed to fetch stations:", err);
         setApiError(`Unable to load grid data: ${err.message}`);
-        
+
         // Set empty array to prevent map errors
         setAllStations([]);
       }
     };
-    
+
     fetchStations();
   }, []);
 
-  const handleLayerChange = (layerId, enabled, settings = null) => {
-    setLayers(prev => ({
-      ...prev,
-      [layerId]: settings
-        ? { enabled, settings }
-        : { ...prev[layerId], enabled }
-    }));
+  const handleLayerChange = (layerId) => {
+    setActiveLayer(layerId);
   };
 
   const handleCheck = async ({ address, type, kw, technology = "Other" }) => {
@@ -103,11 +83,11 @@ function App() {
       if (!address || address.trim().length === 0) {
         throw new Error("Please enter a valid address");
       }
-      
+
       if (!kw || isNaN(kw) || kw <= 0) {
         throw new Error("Please enter a valid power value (kW)");
       }
-      
+
       if (kw > 10000) {
         throw new Error("Power value exceeds maximum limit (10000 kW)");
       }
@@ -152,21 +132,21 @@ function App() {
 
       const lat = parseFloat(geoRes.data[0].lat);
       const lon = parseFloat(geoRes.data[0].lon);
-      
+
       // Validate coordinates
       if (isNaN(lat) || isNaN(lon)) {
         throw new Error("Invalid coordinates received from geocoding service");
       }
-      
+
       console.log(`Geocoded address: ${address} -> (${lat}, ${lon})`);
-      
+
       // Validate coordinates are in Heilbronn area (more precise range)
       // Heilbronn coordinates: approximately 49.14°N, 9.22°E
       if (lat < 49.0 || lat > 49.3 || lon < 9.0 || lon > 9.5) {
         console.warn(`Coordinates outside typical Heilbronn area: (${lat}, ${lon})`);
         throw new Error("The address appears to be outside the Heilbronn service area. Please enter an address in Heilbronn.");
       }
-      
+
       setUserLocation([lat, lon]);
 
       // 2. Map frontend type to backend type
@@ -175,7 +155,7 @@ function App() {
       // 3. Call Backend with retry logic
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
       console.log(`Calling API: ${apiUrl}/check-feasibility`);
-      
+
       let apiRes;
       try {
         apiRes = await retryRequest(() =>
@@ -192,11 +172,11 @@ function App() {
         );
       } catch (apiError) {
         console.error("API call failed:", apiError);
-        
+
         if (apiError.response) {
           // Server responded with error
           const errorData = apiError.response.data;
-          
+
           if (errorData.detail) {
             if (typeof errorData.detail === 'object') {
               throw new Error(errorData.detail.message || JSON.stringify(errorData.detail));
@@ -204,7 +184,7 @@ function App() {
             throw new Error(errorData.detail);
           }
         }
-        
+
         throw new Error("Backend service unavailable. Please try again later.");
       }
 
@@ -212,7 +192,7 @@ function App() {
       if (!apiRes.data) {
         throw new Error("Invalid response from backend service");
       }
-      
+
       console.log('API Response:', apiRes.data);
       setResult(apiRes.data);
 
@@ -225,10 +205,10 @@ function App() {
 
     } catch (err) {
       console.error("Error details:", err);
-      
+
       // Determine user-friendly error message
       let errorMessage = "An unexpected error occurred. Please try again.";
-      
+
       if (err.message) {
         errorMessage = err.message;
       } else if (err.code === 'ECONNABORTED') {
@@ -236,7 +216,7 @@ function App() {
       } else if (err.request && !err.response) {
         errorMessage = `Cannot connect to backend server. Please ensure the backend is running and accessible.`;
       }
-      
+
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -246,18 +226,18 @@ function App() {
   const handleLoadInsights = async () => {
     setInsightsLoading(true);
     setInsightsError(null);
-    
+
     try {
       const res = await retryRequest(() =>
         axios.get(`${import.meta.env.VITE_API_URL}/insights/summary`, {
           timeout: 10000
         })
       );
-      
+
       if (!res.data) {
         throw new Error('Invalid response from insights endpoint');
       }
-      
+
       setInsights(res.data);
     } catch (err) {
       console.error('Failed to load insights', err);
@@ -285,7 +265,7 @@ function App() {
           userLocation={userLocation}
           stationLocation={stationLocation}
           allStations={allStations}
-          heatmapEnabled={layers.heatmap.enabled}
+          activeLayer={activeLayer}
         />
       </div>
 
@@ -303,7 +283,7 @@ function App() {
 
       {/* Layers Menu (Right) */}
       <LayersMenu
-        layers={layers}
+        activeLayer={activeLayer}
         onLayerChange={handleLayerChange}
       />
     </div>
