@@ -3,7 +3,7 @@ import axios from 'axios';
 import Hero from './components/Hero';
 import InputCard from './components/InputCard';
 import MapView from './components/MapView';
-import { CheckCircle, XCircle, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { CheckCircle, XCircle, AlertCircle, ChevronDown, ChevronUp, Sun, Battery, Zap, Thermometer, Leaf, Car } from 'lucide-react';
 
 function App() {
   const [result, setResult] = useState(null);
@@ -82,6 +82,26 @@ function App() {
     }
   };
 
+  const getRecommendationIcon = (type) => {
+    switch(type) {
+      case 'solar': return Sun;
+      case 'battery': return Battery;
+      case 'ev': return Car; // Changed from Zap to Car
+      case 'heatpump': return Thermometer;
+      case 'behavior': return Leaf;
+      default: return Leaf;
+    }
+  };
+
+  const getPriorityColor = (priority) => {
+    switch(priority) {
+      case 'high': return 'border-green-500 bg-green-50';
+      case 'medium': return 'border-yellow-500 bg-yellow-50';
+      case 'low': return 'border-blue-500 bg-blue-50';
+      default: return 'border-gray-300 bg-gray-50';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
       <Hero />
@@ -111,32 +131,82 @@ function App() {
                 {result.traffic_light === 'green' && (
                   <>
                     <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-2" />
-                    <h2 className="text-2xl font-bold text-green-700">Likely Feasible ✓</h2>
-                    <p className="text-green-600 mt-2">{result.message}</p>
+                    <h2 className="text-2xl font-bold text-green-700">Excellent Grid Compatibility ✓</h2>
+                    <p className="text-green-600 mt-2">Your location is ideal for sustainable energy solutions</p>
                   </>
                 )}
                 {result.traffic_light === 'yellow' && (
                   <>
                     <AlertCircle className="w-16 h-16 text-yellow-500 mx-auto mb-2" />
-                    <h2 className="text-2xl font-bold text-yellow-700">Technical Review Needed</h2>
-                    <p className="text-yellow-600 mt-2">{result.message}</p>
+                    <h2 className="text-2xl font-bold text-yellow-700">Good with Optimization</h2>
+                    <p className="text-yellow-600 mt-2">Smart solutions recommended for optimal grid integration</p>
                   </>
                 )}
                 {result.traffic_light === 'red' && (
                   <>
                     <XCircle className="w-16 h-16 text-red-500 mx-auto mb-2" />
-                    <h2 className="text-2xl font-bold text-red-700">Alternative Solution Required</h2>
-                    <p className="text-red-600 mt-2">{result.message}</p>
+                    <h2 className="text-2xl font-bold text-red-700">Enhanced Solutions Needed</h2>
+                    <p className="text-red-600 mt-2">Alternative approaches recommended for this location</p>
                   </>
+                )}
+                
+                {/* Eco Score Display */}
+                {result.eco_score !== undefined && (
+                  <div className="mt-4">
+                    <div className="text-sm text-gray-600 mb-1">Grid Compatibility Score</div>
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="flex-1 bg-gray-200 rounded-full h-3 max-w-xs">
+                        <div 
+                          className={`h-3 rounded-full ${
+                            result.eco_score >= 70 ? 'bg-green-500' : 
+                            result.eco_score >= 40 ? 'bg-yellow-500' : 
+                            'bg-red-500'
+                          }`}
+                          style={{ width: `${Math.min(result.eco_score, 100)}%` }}
+                        />
+                      </div>
+                      <span className="font-bold text-lg">{result.eco_score}/100</span>
+                    </div>
+                  </div>
                 )}
               </div>
 
+              {/* Recommendations Section */}
+              {result.recommendations && result.recommendations.length > 0 && (
+                <div className="p-6 border-t border-gray-100">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <Leaf className="w-5 h-5 text-green-600" />
+                    Eco-Friendly Recommendations
+                  </h3>
+                  <div className="space-y-3">
+                    {result.recommendations.map((rec, index) => {
+                      const IconComponent = getRecommendationIcon(rec.type);
+                      return (
+                        <div 
+                          key={index} 
+                          className={`border-l-4 p-4 rounded-r-lg ${getPriorityColor(rec.priority)}`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <IconComponent className="w-5 h-5 mt-1 flex-shrink-0" />
+                            <div>
+                              <h4 className="font-semibold text-gray-900">{rec.title}</h4>
+                              <p className="text-sm text-gray-700 mt-1">{rec.description}</p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Technical Details (Collapsed by default) */}
               <div className="border-t border-gray-100">
                 <button
                   onClick={() => setShowDetails(!showDetails)}
                   className="w-full p-4 flex items-center justify-between text-gray-600 hover:bg-gray-50"
                 >
-                  <span className="font-medium">Technical Details</span>
+                  <span className="text-sm font-medium">Technical Details (For Professionals)</span>
                   {showDetails ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                 </button>
 
@@ -147,16 +217,12 @@ function App() {
                       <span className="font-medium">{result.grid_level}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Distance:</span>
+                      <span className="text-gray-500">Distance to Station:</span>
                       <span className="font-medium">{result.distance_meters} m</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-500">Requested Power:</span>
                       <span className="font-medium">{result.kw_requested} kW</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Available Capacity:</span>
-                      <span className="font-medium">{result.remaining_safe} kW</span>
                     </div>
                   </div>
                 )}

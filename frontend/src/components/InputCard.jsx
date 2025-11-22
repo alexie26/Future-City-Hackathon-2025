@@ -171,7 +171,8 @@ const InputCard = ({ onCheck }) => {
                             }`}
                     >
                         <BatteryCharging className="w-6 h-6 mb-1" />
-                        <span className="text-sm font-medium">Consume</span>
+                        <span className="text-sm font-medium">Consumer</span>
+                        <span className="text-xs text-gray-500">EV, Heat Pump</span>
                     </button>
                     <button
                         type="button"
@@ -182,13 +183,17 @@ const InputCard = ({ onCheck }) => {
                             }`}
                     >
                         <Sun className="w-6 h-6 mb-1" />
-                        <span className="text-sm font-medium">Feed-in</span>
+                        <span className="text-sm font-medium">Producer</span>
+                        <span className="text-xs text-gray-500">Solar PV</span>
                     </button>
                 </div>
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Power Need (kW)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Expected Power (kW)
+                    <span className="text-xs text-gray-500 ml-2">e.g., 11 kW for home EV charger</span>
+                </label>
                 <input
                     type="number"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
@@ -202,7 +207,7 @@ const InputCard = ({ onCheck }) => {
                 onClick={handleSubmit}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md hover:shadow-lg transform active:scale-95"
             >
-                Check Feasibility
+                Get Eco Recommendations
             </button>
         </div>
     );

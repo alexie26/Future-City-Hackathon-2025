@@ -84,6 +84,88 @@ class GridDataManager:
             
         return nearest_station['ONS'], nearest_station, nearest_coords, min_dist
 
+    def _generate_recommendations(self, remaining_capacity, kw_requested, traffic_light, grid_level):
+        """Generate eco-friendly recommendations based on grid conditions"""
+        recommendations = []
+        
+        capacity_ratio = remaining_capacity / max(kw_requested, 1)
+        
+        # Solar PV recommendations
+        if capacity_ratio > 3:
+            recommendations.append({
+                "type": "solar",
+                "icon": "sun",
+                "title": "Ideal for Solar PV Installation",
+                "description": "This location has excellent grid capacity for solar energy. Consider installing solar panels to reduce energy costs and support renewable energy.",
+                "priority": "high"
+            })
+        elif capacity_ratio > 1.5:
+            recommendations.append({
+                "type": "solar",
+                "icon": "sun",
+                "title": "Good Solar PV Potential",
+                "description": "Solar installation is viable here. Smart inverters recommended for optimal grid integration.",
+                "priority": "medium"
+            })
+        
+        # Battery storage recommendations
+        if traffic_light in ["yellow", "red"]:
+            recommendations.append({
+                "type": "battery",
+                "icon": "battery",
+                "title": "Battery Storage Recommended",
+                "description": "Adding battery storage would help reduce grid stress and provide backup power. This area would benefit from load balancing.",
+                "priority": "high" if traffic_light == "red" else "medium"
+            })
+        elif capacity_ratio > 2:
+            recommendations.append({
+                "type": "battery",
+                "icon": "battery",
+                "title": "Battery Storage Optional",
+                "description": "Grid capacity is good, but battery storage can still maximize your solar investment and provide energy independence.",
+                "priority": "low"
+            })
+        
+        # EV charging recommendations
+        if capacity_ratio > 2 and kw_requested < 100:
+            recommendations.append({
+                "type": "ev",
+                "icon": "car",
+                "title": "EV Charging Suitable",
+                "description": "This location supports EV charging infrastructure. Smart charging systems recommended to optimize grid usage.",
+                "priority": "high"
+            })
+        elif capacity_ratio > 1:
+            recommendations.append({
+                "type": "ev",
+                "icon": "car",
+                "title": "Smart EV Charging Recommended",
+                "description": "EV charging is possible with smart charging technology to balance grid load during off-peak hours.",
+                "priority": "medium"
+            })
+        
+        # Heat pump recommendations
+        if capacity_ratio > 1.5 and grid_level == "Niederspannung":
+            recommendations.append({
+                "type": "heatpump",
+                "icon": "thermometer",
+                "title": "Heat Pump Suitable",
+                "description": "High efficiency expected for heat pump installation. This is an excellent alternative to fossil fuel heating.",
+                "priority": "high"
+            })
+        
+        # Grid-friendly behavior suggestions
+        if traffic_light == "yellow":
+            recommendations.append({
+                "type": "behavior",
+                "icon": "leaf",
+                "title": "Grid-Friendly Consumption Patterns",
+                "description": "Consider time-of-use optimization and load shifting to off-peak hours to support grid stability.",
+                "priority": "medium"
+            })
+        
+        return recommendations
+
     def get_station_data(self, lat, lon, kw_requested):
         nearest_station_id, station_data, nearest_coords, distance = self.find_nearest_station(lat, lon)
         
@@ -144,19 +226,16 @@ class GridDataManager:
         print(f"DEBUG: Final remaining_safe: {remaining_capacity}, threshold 70%: {remaining_capacity * 0.7}")
         
         if kw_requested <= remaining_capacity * 0.7:
-            # Green: Less than 70% of remaining capacity - safe zone
             result["traffic_light"] = "green"
             result["status"] = "approved"
             result["message"] = "Connection is likely feasible with current grid capacity."
             print(f"DEBUG: GREEN - {kw_requested} <= {remaining_capacity * 0.7}")
         elif kw_requested <= remaining_capacity:
-            # Yellow: Between 70-100% of remaining capacity - needs review
             result["traffic_light"] = "yellow"
             result["status"] = "review_needed"
             result["message"] = "Further technical review needed. Please contact our engineering team for detailed assessment."
             print(f"DEBUG: YELLOW - {kw_requested} <= {remaining_capacity}")
         else:
-            # Red: Exceeds remaining capacity
             result["traffic_light"] = "red"
             result["status"] = "not_feasible"
             if result["grid_level"] == "Niederspannung":
@@ -164,6 +243,18 @@ class GridDataManager:
             else:
                 result["message"] = "Not feasible with current capacity. Significant grid expansion required."
             print(f"DEBUG: RED - {kw_requested} > {remaining_capacity}")
+        
+        # Generate recommendations (new feature)
+        result["recommendations"] = self._generate_recommendations(
+            remaining_capacity, 
+            kw_requested, 
+            result["traffic_light"],
+            result["grid_level"]
+        )
+        
+        # Add eco-score (0-100) for frontend display
+        capacity_percentage = min((remaining_capacity / max(kw_requested, 1)) * 100, 100)
+        result["eco_score"] = int(capacity_percentage * 0.7)  # Scale to 0-70 range, reserve top 30% for perfect conditions
 
         return result
 
