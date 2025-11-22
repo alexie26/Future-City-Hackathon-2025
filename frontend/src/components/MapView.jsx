@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, CircleMarker } from 'react-leaflet';
+import React, { useEffect, useMemo } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap, CircleMarker, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import * as turf from '@turf/turf';
 
 // Fix for default marker icon
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -32,28 +33,92 @@ const MapView = ({ userLocation, stationLocation, allStations = [] }) => {
     const center = userLocation || defaultCenter;
     const zoom = userLocation ? 15 : 13;
 
-    // Filter stations to show only nearby ones (within 2km) when user location is set
-    const getDistance = (lat1, lon1, lat2, lon2) => {
-        const R = 6371e3; // Earth's radius in meters
-        const φ1 = lat1 * Math.PI / 180;
-        const φ2 = lat2 * Math.PI / 180;
-        const Δφ = (lat2 - lat1) * Math.PI / 180;
-        const Δλ = (lon2 - lon1) * Math.PI / 180;
+    // Calculate Voronoi Polygons
+    const voronoiPolygons = useMemo(() => {
+        if (!allStations.length) return null;
 
-        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-                Math.cos(φ1) * Math.cos(φ2) *
-                Math.sin(Δλ/2) * Math.sin(Δλ/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        // Filter out duplicate coordinates to prevent Voronoi errors
+        const seen = new Set();
+        const uniqueStations = allStations.filter(s => {
+            const key = `${s.lat},${s.lon}`;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
 
-        return R * c; // Distance in meters
+        // Create FeatureCollection of points
+        const points = turf.featureCollection(
+            uniqueStations.map(station => turf.point([station.lon, station.lat], { ...station }))
+        );
+
+        // Create Bounding Box (Heilbronn area approx)
+        const bbox = [9.0, 49.0, 9.4, 49.3]; // [minX, minY, maxX, maxY]
+
+        // Generate Voronoi
+        const voronoi = turf.voronoi(points, { bbox });
+
+        // IMPORTANT: Map properties back to polygons!
+        // Turf.voronoi preserves the order, so index i corresponds to points.features[i]
+        if (voronoi) {
+            voronoi.features.forEach((feature, i) => {
+                if (feature) {
+                    feature.properties = points.features[i].properties;
+                }
+            });
+        }
+
+        return voronoi;
+    }, [allStations]);
+
+    const onEachFeature = (feature, layer) => {
+        if (feature.properties) {
+            const { id, remaining_capacity } = feature.properties;
+            layer.bindPopup(`
+                <div class="font-sans">
+                    <h3 class="font-bold">Grid Zone: ${id}</h3>
+                    <p>Capacity: ${remaining_capacity} kW</p>
+                </div>
+            `);
+
+            layer.on({
+                mouseover: (e) => {
+                    const layer = e.target;
+                    layer.setStyle({ fillOpacity: 0.5, weight: 2, color: '#666' });
+                },
+                mouseout: (e) => {
+                    const layer = e.target;
+                    // Reset style
+                    const capacity = feature.properties.remaining_capacity;
+                    let opacity = 0.2;
+                    if (capacity < 50) opacity = 0.3;
+
+                    layer.setStyle({ fillOpacity: opacity, weight: 0 });
+                }
+            });
+        }
     };
 
-    const visibleStations = userLocation 
-        ? allStations.filter(station => {
-            const distance = getDistance(userLocation[0], userLocation[1], station.lat, station.lon);
-            return distance <= 2000; // Only show stations within 2km
-        })
-        : allStations.slice(0, 50); // Show only first 50 stations when no user location
+    const getStyle = (feature) => {
+        const capacity = feature.properties.remaining_capacity;
+        let color = '#10b981'; // Emerald Green
+        let opacity = 0.2;
+
+        if (capacity < 50) {
+            color = '#ef4444'; // Red
+            opacity = 0.3;
+        } else if (capacity < 150) {
+            color = '#f59e0b'; // Amber
+            opacity = 0.2;
+        }
+
+        return {
+            fillColor: color,
+            weight: 0,
+            opacity: 0,
+            color: 'white',
+            fillOpacity: opacity
+        };
+    };
 
     return (
         <MapContainer center={defaultCenter} zoom={13} className="h-full w-full rounded-xl z-0">
@@ -63,25 +128,35 @@ const MapView = ({ userLocation, stationLocation, allStations = [] }) => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
-            {/* Nearby Stations (Red dots) */}
-            {visibleStations.map((station) => (
+            {/* Voronoi Overlay */}
+            {voronoiPolygons && (
+                <GeoJSON
+                    data={voronoiPolygons}
+                    style={getStyle}
+                    onEachFeature={onEachFeature}
+                />
+            )}
+
+            {/* All Stations (Small dots on top) */}
+            {allStations.map((station) => (
                 <CircleMarker
                     key={station.id}
                     center={[station.lat, station.lon]}
-                    pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 0.7 }}
-                    radius={3}
-                >
-                    <Popup>
-                        Station ID: {station.id}
-                    </Popup>
-                </CircleMarker>
+                    pathOptions={{
+                        color: 'black',
+                        fillColor: 'white',
+                        fillOpacity: 1,
+                        weight: 1
+                    }}
+                    radius={2}
+                />
             ))}
 
             {/* User Location (Green dot) */}
             {userLocation && (
                 <CircleMarker
                     center={userLocation}
-                    pathOptions={{ color: 'green', fillColor: '#10B981', fillOpacity: 0.9 }}
+                    pathOptions={{ color: 'blue', fillColor: '#2563EB', fillOpacity: 1 }}
                     radius={8}
                 >
                     <Popup>Your Location</Popup>
