@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import InputCard from './components/InputCard';
+import OverlayMenu from './components/OverlayMenu';
 import MapView from './components/MapView';
 import { CheckCircle, XCircle, ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -91,101 +91,13 @@ function App() {
         <MapView userLocation={userLocation} stationLocation={stationLocation} allStations={allStations} />
       </div>
 
-      {/* Floating Menu (Desktop: Top-Left, Mobile: Bottom Drawer) */}
-      <div className="absolute z-50 
-                      top-auto bottom-0 left-0 right-0 
-                      md:top-6 md:left-6 md:bottom-auto md:right-auto md:w-[400px]
-                      bg-white md:rounded-xl rounded-t-2xl shadow-2xl 
-                      max-h-[80vh] overflow-y-auto
-                      flex flex-col">
-
-        {/* Header inside the floating box */}
-        <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-blue-600 to-blue-500 text-white md:rounded-t-xl rounded-t-2xl">
-          <h1 className="text-2xl font-bold">Electrify Heilbronn</h1>
-          <p className="text-blue-100 text-sm">Grid Feasibility Check</p>
-        </div>
-
-        <div className="p-6 space-y-6">
-          <InputCard onCheck={handleCheck} />
-
-          {loading && (
-            <div className="text-center p-4 text-gray-500 animate-pulse">Calculating feasibility...</div>
-          )}
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-sm">
-              {error}
-            </div>
-          )}
-
-          {result && (
-            <div className="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden animate-fade-in">
-              <div className={`p-4 text-center ${result.kw_requested <= result.remaining_safe ? 'bg-green-50' : 'bg-red-50'}`}>
-                {result.kw_requested <= result.remaining_safe ? (
-                  <>
-                    <CheckCircle className="w-10 h-10 text-green-500 mx-auto mb-2" />
-                    <h2 className="text-lg font-bold text-green-700">Approved</h2>
-                    <p className="text-green-600 text-sm">Grid capacity available.</p>
-                  </>
-                ) : (
-                  <>
-                    <XCircle className="w-10 h-10 text-red-500 mx-auto mb-2" />
-                    <h2 className="text-lg font-bold text-red-700">Grid Expansion Needed</h2>
-                    <p className="text-red-600 text-sm">Requested power exceeds safe capacity.</p>
-                  </>
-                )}
-              </div>
-
-              <div className="border-t border-gray-200">
-                <button
-                  onClick={() => setShowDetails(!showDetails)}
-                  className="w-full p-3 flex items-center justify-between text-gray-600 hover:bg-gray-100 text-sm"
-                >
-                  <span className="font-medium">Technical Details</span>
-                  {showDetails ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                </button>
-
-                {showDetails && (
-                  <div className="p-4 bg-white text-xs space-y-2 border-t border-gray-200">
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Grid Level:</span>
-                      <span className="font-medium">{result.grid_level}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Station ID:</span>
-                      <span className="font-medium">{result.nearest_station_id}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Distance:</span>
-                      <span className="font-medium">{result.distance_meters} m</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Max Capacity:</span>
-                      <span className="font-medium">{result.max_capacity} kW</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Current Load (PV):</span>
-                      <span className="font-medium">{result.current_load_pv} kW</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Remaining (Safe):</span>
-                      <span className="font-medium">{result.remaining_safe} kW</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Remaining (Raw):</span>
-                      <span className="font-medium">{result.remaining_raw} kW</span>
-                    </div>
-                    <div className="mt-3 pt-3 border-t border-gray-100">
-                      <span className="block text-gray-500 mb-1 font-semibold">Next Steps:</span>
-                      <p className="text-gray-700">{result.next_steps}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+      {/* New Overlay Menu */}
+      <OverlayMenu
+        onCheck={handleCheck}
+        result={result}
+        loading={loading}
+        error={error}
+      />
     </div>
   );
 }
