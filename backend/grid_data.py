@@ -363,9 +363,30 @@ class GridDataManager:
                 result["grid_level"]
             )
             
-            # Add eco-score
-            capacity_percentage = min((remaining_capacity / max(kw_requested, 1)) * 100, 100)
-            result["eco_score"] = int(capacity_percentage * 0.7)
+            # Add eco-score (0-100) for frontend display
+            # Base score from capacity availability (0-70)
+            capacity_ratio = min(remaining_capacity / max(kw_requested, 1), 2.0) # Cap ratio at 2.0
+            base_score = int((capacity_ratio / 2.0) * 70)
+            
+            # Bonus points for grid-friendly technologies
+            bonus = 0
+            
+            # Bonus for Producers (Solar PV) - they add green energy!
+            # We can infer producer if type is 'feed_in' (need to pass type to this function)
+            # For now, let's assume if it's a "feed_in" request (we need to pass this param)
+            # Since we don't have 'type' here yet, let's use a heuristic or update the signature later.
+            # For now, let's give a bonus if recommendations include Solar.
+            
+            has_solar_rec = any(r['type'] == 'solar' for r in result['recommendations'])
+            if has_solar_rec:
+                bonus += 15
+                
+            # Bonus for flexible loads (EV, Battery, Heat Pump)
+            has_flex_rec = any(r['type'] in ['ev', 'battery', 'heatpump'] for r in result['recommendations'])
+            if has_flex_rec:
+                bonus += 15
+                
+            result["eco_score"] = min(base_score + bonus, 100)
 
             return result
 

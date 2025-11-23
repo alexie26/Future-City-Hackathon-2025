@@ -135,3 +135,30 @@
 2025-11-23 01:36:09,210 - main - INFO - [1763854569.209544] Requesting grid data from manager
 2025-11-23 01:36:09,756 - grid_data - WARNING - UW UW_KETER not found for MV request
 2025-11-23 01:36:09,757 - main - INFO - [1763854569.209544] Successfully processed request. Station: UW_KETER, Status: red
+2025-11-23 01:37:51,973 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 01:37:51,974 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 01:37:52,017 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 01:37:52,023 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 01:37:52,024 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 01:37:52,029 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 01:37:52,036 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 01:37:52,037 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 01:38:31,923 - main - INFO - Retrieved 649 stations
+2025-11-23 01:38:32,035 - main - INFO - Retrieved 649 stations
+2025-11-23 01:38:57,342 - main - INFO - [1763854737.342183] Received request: lat=49.1411233, lon=9.218109, kw=29.0, type=load
+2025-11-23 01:38:57,342 - main - INFO - [1763854737.342183] Requesting grid data from manager
+2025-11-23 01:38:57,574 - main - INFO - [1763854737.342183] Successfully processed request. Station: 01TS0853, Status: green
+2025-11-23 01:40:24,187 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 01:40:24,188 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 01:40:24,217 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 01:40:24,222 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 01:40:24,224 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 01:40:24,229 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 01:40:24,236 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 01:40:24,236 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 01:40:30,334 - main - INFO - Retrieved 649 stations
+2025-11-23 01:40:30,438 - main - INFO - Retrieved 649 stations
+2025-11-23 01:40:51,040 - main - INFO - [1763854851.040163] Received request: lat=49.1411233, lon=9.218109, kw=599.0, type=load
+2025-11-23 01:40:51,040 - main - INFO - [1763854851.040163] Requesting grid data from manager
+2025-11-23 01:40:51,306 - grid_data - WARNING - UW UW_KETER not found for MV request
+2025-11-23 01:40:51,307 - main - INFO - [1763854851.040163] Successfully processed request. Station: UW_KETER, Status: red
