@@ -160,7 +160,48 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
                     )}
 
                     {result && !loading && !error && (
-                        <ResultCard result={result} onApply={handleApply} lang={lang} />
+                        <>
+                            <ResultCard result={result} onApply={handleApply} lang={lang} />
+
+                            {/* Anonymous Planning Insights Button */}
+                            {onLoadInsights && (
+                                <div className="mt-4">
+                                    <button
+                                        type="button"
+                                        onClick={onLoadInsights}
+                                        disabled={insightsLoading}
+                                        className="w-full py-2 rounded-lg text-sm font-medium border border-blue-200 text-blue-700 hover:bg-blue-50 disabled:opacity-60 disabled:cursor-not-allowed"
+                                    >
+                                        {insightsLoading
+                                            ? (lang === 'de' ? 'Lade anonyme Planungs-Insights…' : 'Loading anonymous planning insights…')
+                                            : (lang === 'de' ? 'Anonyme Planungs-Insights anzeigen' : 'Show anonymous planning insights')}
+                                    </button>
+
+                                    {insightsError && (
+                                        <p className="mt-2 text-xs text-red-500">
+                                            {insightsError}
+                                        </p>
+                                    )}
+
+                                    {insights && (
+                                        <div className="mt-3 text-left text-xs text-gray-700 bg-white border border-gray-200 rounded-lg p-3 space-y-1">
+                                            <p className="font-semibold text-gray-900">
+                                                {lang === 'de' ? 'Stadtplanungs-Insights (anonym)' : 'City planning insights (anonymous)'}
+                                            </p>
+                                            <p>
+                                                {lang === 'de' ? 'Anzahl Prüfungen' : 'Total checks'}: {insights.total_checks}
+                                            </p>
+                                            {insights.peak_day_of_week && insights.peak_hour_utc !== null && (
+                                                <p>
+                                                    {lang === 'de' ? 'Höchstes Interesse:' : 'Peak interest:'}{' '}
+                                                    {insights.peak_day_of_week} {lang === 'de' ? 'um' : 'at'} {insights.peak_hour_utc}:00 (UTC)
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </>
                     )}
 
                     {/* ChatBot Assistant - appears after results */}
