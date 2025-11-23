@@ -532,7 +532,7 @@ async def submit_application(application: ApplicationRequest):
     }
 
 # Configure Gemini API
-GEMINI_API_KEY = "AIzaSyDbO4lNinj72M0KkyS29wUQeOJly0bG7O4"
+GEMINI_API_KEY = "AIzaSyB_a0zZV8hQpKTS2F0I6DG8crP345BygpY"
 genai.configure(api_key=GEMINI_API_KEY)
 
 class ChatMessage(BaseModel):
