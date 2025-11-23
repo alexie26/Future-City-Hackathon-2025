@@ -1,32 +1,140 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Bot, Send } from 'lucide-react';
+import { Bot, Send, CheckCircle, AlertCircle, XCircle, Sparkles } from 'lucide-react';
 import axios from 'axios';
 
-const ChatBot = () => {
-    const [isOpen, setIsOpen] = useState(false);
+const ChatBot = ({ result, onApply }) => {
     const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState('');
     const messagesEndRef = useRef(null);
 
-    // Initial welcome message when component mounts
+    // Generate context-aware initial greeting based on result status
     useEffect(() => {
-        setMessages([
-            {
-                id: 1,
-                text: 'Hello! I\'m your Electrify Assistant. I can help guide you through the grid connection application process. How can I assist you today?',
+        if (!result) return;
+
+        const getInitialGreeting = () => {
+            const baseGreeting = {
+                id: Date.now(),
                 sender: 'bot',
                 timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+            };
+
+            switch (result.status) {
+                case 'green':
+                    return {
+                        ...baseGreeting,
+                        text: `Hi! 🎉 Great news! Your grid connection for ${result.kw_requested}kW is **feasible** at station ${result.station_id}. The capacity is available and your application can be processed quickly!`,
+                        type: 'text',
+                        buttons: [
+                            { label: 'Apply Now', action: 'apply', icon: CheckCircle },
+                            { label: 'View Details', action: 'details', icon: Sparkles }
+                        ]
+                    };
+                
+                case 'yellow':
+                    return {
+                        ...baseGreeting,
+                        text: `Hello! ⚠️ Your request for ${result.kw_requested}kW requires a **detailed review**. The grid has limited capacity at station ${result.station_id}. Expected timeline: ${result.timeline || '2-4 weeks'}. I recommend submitting an application so our team can evaluate your specific case.`,
+                        type: 'text',
+                        buttons: [
+                            { label: 'Apply for Review', action: 'apply', icon: AlertCircle },
+                            { label: 'Learn More', action: 'info', icon: Sparkles }
+                        ]
+                    };
+                
+                case 'red':
+                    return {
+                        ...baseGreeting,
+                        text: `Hi there. ⛔ Unfortunately, the grid at station ${result.station_id} doesn't have sufficient capacity for ${result.kw_requested}kW. **Grid expansion** would be needed, which typically takes ${result.timeline || '6-12 months'}. However, there may be alternative solutions!`,
+                        type: 'text',
+                        buttons: [
+                            { label: 'Contact Support', action: 'apply', icon: XCircle },
+                            { label: 'View Alternatives', action: 'alternatives', icon: Sparkles }
+                        ]
+                    };
+                
+                default:
+                    return {
+                        ...baseGreeting,
+                        text: 'Hello! I\'m your Electrify Assistant. I can help guide you through the grid connection application process.',
+                        type: 'text'
+                    };
             }
-        ]);
-    }, []);
+        };
+
+        setMessages([getInitialGreeting()]);
+    }, [result]);
 
     // Auto-scroll to bottom when messages change
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-    const handleToggle = () => {
-        setIsOpen(!isOpen);
+    const handleButtonClick = (action, messageId) => {
+        if (action === 'apply') {
+            // Remove buttons and add confirmation in single update
+            setMessages(prev => {
+                const updated = prev.map(msg => 
+                    msg.id === messageId ? { ...msg, buttons: undefined } : msg
+                );
+                return [...updated, {
+                    id: Date.now(),
+                    text: '✅ Opening application form for you!',
+                    sender: 'bot',
+                    type: 'text',
+                    timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+                }];
+            });
+            
+            if (onApply) {
+                onApply();
+            }
+        } else if (action === 'details' || action === 'info') {
+            const detailsMessage = `📊 **Your Connection Details:**\n\n` +
+                `• Status: ${result.status.toUpperCase()}\n` +
+                `• Power Requested: ${result.kw_requested}kW\n` +
+                `• Voltage Level: ${result.grid_level || 'NS'}\n` +
+                `• Distance to Station: ${result.distance_km}km\n` +
+                `• Remaining Capacity: ${result.remaining_safe}kW\n` +
+                `• Timeline: ${result.timeline || 'Contact for details'}\n` +
+                (result.eco_score ? `• Eco Score: ${result.eco_score}/100\n` : '') +
+                `\n${result.next_steps || 'Submit your application to proceed!'}`;
+            
+            // Remove buttons and add details in single update
+            setMessages(prev => {
+                const updated = prev.map(msg => 
+                    msg.id === messageId ? { ...msg, buttons: undefined } : msg
+                );
+                return [...updated, {
+                    id: Date.now(),
+                    text: detailsMessage,
+                    sender: 'bot',
+                    type: 'text',
+                    timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+                }];
+            });
+        } else if (action === 'alternatives') {
+            const altMessage = `🔄 **Alternative Options:**\n\n` +
+                `1. **Reduce Power:** Consider scaling down your installation to fit available capacity\n` +
+                `2. **Different Location:** Check nearby addresses with better grid capacity\n` +
+                `3. **Phased Installation:** Start with partial capacity now, expand later\n` +
+                `4. **Grid Expansion:** Apply for connection and participate in grid upgrade costs\n\n` +
+                `Would you like to submit an application to discuss these options with our team?`;
+            
+            // Remove buttons and add alternatives in single update
+            setMessages(prev => {
+                const updated = prev.map(msg => 
+                    msg.id === messageId ? { ...msg, buttons: undefined } : msg
+                );
+                return [...updated, {
+                    id: Date.now(),
+                    text: altMessage,
+                    sender: 'bot',
+                    type: 'text',
+                    buttons: [{ label: 'Yes, Apply Now', action: 'apply', icon: CheckCircle }],
+                    timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+                }];
+            });
+        }
     };
 
     const handleSendMessage = async () => {
@@ -35,23 +143,72 @@ const ChatBot = () => {
         const messageText = inputValue;
         setInputValue('');
 
-        // Add user message using functional updater
-        setMessages(prev => {
-            const newMessage = {
-                id: Date.now(),
-                text: messageText,
-                sender: 'user',
-                timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
-            };
-            return [...prev, newMessage];
-        });
+        // Add user message
+        setMessages(prev => [...prev, {
+            id: Date.now(),
+            text: messageText,
+            sender: 'user',
+            type: 'text',
+            timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+        }]);
 
-        // Call Gemini-powered backend
+        // Check for keywords and provide contextual responses
+        const lowerMessage = messageText.toLowerCase();
+        
+        if (lowerMessage.includes('apply') || lowerMessage.includes('application')) {
+            setMessages(prev => [...prev, {
+                id: Date.now(),
+                text: `I'll help you start the application process! Click the "Apply Now" button below to open the application form with your details pre-filled.`,
+                sender: 'bot',
+                type: 'text',
+                buttons: [{ label: 'Apply Now', action: 'apply', icon: CheckCircle }],
+                timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+            }]);
+            return;
+        }
+
+        if (lowerMessage.includes('timeline') || lowerMessage.includes('how long')) {
+            setMessages(prev => [...prev, {
+                id: Date.now(),
+                text: `Based on your grid status (${result.status}), the expected timeline is: **${result.timeline || 'Please contact us for specific timeline'}**. This includes application review and connection setup.`,
+                sender: 'bot',
+                type: 'text',
+                timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+            }]);
+            return;
+        }
+
+        if (lowerMessage.includes('score') || lowerMessage.includes('eco')) {
+            const ecoText = result.eco_score 
+                ? `Your Eco Score is **${result.eco_score}/100**! ${result.eco_score >= 80 ? '🌟 Excellent! ' : result.eco_score >= 60 ? '✅ Good! ' : '⚠️ '}This reflects the environmental impact and grid efficiency of your connection.`
+                : 'Eco score information is not available for this check.';
+            
+            setMessages(prev => [...prev, {
+                id: Date.now(),
+                text: ecoText,
+                sender: 'bot',
+                type: 'text',
+                timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+            }]);
+            return;
+        }
+
+        if (lowerMessage.includes('help') || lowerMessage.includes('what can you')) {
+            setMessages(prev => [...prev, {
+                id: Date.now(),
+                text: `I can help you with:\n\n• Understanding your grid connection results\n• Explaining timeline and next steps\n• Starting your application\n• Providing cost estimates\n• Technical requirements (TAB, VDE)\n• Document preparation\n\nWhat would you like to know more about?`,
+                sender: 'bot',
+                type: 'text',
+                timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+            }]);
+            return;
+        }
+
+        // Call Gemini-powered backend for other queries
         try {
             const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
             
-            // Get conversation history for context
-            const history = messages.map(msg => ({
+            const history = messages.filter(m => m.type === 'text').map(msg => ({
                 text: msg.text,
                 sender: msg.sender
             }));
@@ -59,31 +216,25 @@ const ChatBot = () => {
             const response = await axios.post(`${apiUrl}/chat`, {
                 message: messageText,
                 conversation_history: history,
-                grid_context: null // TODO: Pass grid check results when available
+                grid_context: result // Pass result data for context
             });
 
-            // Add bot response
-            setMessages(prev => {
-                const botResponse = {
-                    id: Date.now(),
-                    text: response.data.response,
-                    sender: 'bot',
-                    timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
-                };
-                return [...prev, botResponse];
-            });
+            setMessages(prev => [...prev, {
+                id: Date.now(),
+                text: response.data.response,
+                sender: 'bot',
+                type: 'text',
+                timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+            }]);
         } catch (error) {
             console.error('Chat error:', error);
-            // Add error message
-            setMessages(prev => {
-                const errorMessage = {
-                    id: Date.now(),
-                    text: 'Sorry, I encountered an error. Please try again.',
-                    sender: 'bot',
-                    timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
-                };
-                return [...prev, errorMessage];
-            });
+            setMessages(prev => [...prev, {
+                id: Date.now(),
+                text: 'Sorry, I encountered an error. Please try again or use the quick action buttons above.',
+                sender: 'bot',
+                type: 'text',
+                timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+            }]);
         }
     };
 
@@ -95,96 +246,96 @@ const ChatBot = () => {
     };
 
     return (
-        <>
-            {/* Toggle Button (visible when chat is closed) */}
-            {!isOpen && (
-                <button
-                    onClick={handleToggle}
-                    className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center z-[6000]"
-                    aria-label="Open chat"
-                >
-                    <MessageCircle className="w-8 h-8" />
-                </button>
-            )}
-
-            {/* Chat Window (visible when isOpen is true) */}
-            {isOpen && (
-                <div className="fixed bottom-6 right-6 w-96 h-[600px] bg-white rounded-2xl shadow-2xl z-[6000] flex flex-col animate-in slide-in-from-bottom duration-300">
-                    {/* Chat Header */}
-                    <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white p-4 rounded-t-2xl flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <Bot className="w-6 h-6" />
-                            <div>
-                                <h3 className="font-bold text-lg">Electrify Assistant</h3>
-                                <p className="text-xs text-blue-100">Here to help you</p>
-                            </div>
-                        </div>
-                        <button
-                            onClick={handleToggle}
-                            className="hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition-colors"
-                            aria-label="Close chat"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
-                    </div>
-
-                    {/* Messages Container */}
-                    <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
-                        {messages.map((message) => (
-                            <div
-                                key={message.id}
-                                className={`mb-3 flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                            >
-                                {message.sender === 'bot' && (
-                                    <div className="flex items-start gap-2 max-w-[80%]">
-                                        <div className="bg-blue-100 rounded-full p-2 flex-shrink-0">
-                                            <Bot className="w-4 h-4 text-blue-600" />
-                                        </div>
-                                        <div>
-                                            <div className="bg-white border border-gray-200 rounded-lg rounded-tl-none p-3 text-gray-800">
-                                                {message.text}
-                                            </div>
-                                            <p className="text-xs text-gray-500 mt-1 ml-1">{message.timestamp}</p>
-                                        </div>
-                                    </div>
-                                )}
-                                {message.sender === 'user' && (
-                                    <div className="flex flex-col items-end max-w-[80%]">
-                                        <div className="bg-blue-600 text-white rounded-lg rounded-tr-none p-3">
-                                            {message.text}
-                                        </div>
-                                        <p className="text-xs text-gray-500 mt-1 mr-1">{message.timestamp}</p>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                        <div ref={messagesEndRef} />
-                    </div>
-
-                    {/* Chat Input Area */}
-                    <div className="bg-white border-t border-gray-200 p-4 rounded-b-2xl">
-                        <div className="flex gap-2">
-                            <input
-                                type="text"
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                onKeyPress={handleKeyPress}
-                                placeholder="Type your message..."
-                                className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                            />
-                            <button
-                                onClick={handleSendMessage}
-                                disabled={inputValue.trim() === ''}
-                                className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg px-4 py-2 transition-colors flex items-center justify-center"
-                                aria-label="Send message"
-                            >
-                                <Send className="w-5 h-5" />
-                            </button>
-                        </div>
-                    </div>
+        <div className="w-full bg-white rounded-lg shadow-lg border border-gray-200 flex flex-col overflow-hidden">
+            {/* Chat Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white p-4 flex items-center gap-3">
+                <div className="bg-white bg-opacity-20 rounded-full p-2">
+                    <Bot className="w-5 h-5" />
                 </div>
-            )}
-        </>
+                <div>
+                    <h3 className="font-bold text-base">Electrify Assistant</h3>
+                    <p className="text-xs text-blue-100">Powered by AI - Here to guide you</p>
+                </div>
+            </div>
+
+            {/* Messages Container */}
+            <div className="flex-1 overflow-y-auto p-4 bg-gray-50 max-h-[500px] min-h-[300px]">
+                {messages.map((message) => (
+                    <div
+                        key={message.id}
+                        className={`mb-3 flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                        {message.sender === 'bot' && (
+                            <div className="flex items-start gap-2 max-w-full">
+                                <div className="bg-blue-100 rounded-full p-2 flex-shrink-0 mt-1">
+                                    <Bot className="w-4 h-4 text-blue-600" />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="bg-white border border-gray-200 rounded-lg rounded-tl-none p-3 text-gray-800 whitespace-pre-line text-sm">
+                                        {message.text}
+                                    </div>
+                                    
+                                    {/* Action Buttons */}
+                                    {message.buttons && message.buttons.length > 0 && (
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            {message.buttons.map((btn, idx) => {
+                                                const Icon = btn.icon;
+                                                return (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => handleButtonClick(btn.action, message.id)}
+                                                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm hover:shadow-md"
+                                                    >
+                                                        {Icon && <Icon className="w-4 h-4" />}
+                                                        {btn.label}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                    
+                                    <p className="text-xs text-gray-500 mt-1 ml-1">{message.timestamp}</p>
+                                </div>
+                            </div>
+                        )}
+                        {message.sender === 'user' && (
+                            <div className="flex flex-col items-end max-w-[80%]">
+                                <div className="bg-blue-600 text-white rounded-lg rounded-tr-none p-3 text-sm">
+                                    {message.text}
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1 mr-1">{message.timestamp}</p>
+                            </div>
+                        )}
+                    </div>
+                ))}
+                <div ref={messagesEndRef} />
+            </div>
+
+            {/* Chat Input Area */}
+            <div className="bg-white border-t border-gray-200 p-4">
+                <div className="flex gap-2">
+                    <input
+                        type="text"
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        placeholder="Ask me anything..."
+                        className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    />
+                    <button
+                        onClick={handleSendMessage}
+                        disabled={inputValue.trim() === ''}
+                        className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg px-4 py-2 transition-colors flex items-center justify-center"
+                        aria-label="Send message"
+                    >
+                        <Send className="w-5 h-5" />
+                    </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                    Ask about timeline, costs, documents, or next steps
+                </p>
+            </div>
+        </div>
     );
 };
 

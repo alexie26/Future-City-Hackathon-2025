@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Zap, Sun, Loader2, CheckCircle, AlertCircle, ChevronDown, ChevronUp, MapPin } from 'lucide-react';
+import { Search, Zap, Sun, Loader2, CheckCircle, AlertCircle, ChevronDown, ChevronUp, MapPin, MessageCircle } from 'lucide-react';
 import axios from 'axios';
 import Hero from './Hero';
 import InputCard from './InputCard';
 import ResultCard from './ResultCard';
 import ApplicationModal from './ApplicationModal';
+import ChatBot from './ChatBot';
 
 const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, insightsLoading, insightsError, onLoadInsights }) => {
     const [address, setAddress] = useState('');
@@ -15,6 +16,7 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [searchLoading, setSearchLoading] = useState(false);
     const [selectedCoordinates, setSelectedCoordinates] = useState(null);
+    const [showBot, setShowBot] = useState(true);
     const searchTimeout = useRef(null);
     const suggestionsRef = useRef(null);
 
@@ -159,6 +161,32 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
 
                     {result && !loading && !error && (
                         <ResultCard result={result} onApply={handleApply} />
+                    )}
+
+                    {/* ChatBot Assistant - appears after results */}
+                    {result && !loading && !error && (
+                        <div className="mt-6">
+                            {/* Bot Toggle Header */}
+                            <button
+                                onClick={() => setShowBot(!showBot)}
+                                className="w-full flex items-center justify-between bg-gradient-to-r from-blue-50 to-green-50 border-2 border-blue-200 rounded-lg p-3 mb-3 hover:from-blue-100 hover:to-green-100 transition-all"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <MessageCircle className="w-5 h-5 text-blue-600" />
+                                    <span className="font-semibold text-gray-800">💬 Chat with AI Assistant</span>
+                                </div>
+                                {showBot ? (
+                                    <ChevronUp className="w-5 h-5 text-gray-600" />
+                                ) : (
+                                    <ChevronDown className="w-5 h-5 text-gray-600" />
+                                )}
+                            </button>
+
+                            {/* ChatBot Component */}
+                            {showBot && (
+                                <ChatBot result={result} onApply={handleApply} />
+                            )}
+                        </div>
                     )}
                 </div>
             </div>
