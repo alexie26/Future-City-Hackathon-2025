@@ -107,21 +107,6 @@ const ResultCard = ({ result, onApply }) => {
                     {result.recommendation}
                 </p>
             </div>
-
-            {/* Green Recommendations */}
-            {result.recommendations && result.recommendations.length > 0 && (
-                <div className="space-y-3">
-                    <div className="flex items-center gap-2 mb-3">
-                        <Leaf className="w-5 h-5 text-green-600" />
-                        <h4 className="font-bold text-gray-900">
-                            Personalized Green Recommendations
-                        </h4>
-                    </div>
-                    {result.recommendations.map((rec, idx) => (
-                        <RecommendationCard key={idx} recommendation={rec} />
-                    ))}
-                </div>
-            )}
         </div>
     );
 };

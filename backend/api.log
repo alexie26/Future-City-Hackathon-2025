@@ -499,3 +499,8 @@ google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found fo
 2025-11-23 10:14:24,499 - main - INFO - [1763885664.499115] Received request: lat=49.1411398, lon=9.2178421, kw=22.0, type=load
 2025-11-23 10:14:24,499 - main - INFO - [1763885664.499115] Requesting grid data from manager
 2025-11-23 10:14:24,681 - main - INFO - [1763885664.499115] Successfully processed request. Station: 01TS0817, Status: green
+2025-11-23 10:16:54,235 - main - INFO - Retrieved 649 stations
+2025-11-23 10:16:54,311 - main - INFO - Retrieved 649 stations
+2025-11-23 10:17:08,482 - main - INFO - [1763885828.482834] Received request: lat=49.1423735, lon=9.2225257, kw=20.0, type=load
+2025-11-23 10:17:08,483 - main - INFO - [1763885828.482834] Requesting grid data from manager
+2025-11-23 10:17:08,611 - main - INFO - [1763885828.482834] Successfully processed request. Station: 01TS0210, Status: green

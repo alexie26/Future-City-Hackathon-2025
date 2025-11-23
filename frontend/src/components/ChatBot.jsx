@@ -49,7 +49,24 @@ const ChatBot = ({ result, onApply }) => {
             }
         };
 
-        setMessages([getInitialGreeting()]);
+        const initialMessages = [getInitialGreeting()];
+
+        // Add green recommendations if available
+        if (result.recommendations && result.recommendations.length > 0) {
+            const recsText = result.recommendations.map((rec, idx) => 
+                `${idx + 1}. **${rec.title}**\n   ${rec.description}${rec.savings ? `\n   💰 Savings: ${rec.savings}` : ''}`
+            ).join('\n\n');
+
+            initialMessages.push({
+                id: Date.now() + 1,
+                text: `🌱 **Personalized Green Recommendations:**\n\n${recsText}`,
+                sender: 'bot',
+                type: 'text',
+                timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+            });
+        }
+
+        setMessages(initialMessages);
     }, [result]);
 
     // Auto-scroll to bottom when messages change
