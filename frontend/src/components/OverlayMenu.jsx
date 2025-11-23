@@ -227,7 +227,7 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
 
                             {/* ChatBot Component */}
                             {showBot && (
-                                <ChatBot result={result} onApply={handleApply} />
+                                <ChatBot result={result} onApply={handleApply} lang={lang} />
                             )}
                         </div>
                     )}

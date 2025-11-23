@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bot, Send, CheckCircle, AlertCircle, XCircle, Sparkles } from 'lucide-react';
 import axios from 'axios';
+import RecommendationCard from './RecommendationCard';
 
-const ChatBot = ({ result, onApply }) => {
+const ChatBot = ({ result, onApply, lang = 'en' }) => {
     const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState('');
+    const [showRecommendations, setShowRecommendations] = useState(false);
     const messagesEndRef = useRef(null);
 
     // Generate context-aware initial greeting based on result status
@@ -22,49 +24,42 @@ const ChatBot = ({ result, onApply }) => {
                 case 'green':
                     return {
                         ...baseGreeting,
-                        text: `Hi! 🎉 Great news! Your grid connection for ${result.kw_requested}kW is **feasible**. The capacity is available and your application can be processed quickly!`,
+                        text: lang === 'de' 
+                            ? `Hallo! 🎉 Gute Nachrichten! Ihr Netzanschluss für ${result.kw_requested}kW ist **machbar**. Die Kapazität ist verfügbar und Ihr Antrag kann schnell bearbeitet werden!`
+                            : `Hi! 🎉 Great news! Your grid connection for ${result.kw_requested}kW is **feasible**. The capacity is available and your application can be processed quickly!`,
                         type: 'text'
                     };
                 
                 case 'yellow':
                     return {
                         ...baseGreeting,
-                        text: `Hello! ⚠️ Your request for ${result.kw_requested}kW requires a **detailed review**. The grid has limited capacity. Expected timeline: ${result.timeline || '2-4 weeks'}. I recommend submitting an application so our team can evaluate your specific case.`,
+                        text: lang === 'de'
+                            ? `Hallo! ⚠️ Ihre Anfrage für ${result.kw_requested}kW erfordert eine **detaillierte Prüfung**. Das Netz hat begrenzte Kapazität. Voraussichtliche Zeitachse: ${result.timeline || '2-4 Wochen'}. Ich empfehle, einen Antrag einzureichen, damit unser Team Ihren spezifischen Fall bewerten kann.`
+                            : `Hello! ⚠️ Your request for ${result.kw_requested}kW requires a **detailed review**. The grid has limited capacity. Expected timeline: ${result.timeline || '2-4 weeks'}. I recommend submitting an application so our team can evaluate your specific case.`,
                         type: 'text'
                     };
                 
                 case 'red':
                     return {
                         ...baseGreeting,
-                        text: `Hi there. ⛔ Unfortunately, the grid doesn't have sufficient capacity for ${result.kw_requested}kW. **Grid expansion** would be needed, which typically takes ${result.timeline || '6-12 months'}. However, there may be alternative solutions!`,
+                        text: lang === 'de'
+                            ? `Hallo. ⛔ Leider hat das Netz keine ausreichende Kapazität für ${result.kw_requested}kW. Eine **Netzerweiterung** wäre erforderlich, die normalerweise ${result.timeline || '6-12 Monate'} dauert. Es könnte jedoch alternative Lösungen geben!`
+                            : `Hi there. ⛔ Unfortunately, the grid doesn't have sufficient capacity for ${result.kw_requested}kW. **Grid expansion** would be needed, which typically takes ${result.timeline || '6-12 months'}. However, there may be alternative solutions!`,
                         type: 'text'
                     };
                 
                 default:
                     return {
                         ...baseGreeting,
-                        text: 'Hello! I\'m your Electrify Assistant. I can help guide you through the grid connection application process.',
+                        text: lang === 'de'
+                            ? 'Hallo! Ich bin Ihr Electrify-Assistent. Ich kann Sie durch den Netzanschluss-Antragsprozess führen.'
+                            : 'Hello! I\'m your Electrify Assistant. I can help guide you through the grid connection application process.',
                         type: 'text'
                     };
             }
         };
 
         const initialMessages = [getInitialGreeting()];
-
-        // Add green recommendations if available
-        if (result.recommendations && result.recommendations.length > 0) {
-            const recsText = result.recommendations.map((rec, idx) => 
-                `${idx + 1}. **${rec.title}**\n   ${rec.description}${rec.savings ? `\n   💰 Savings: ${rec.savings}` : ''}`
-            ).join('\n\n');
-
-            initialMessages.push({
-                id: Date.now() + 1,
-                text: `🌱 **Personalized Green Recommendations:**\n\n${recsText}`,
-                sender: 'bot',
-                type: 'text',
-                timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
-            });
-        }
 
         setMessages(initialMessages);
     }, [result]);
@@ -321,13 +316,37 @@ const ChatBot = ({ result, onApply }) => {
                 <div className="bg-gradient-to-r from-green-50 to-blue-50 border-t border-green-200 p-4">
                     <button
                         onClick={onApply}
-                        className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2"
+                        className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2 mb-3"
                     >
                         <CheckCircle className="w-5 h-5" />
-                        Apply for Connection
+                        {lang === 'de' ? 'Verbindung beantragen' : 'Apply for Connection'}
                     </button>
+                    
+                    {/* Green Recommendations Toggle Button */}
+                    {result.recommendations && result.recommendations.length > 0 && (
+                        <>
+                            <button
+                                onClick={() => setShowRecommendations(!showRecommendations)}
+                                className="w-full bg-white hover:bg-green-50 text-green-700 font-medium py-2.5 rounded-lg transition-colors border-2 border-green-300 flex items-center justify-center gap-2"
+                            >
+                                🌱 {lang === 'de' ? 'Grüne Empfehlungen anzeigen' : 'Show Green Recommendations'}
+                            </button>
+                            
+                            {/* Recommendations Display */}
+                            {showRecommendations && (
+                                <div className="mt-3 space-y-2 max-h-60 overflow-y-auto">
+                                    {result.recommendations.map((rec, idx) => (
+                                        <RecommendationCard key={idx} recommendation={rec} lang={lang} />
+                                    ))}
+                                </div>
+                            )}
+                        </>
+                    )}
+                    
                     <p className="text-xs text-center text-gray-600 mt-2">
-                        ✅ Your connection is feasible! Submit your application now.
+                        {lang === 'de' 
+                            ? '✅ Ihre Verbindung ist machbar! Reichen Sie jetzt Ihren Antrag ein.' 
+                            : '✅ Your connection is feasible! Submit your application now.'}
                     </p>
                 </div>
             )}
@@ -340,7 +359,7 @@ const ChatBot = ({ result, onApply }) => {
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        placeholder="Ask me anything..."
+                        placeholder={lang === 'de' ? 'Frag mich etwas...' : 'Ask me anything...'}
                         className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     />
                     <button
@@ -353,7 +372,9 @@ const ChatBot = ({ result, onApply }) => {
                     </button>
                 </div>
                 <p className="text-xs text-gray-500 mt-2 text-center">
-                    Ask about timeline, costs, documents, or next steps
+                    {lang === 'de' 
+                        ? 'Fragen Sie nach Zeitplan, Kosten, Dokumenten oder nächsten Schritten' 
+                        : 'Ask about timeline, costs, documents, or next steps'}
                 </p>
             </div>
         </div>
