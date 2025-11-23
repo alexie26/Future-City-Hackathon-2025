@@ -189,11 +189,6 @@ const MapView = ({ userLocation, stationLocation, allStations = [], activeLayers
     const filteredVoronoiPolygons = useMemo(() => {
         if (!voronoiPolygons || activeLayers.length === 0) return null;
 
-        // If 'voltage-regions' is active, show all voltage regions
-        if (activeLayers.includes('voltage-regions')) {
-            return voronoiPolygons; // Show all regions
-        }
-
         const filteredFeatures = voronoiPolygons.features.filter(feature => {
             const capacity = feature.properties.remaining_capacity;
 

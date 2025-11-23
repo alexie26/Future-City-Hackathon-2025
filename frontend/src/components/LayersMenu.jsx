@@ -5,8 +5,9 @@ const LayersMenu = ({ activeLayers = [], onLayerChange }) => {
     const [isExpanded, setIsExpanded] = useState(true);
 
     const layers = [
-        { id: 'voltage-regions', label: 'Voltage Regions' },
-        { id: 'stations', label: 'Grid Stations' }
+        { id: 'lv', label: 'Low Voltage (LV)' },
+        { id: 'mv', label: 'Medium Voltage (MV)' },
+        { id: 'hv', label: 'High Voltage (HV)' }
     ];
 
     return (
@@ -18,28 +19,34 @@ const LayersMenu = ({ activeLayers = [], onLayerChange }) => {
             >
                 <div className="flex items-center gap-2">
                     <Layers className="w-5 h-5 text-gray-700" />
-                    <h2 className="font-bold text-gray-900">Map Layers</h2>
+                    <h2 className="font-bold text-gray-900">Voltage Layers</h2>
                 </div>
                 {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-500" />}
             </button>
 
             {/* Layer Controls */}
             {isExpanded && (
-                <div className="p-4 space-y-2">
+                <div className="p-4 space-y-3">
                     {layers.map(layer => {
                         const isActive = activeLayers.includes(layer.id);
                         return (
-                            <button
-                                key={layer.id}
-                                onClick={() => onLayerChange(layer.id)}
-                                className={`w-full px-4 py-3 rounded-lg font-medium text-sm transition-all ${
-                                    isActive 
-                                        ? 'bg-blue-100 text-blue-700 border-2 border-blue-300' 
-                                        : 'bg-gray-100 text-gray-600 border-2 border-gray-200 hover:bg-gray-200'
-                                }`}
-                            >
-                                {layer.label}
-                            </button>
+                            <div key={layer.id} className="flex items-center justify-between">
+                                <span className={`text-sm ${isActive ? 'font-medium text-gray-900' : 'text-gray-600'}`}>
+                                    {layer.label}
+                                </span>
+                                <button
+                                    onClick={() => onLayerChange(layer.id)}
+                                    className={`relative w-11 h-6 rounded-full transition-colors ${
+                                        isActive ? 'bg-teal-500' : 'bg-gray-200'
+                                    }`}
+                                >
+                                    <div
+                                        className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform ${
+                                            isActive ? 'translate-x-5' : 'translate-x-0'
+                                        }`}
+                                    />
+                                </button>
+                            </div>
                         );
                     })}
                 </div>
