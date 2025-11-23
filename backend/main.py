@@ -8,6 +8,7 @@ import logging
 import os
 import traceback
 from datetime import datetime
+import google.generativeai as genai
 
 # Configure logging with more detail
 logging.basicConfig(
@@ -449,6 +450,93 @@ async def submit_application(application: ApplicationRequest):
         "message": "Application received successfully! We will contact you shortly.",
         "application_id": f"APP-{int(datetime.utcnow().timestamp())}"
     }
+
+# Configure Gemini API
+GEMINI_API_KEY = "AIzaSyDbO4lNinj72M0KkyS29wUQeOJly0bG7O4"
+genai.configure(api_key=GEMINI_API_KEY)
+
+class ChatMessage(BaseModel):
+    message: str
+    conversation_history: Optional[List[Dict[str, str]]] = []
+    grid_context: Optional[Dict[str, Any]] = None
+
+@app.post("/chat")
+async def chat(chat_request: ChatMessage):
+    """
+    Chat endpoint powered by Gemini AI
+    Provides guidance on grid connection applications
+    """
+    try:
+        # System prompt for the assistant
+        system_prompt = """You are an intelligent assistant for Heilbronn's grid connection application system. 
+Your role is to help users understand and navigate the grid connection process for their electrical installations (Solar PV, EV Chargers, Heat Pumps, etc.).
+
+You should provide helpful, accurate information about:
+- Grid connection application steps and requirements
+- Timeline expectations for different voltage levels (Niederspannung, Mittelspannung, Hochspannung)
+- Required documents and technical specifications
+- Cost estimates and subsidies
+- NHF (Netz Heilbronn-Franken) regulations
+- Technical requirements (TAB, VDE standards)
+- Next steps based on their grid check results
+
+Keep responses concise, friendly, and practical. Use German technical terms when appropriate but explain them clearly. 
+If the user has performed a grid check, use that context to provide personalized guidance."""
+
+        # Build context from grid check results if available
+        context_info = ""
+        if chat_request.grid_context:
+            gc = chat_request.grid_context
+            context_info = f"""
+
+Current User Context:
+- Grid Status: {gc.get('status', 'unknown')}
+- Requested Power: {gc.get('kw_requested', 'unknown')} kW
+- Voltage Level: {gc.get('grid_level', 'unknown')}
+- Distance to Station: {gc.get('distance_km', 'unknown')} km
+- Timeline: {gc.get('timeline', 'unknown')}
+- Available Capacity: {gc.get('remaining_safe', 'unknown')} kW
+- Next Steps: {gc.get('next_steps', 'unknown')}"""
+
+        # Build conversation history
+        conversation = []
+        for msg in chat_request.conversation_history[-6:]:  # Last 6 messages for context
+            conversation.append({
+                "role": "user" if msg.get("sender") == "user" else "model",
+                "parts": [msg.get("text", "")]
+            })
+        
+        # Add current message
+        conversation.append({
+            "role": "user",
+            "parts": [chat_request.message]
+        })
+
+        # Initialize Gemini model
+        model = genai.GenerativeModel('gemini-2.0-flash')
+        
+        # Create chat with history
+        chat_session = model.start_chat(history=conversation[:-1])
+        
+        # Generate response with context
+        full_prompt = system_prompt + context_info + "\n\nUser: " + chat_request.message
+        
+        response = chat_session.send_message(full_prompt)
+        
+        return {
+            "response": response.text,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Chat error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "error": "CHAT_ERROR",
+                "message": "Failed to process chat message. Please try again."
+            }
+        )
 
 if __name__ == "__main__":
     import uvicorn

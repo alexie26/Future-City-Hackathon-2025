@@ -276,3 +276,186 @@
 2025-11-23 08:17:28,212 - main - INFO - [1763878648.045622] Successfully processed request. Station: 01TS0817, Status: yellow
 2025-11-23 08:17:55,468 - main - INFO - Retrieved 649 stations
 2025-11-23 08:17:55,550 - main - INFO - Retrieved 649 stations
+2025-11-23 08:24:03,599 - main - INFO - [1763879043.599641] Received request: lat=49.1411233, lon=9.218109, kw=59.0, type=load
+2025-11-23 08:24:03,599 - main - INFO - [1763879043.599641] Requesting grid data from manager
+2025-11-23 08:24:03,760 - main - INFO - [1763879043.599641] Successfully processed request. Station: 01TS0853, Status: yellow
+2025-11-23 08:29:20,538 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 08:29:20,539 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 08:29:20,560 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 08:29:20,566 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 08:29:20,567 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 08:29:20,571 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 08:29:20,576 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 08:29:20,576 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 09:12:47,264 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 09:12:47,264 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 09:12:47,280 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 09:12:47,284 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 09:12:47,285 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 09:12:47,289 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 09:12:47,293 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 09:12:47,293 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 09:12:57,199 - main - INFO - Retrieved 649 stations
+2025-11-23 09:12:57,271 - main - INFO - Retrieved 649 stations
+2025-11-23 09:13:24,179 - main - ERROR - Chat error: 404 models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Traceback (most recent call last):
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/main.py", line 524, in chat
+    response = chat_session.send_message(full_prompt)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/generativeai/generative_models.py", line 578, in send_message
+    response = self.model.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/generativeai/generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/ai/generativelanguage_v1beta/services/generative_service/client.py", line 835, in generate_content
+    response = rpc(
+               ^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/gapic_v1/method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 147, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.NotFound: 404 models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-11-23 09:13:26,719 - main - ERROR - Chat error: 404 models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Traceback (most recent call last):
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/main.py", line 524, in chat
+    response = chat_session.send_message(full_prompt)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/generativeai/generative_models.py", line 578, in send_message
+    response = self.model.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/generativeai/generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/ai/generativelanguage_v1beta/services/generative_service/client.py", line 835, in generate_content
+    response = rpc(
+               ^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/gapic_v1/method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 147, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.NotFound: 404 models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-11-23 09:14:21,528 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 09:14:21,529 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 09:14:21,544 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 09:14:21,548 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 09:14:21,549 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 09:14:21,551 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 09:14:21,557 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 09:14:21,557 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 09:14:40,100 - main - ERROR - Chat error: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Traceback (most recent call last):
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/main.py", line 524, in chat
+    response = chat_session.send_message(full_prompt)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/generativeai/generative_models.py", line 578, in send_message
+    response = self.model.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/generativeai/generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/ai/generativelanguage_v1beta/services/generative_service/client.py", line 835, in generate_content
+    response = rpc(
+               ^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/gapic_v1/method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 147, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-11-23 09:15:24,125 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 09:15:24,126 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 09:15:24,142 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 09:15:24,145 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 09:15:24,146 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 09:15:24,149 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 09:15:24,152 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 09:15:24,152 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 09:15:33,656 - main - INFO - Retrieved 649 stations
+2025-11-23 09:15:33,744 - main - INFO - Retrieved 649 stations
+2025-11-23 09:15:54,575 - main - ERROR - Chat error: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Traceback (most recent call last):
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/main.py", line 524, in chat
+    response = chat_session.send_message(full_prompt)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/generativeai/generative_models.py", line 578, in send_message
+    response = self.model.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/generativeai/generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/ai/generativelanguage_v1beta/services/generative_service/client.py", line 835, in generate_content
+    response = rpc(
+               ^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/gapic_v1/method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 147, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-11-23 09:16:34,802 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 09:16:34,802 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 09:16:34,818 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 09:16:34,821 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 09:16:34,822 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 09:16:34,824 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 09:16:34,829 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 09:16:34,829 - main - INFO - ✅ Grid manager initialized successfully

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Bot, Send } from 'lucide-react';
+import axios from 'axios';
 
 const ChatBot = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -28,7 +29,7 @@ const ChatBot = () => {
         setIsOpen(!isOpen);
     };
 
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
         if (inputValue.trim() === '') return;
 
         const messageText = inputValue;
@@ -45,18 +46,45 @@ const ChatBot = () => {
             return [...prev, newMessage];
         });
 
-        // Bot response (placeholder for now)
-        setTimeout(() => {
+        // Call Gemini-powered backend
+        try {
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+            
+            // Get conversation history for context
+            const history = messages.map(msg => ({
+                text: msg.text,
+                sender: msg.sender
+            }));
+
+            const response = await axios.post(`${apiUrl}/chat`, {
+                message: messageText,
+                conversation_history: history,
+                grid_context: null // TODO: Pass grid check results when available
+            });
+
+            // Add bot response
             setMessages(prev => {
                 const botResponse = {
                     id: Date.now(),
-                    text: 'Thank you for your message. I\'m here to help you with the application process!',
+                    text: response.data.response,
                     sender: 'bot',
                     timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
                 };
                 return [...prev, botResponse];
             });
-        }, 500);
+        } catch (error) {
+            console.error('Chat error:', error);
+            // Add error message
+            setMessages(prev => {
+                const errorMessage = {
+                    id: Date.now(),
+                    text: 'Sorry, I encountered an error. Please try again.',
+                    sender: 'bot',
+                    timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+                };
+                return [...prev, errorMessage];
+            });
+        }
     };
 
     const handleKeyPress = (e) => {
