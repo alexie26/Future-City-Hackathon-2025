@@ -573,3 +573,268 @@ google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found fo
 2025-11-23 11:07:25,780 - main - INFO - ✅ Grid manager initialized successfully
 2025-11-23 11:12:57,209 - main - INFO - Retrieved 649 stations
 2025-11-23 11:12:57,278 - main - INFO - Retrieved 649 stations
+2025-11-23 11:20:56,815 - main - INFO - [1763889656.815649] Received request: lat=49.1498817, lon=9.2213255, kw=50.0, type=load
+2025-11-23 11:20:56,816 - main - INFO - [1763889656.815649] Requesting grid data from manager
+2025-11-23 11:20:57,304 - main - INFO - [1763889656.815649] Successfully processed request. Station: 01TS0709, Status: yellow
+2025-11-23 11:21:21,618 - main - INFO - [1763889681.618629] Received request: lat=49.1498817, lon=9.2213255, kw=30.0, type=load
+2025-11-23 11:21:21,619 - main - INFO - [1763889681.618629] Requesting grid data from manager
+2025-11-23 11:21:22,023 - main - INFO - [1763889681.618629] Successfully processed request. Station: 01TS0709, Status: green
+2025-11-23 11:22:23,239 - main - INFO - [1763889743.239001] Received request: lat=49.1498817, lon=9.2213255, kw=30.0, type=load
+2025-11-23 11:22:23,239 - main - INFO - [1763889743.239001] Requesting grid data from manager
+2025-11-23 11:22:23,503 - main - INFO - [1763889743.239001] Successfully processed request. Station: 01TS0709, Status: green
+2025-11-23 11:22:42,392 - main - INFO - [1763889762.392763] Received request: lat=49.1498817, lon=9.2213255, kw=60.0, type=load
+2025-11-23 11:22:42,393 - main - INFO - [1763889762.392763] Requesting grid data from manager
+2025-11-23 11:22:42,727 - main - INFO - [1763889762.392763] Successfully processed request. Station: 01TS0709, Status: yellow
+2025-11-23 11:23:05,652 - main - INFO - [1763889785.652709] Received request: lat=49.1498817, lon=9.2213255, kw=1000.0, type=load
+2025-11-23 11:23:05,653 - main - INFO - [1763889785.652709] Requesting grid data from manager
+2025-11-23 11:23:06,114 - grid_data - WARNING - UW UW_KETER not found for MV request
+2025-11-23 11:23:06,115 - main - INFO - [1763889785.652709] Successfully processed request. Station: UW_KETER, Status: red
+2025-11-23 11:33:40,527 - main - INFO - Retrieved 649 stations
+2025-11-23 11:33:40,720 - main - INFO - Retrieved 649 stations
+2025-11-23 11:36:06,626 - main - INFO - [1763890566.626377] Received request: lat=49.1411233, lon=9.218109, kw=20.0, type=load
+2025-11-23 11:36:06,626 - main - INFO - [1763890566.626377] Requesting grid data from manager
+2025-11-23 11:36:06,987 - main - INFO - [1763890566.626377] Successfully processed request. Station: 01TS0853, Status: green
+2025-11-23 11:37:52,062 - main - INFO - [1763890672.062909] Received request: lat=49.1411233, lon=9.218109, kw=200.0, type=load
+2025-11-23 11:37:52,063 - main - INFO - [1763890672.062909] Requesting grid data from manager
+2025-11-23 11:37:52,369 - grid_data - WARNING - UW UW_KETER not found for MV request
+2025-11-23 11:37:52,370 - main - INFO - [1763890672.062909] Successfully processed request. Station: UW_KETER, Status: red
+2025-11-23 11:37:59,611 - main - INFO - [1763890679.610969] Received request: lat=49.1411233, lon=9.218109, kw=20.0, type=load
+2025-11-23 11:37:59,611 - main - INFO - [1763890679.610969] Requesting grid data from manager
+2025-11-23 11:37:59,978 - main - INFO - [1763890679.610969] Successfully processed request. Station: 01TS0853, Status: green
+2025-11-23 11:39:40,473 - main - INFO - [1763890780.473722] Received request: lat=49.1411233, lon=9.218109, kw=200.0, type=load
+2025-11-23 11:39:40,474 - main - INFO - [1763890780.473722] Requesting grid data from manager
+2025-11-23 11:39:40,694 - grid_data - WARNING - UW UW_KETER not found for MV request
+2025-11-23 11:39:40,694 - main - INFO - [1763890780.473722] Successfully processed request. Station: UW_KETER, Status: red
+2025-11-23 11:39:47,161 - main - INFO - [1763890787.161394] Received request: lat=49.1411233, lon=9.218109, kw=20.0, type=load
+2025-11-23 11:39:47,161 - main - INFO - [1763890787.161394] Requesting grid data from manager
+2025-11-23 11:39:47,576 - main - INFO - [1763890787.161394] Successfully processed request. Station: 01TS0853, Status: green
+2025-11-23 11:40:00,127 - main - INFO - [1763890800.127722] Received request: lat=49.1411233, lon=9.218109, kw=200.0, type=load
+2025-11-23 11:40:00,128 - main - INFO - [1763890800.127722] Requesting grid data from manager
+2025-11-23 11:40:00,398 - grid_data - WARNING - UW UW_KETER not found for MV request
+2025-11-23 11:40:00,399 - main - INFO - [1763890800.127722] Successfully processed request. Station: UW_KETER, Status: red
+2025-11-23 11:40:06,516 - main - INFO - [1763890806.516396] Received request: lat=49.1411233, lon=9.218109, kw=20.0, type=load
+2025-11-23 11:40:06,516 - main - INFO - [1763890806.516396] Requesting grid data from manager
+2025-11-23 11:40:06,979 - main - INFO - [1763890806.516396] Successfully processed request. Station: 01TS0853, Status: green
+2025-11-23 11:41:36,675 - main - INFO - Retrieved 649 stations
+2025-11-23 11:41:36,854 - main - INFO - Retrieved 649 stations
+2025-11-23 11:44:25,906 - main - INFO - [1763891065.905917] Received request: lat=49.1450304, lon=9.2230835, kw=20.0, type=load
+2025-11-23 11:44:25,906 - main - INFO - [1763891065.905917] Requesting grid data from manager
+2025-11-23 11:44:26,335 - main - INFO - [1763891065.905917] Successfully processed request. Station: 01TS0015, Status: green
+2025-11-23 11:46:18,931 - main - INFO - [1763891178.931876] Received request: lat=49.142414, lon=9.2335097, kw=50.0, type=load
+2025-11-23 11:46:18,932 - main - INFO - [1763891178.931876] Requesting grid data from manager
+2025-11-23 11:46:19,508 - main - INFO - [1763891178.931876] Successfully processed request. Station: 01TS0215, Status: yellow
+2025-11-23 11:46:44,232 - main - INFO - [1763891204.232841] Received request: lat=49.142414, lon=9.2335097, kw=5.0, type=load
+2025-11-23 11:46:44,233 - main - INFO - [1763891204.232841] Requesting grid data from manager
+2025-11-23 11:46:44,534 - main - INFO - [1763891204.232841] Successfully processed request. Station: 01TS0215, Status: green
+2025-11-23 11:48:48,530 - main - INFO - [1763891328.530901] Received request: lat=49.142414, lon=9.2335097, kw=50.0, type=load
+2025-11-23 11:48:48,533 - main - INFO - [1763891328.530901] Requesting grid data from manager
+2025-11-23 11:48:48,955 - main - INFO - [1763891328.530901] Successfully processed request. Station: 01TS0215, Status: yellow
+2025-11-23 11:49:31,418 - main - INFO - Retrieved 649 stations
+2025-11-23 11:49:31,554 - main - INFO - Retrieved 649 stations
+2025-11-23 11:49:59,216 - main - INFO - [1763891399.216619] Received request: lat=49.142414, lon=9.2335097, kw=20.0, type=load
+2025-11-23 11:49:59,217 - main - INFO - [1763891399.216619] Requesting grid data from manager
+2025-11-23 11:49:59,771 - main - INFO - [1763891399.216619] Successfully processed request. Station: 01TS0215, Status: green
+2025-11-23 11:50:37,343 - main - INFO - Retrieved 649 stations
+2025-11-23 11:50:37,481 - main - INFO - Retrieved 649 stations
+2025-11-23 11:51:41,608 - main - INFO - [1763891501.608772] Received request: lat=49.1429644, lon=9.2257585, kw=20.0, type=load
+2025-11-23 11:51:41,612 - main - INFO - [1763891501.608772] Requesting grid data from manager
+2025-11-23 11:51:42,068 - main - INFO - [1763891501.608772] Successfully processed request. Station: 01TS0211, Status: green
+2025-11-23 11:51:59,535 - main - INFO - [1763891519.53495] Received request: lat=49.1429644, lon=9.2257585, kw=50.0, type=load
+2025-11-23 11:51:59,535 - main - INFO - [1763891519.53495] Requesting grid data from manager
+2025-11-23 11:51:59,875 - main - INFO - [1763891519.53495] Successfully processed request. Station: 01TS0211, Status: yellow
+2025-11-23 11:52:07,865 - main - INFO - [1763891527.865069] Received request: lat=49.1429644, lon=9.2257585, kw=600.0, type=load
+2025-11-23 11:52:07,865 - main - INFO - [1763891527.865069] Requesting grid data from manager
+2025-11-23 11:52:08,131 - grid_data - WARNING - UW UW_KETER not found for MV request
+2025-11-23 11:52:08,131 - main - INFO - [1763891527.865069] Successfully processed request. Station: UW_KETER, Status: red
+2025-11-23 11:52:28,752 - main - INFO - Retrieved 649 stations
+2025-11-23 11:52:28,897 - main - INFO - Retrieved 649 stations
+2025-11-23 11:55:30,793 - main - INFO - [1763891730.793792] Received request: lat=49.1429644, lon=9.2257585, kw=20.0, type=load
+2025-11-23 11:55:30,796 - main - INFO - [1763891730.793792] Requesting grid data from manager
+2025-11-23 11:55:31,247 - main - INFO - [1763891730.793792] Successfully processed request. Station: 01TS0211, Status: green
+2025-11-23 11:55:45,442 - main - INFO - [1763891745.442845] Received request: lat=49.1429644, lon=9.2257585, kw=50.0, type=load
+2025-11-23 11:55:45,445 - main - INFO - [1763891745.442845] Requesting grid data from manager
+2025-11-23 11:55:45,805 - main - INFO - [1763891745.442845] Successfully processed request. Station: 01TS0211, Status: yellow
+2025-11-23 11:55:56,979 - main - INFO - Retrieved 649 stations
+2025-11-23 11:55:57,083 - main - INFO - Retrieved 649 stations
+2025-11-23 11:56:34,518 - main - INFO - [1763891794.518323] Received request: lat=49.1429644, lon=9.2257585, kw=600.0, type=load
+2025-11-23 11:56:34,520 - main - INFO - [1763891794.518323] Requesting grid data from manager
+2025-11-23 11:56:34,891 - grid_data - WARNING - UW UW_KETER not found for MV request
+2025-11-23 11:56:34,892 - main - INFO - [1763891794.518323] Successfully processed request. Station: UW_KETER, Status: red
+2025-11-23 11:56:53,729 - main - INFO - [1763891813.729473] Received request: lat=49.1429644, lon=9.2257585, kw=50.0, type=load
+2025-11-23 11:56:53,730 - main - INFO - [1763891813.729473] Requesting grid data from manager
+2025-11-23 11:56:54,175 - main - INFO - [1763891813.729473] Successfully processed request. Station: 01TS0211, Status: yellow
+2025-11-23 11:57:08,177 - main - INFO - [1763891828.177381] Received request: lat=49.1429644, lon=9.2257585, kw=20.0, type=load
+2025-11-23 11:57:08,178 - main - INFO - [1763891828.177381] Requesting grid data from manager
+2025-11-23 11:57:08,696 - main - INFO - [1763891828.177381] Successfully processed request. Station: 01TS0211, Status: green
+2025-11-23 11:58:17,168 - main - INFO - Retrieved 649 stations
+2025-11-23 11:58:17,348 - main - INFO - Retrieved 649 stations
+2025-11-23 11:58:39,998 - main - INFO - [1763891919.998673] Received request: lat=49.1429644, lon=9.2257585, kw=20.0, type=load
+2025-11-23 11:58:39,999 - main - INFO - [1763891919.998673] Requesting grid data from manager
+2025-11-23 11:58:40,219 - main - INFO - [1763891919.998673] Successfully processed request. Station: 01TS0211, Status: green
+2025-11-23 11:58:49,261 - main - INFO - Retrieved 649 stations
+2025-11-23 11:58:49,480 - main - INFO - Retrieved 649 stations
+2025-11-23 11:59:29,848 - main - INFO - [1763891969.848678] Received request: lat=49.1429644, lon=9.2257585, kw=20.0, type=load
+2025-11-23 11:59:29,848 - main - INFO - [1763891969.848678] Requesting grid data from manager
+2025-11-23 11:59:30,298 - main - INFO - [1763891969.848678] Successfully processed request. Station: 01TS0211, Status: green
+2025-11-23 11:59:52,669 - main - ERROR - Chat error: 403 Your API key was reported as leaked. Please use another API key.
+Traceback (most recent call last):
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/main.py", line 524, in chat
+    response = chat_session.send_message(full_prompt)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/generativeai/generative_models.py", line 578, in send_message
+    response = self.model.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/generativeai/generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/ai/generativelanguage_v1beta/services/generative_service/client.py", line 835, in generate_content
+    response = rpc(
+               ^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/gapic_v1/method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 147, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.PermissionDenied: 403 Your API key was reported as leaked. Please use another API key.
+2025-11-23 12:00:00,263 - main - INFO - Retrieved 649 stations
+2025-11-23 12:00:00,430 - main - INFO - Retrieved 649 stations
+2025-11-23 12:00:33,801 - main - INFO - [1763892033.801816] Received request: lat=49.1429644, lon=9.2257585, kw=20.0, type=load
+2025-11-23 12:00:33,802 - main - INFO - [1763892033.801816] Requesting grid data from manager
+2025-11-23 12:00:34,032 - main - INFO - [1763892033.801816] Successfully processed request. Station: 01TS0211, Status: green
+2025-11-23 12:00:59,017 - main - ERROR - Chat error: 403 Your API key was reported as leaked. Please use another API key.
+Traceback (most recent call last):
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/main.py", line 524, in chat
+    response = chat_session.send_message(full_prompt)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/generativeai/generative_models.py", line 578, in send_message
+    response = self.model.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/generativeai/generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/ai/generativelanguage_v1beta/services/generative_service/client.py", line 835, in generate_content
+    response = rpc(
+               ^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/gapic_v1/method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 147, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.PermissionDenied: 403 Your API key was reported as leaked. Please use another API key.
+2025-11-23 12:01:14,939 - main - ERROR - Chat error: 403 Your API key was reported as leaked. Please use another API key.
+Traceback (most recent call last):
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/main.py", line 524, in chat
+    response = chat_session.send_message(full_prompt)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/generativeai/generative_models.py", line 578, in send_message
+    response = self.model.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/generativeai/generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/ai/generativelanguage_v1beta/services/generative_service/client.py", line 835, in generate_content
+    response = rpc(
+               ^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/gapic_v1/method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 147, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ali/.gemini/antigravity/scratch/electrify_heilbronn/venv/lib/python3.12/site-packages/google/api_core/grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.PermissionDenied: 403 Your API key was reported as leaked. Please use another API key.
+2025-11-23 12:08:41,271 - main - INFO - [1763892521.271514] Received request: lat=49.1429644, lon=9.2257585, kw=50.0, type=load
+2025-11-23 12:08:41,272 - main - INFO - [1763892521.271514] Requesting grid data from manager
+2025-11-23 12:08:41,719 - main - INFO - [1763892521.271514] Successfully processed request. Station: 01TS0211, Status: yellow
+2025-11-23 12:08:58,310 - main - INFO - [1763892538.310261] Received request: lat=49.1429644, lon=9.2257585, kw=500.0, type=load
+2025-11-23 12:08:58,310 - main - INFO - [1763892538.310261] Requesting grid data from manager
+2025-11-23 12:08:58,767 - grid_data - WARNING - UW UW_KETER not found for MV request
+2025-11-23 12:08:58,767 - main - INFO - [1763892538.310261] Successfully processed request. Station: UW_KETER, Status: red
+2025-11-23 12:38:58,836 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 12:38:58,836 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 12:38:58,858 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 12:38:58,863 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 12:38:58,865 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 12:38:58,869 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 12:38:58,875 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 12:38:58,875 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 12:39:07,251 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 12:39:07,252 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 12:39:07,272 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 12:39:07,277 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 12:39:07,279 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 12:39:07,285 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 12:39:07,291 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 12:39:07,292 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 12:39:22,069 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 12:39:22,070 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 12:39:22,090 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 12:39:22,095 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 12:39:22,096 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 12:39:22,101 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 12:39:22,107 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 12:39:22,107 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 12:39:37,842 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 12:39:37,843 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 12:39:37,866 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 12:39:37,871 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 12:39:37,872 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 12:39:37,878 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 12:39:37,887 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 12:39:37,888 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 12:41:13,015 - main - INFO - Retrieved 649 stations
+2025-11-23 12:41:13,103 - main - INFO - Retrieved 649 stations
+2025-11-23 12:42:13,296 - main - INFO - [1763894533.296408] Received request: lat=49.1423735, lon=9.2225257, kw=20.0, type=load
+2025-11-23 12:42:13,296 - main - INFO - [1763894533.296408] Requesting grid data from manager
+2025-11-23 12:42:13,509 - main - INFO - [1763894533.296408] Successfully processed request. Station: 01TS0210, Status: green
+2025-11-23 12:42:13,509 - main - INFO - [1763894533.296408] Demand tracking: (49.142, 9.223) now has 1 checks
+2025-11-23 12:43:01,983 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 12:43:01,983 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 12:43:02,019 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 12:43:02,023 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 12:43:02,024 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 12:43:02,027 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 12:43:02,031 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 12:43:02,031 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 12:43:08,339 - main - INFO - Retrieved 649 stations
+2025-11-23 12:43:08,421 - main - INFO - Retrieved 649 stations

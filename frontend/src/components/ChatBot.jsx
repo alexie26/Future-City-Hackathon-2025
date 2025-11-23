@@ -21,13 +21,16 @@ const ChatBot = ({ result, onApply }) => {
             switch (result.status) {
                 case 'green':
                     const greenText = result.connection_type === 'feed_in' 
-                        ? `Hi! 🎉 Great news! Your ${result.kw_requested}kW **solar feed-in** connection is **feasible**! The grid has sufficient capacity to accept your renewable energy. Your application can be processed quickly!\n\n**Next Step:** Submit your application to start feeding clean energy into the grid!`
-                        : `Hi! 🎉 Great news! Your ${result.kw_requested}kW **power connection** is **feasible**! The grid has sufficient capacity for your consumption needs. Your application can be processed quickly!\n\n**Next Step:** I recommend submitting your application now to reserve your spot!`;
+                        ? `Hi! 🎉 Great news! Your ${result.kw_requested}kW **solar feed-in** connection is **feasible**! The grid has sufficient capacity to accept your renewable energy. Your application can be processed quickly!\n\n**Next Steps:** You can submit your application or check out green suggestions to maximize your environmental impact!`
+                        : `Hi! 🎉 Great news! Your ${result.kw_requested}kW **power connection** is **feasible**! The grid has sufficient capacity for your consumption needs. Your application can be processed quickly!\n\n**Next Steps:** You can submit your application or check out green suggestions to maximize your environmental impact!`;
                     return {
                         ...baseGreeting,
                         text: greenText,
                         type: 'text',
-                        buttons: [{ label: 'Apply Now', action: 'apply', icon: CheckCircle }]
+                        buttons: [
+                            { label: 'Apply Now', action: 'apply', icon: CheckCircle },
+                            { label: 'Green Suggestions', action: 'show-suggestions', icon: Sparkles }
+                        ]
                     };
                 
                 case 'yellow':
@@ -72,11 +75,16 @@ const ChatBot = ({ result, onApply }) => {
 
     const handleButtonClick = (action, messageId) => {
         if (action === 'apply') {
-            // Remove buttons and add confirmation in single update
+            // Remove clicked button and add confirmation + show other button
             setMessages(prev => {
-                const updated = prev.map(msg => 
-                    msg.id === messageId ? { ...msg, buttons: undefined } : msg
-                );
+                const updated = prev.map(msg => {
+                    if (msg.id === messageId) {
+                        // Remove the Apply button, keep Green Suggestions if it exists
+                        const remainingButtons = msg.buttons?.filter(btn => btn.action !== 'apply');
+                        return { ...msg, buttons: remainingButtons?.length > 0 ? remainingButtons : undefined };
+                    }
+                    return msg;
+                });
                 return [...updated, {
                     id: Date.now(),
                     text: '✅ Opening application form for you!',
@@ -144,6 +152,31 @@ const ChatBot = ({ result, onApply }) => {
                     timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
                 }];
             });
+        } else if (action === 'show-suggestions') {
+            // Show green recommendations and keep Apply button
+            if (result.recommendations && result.recommendations.length > 0) {
+                const recsText = result.recommendations.map((rec, idx) => 
+                    `${idx + 1}. **${rec.title}**\n   ${rec.description}${rec.savings ? `\n   💰 Savings: ${rec.savings}` : ''}`
+                ).join('\n\n');
+
+                setMessages(prev => {
+                    const updated = prev.map(msg => {
+                        if (msg.id === messageId) {
+                            // Remove the Green Suggestions button, keep Apply button if it exists
+                            const remainingButtons = msg.buttons?.filter(btn => btn.action !== 'show-suggestions');
+                            return { ...msg, buttons: remainingButtons?.length > 0 ? remainingButtons : undefined };
+                        }
+                        return msg;
+                    });
+                    return [...updated, {
+                        id: Date.now(),
+                        text: `🌱 **Green Suggestions to Maximize Your Environmental Impact:**\n\n${recsText}\n\nThese are optional ways to make your connection more sustainable!`,
+                        sender: 'bot',
+                        type: 'text',
+                        timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+                    }];
+                });
+            }
         }
     };
 
