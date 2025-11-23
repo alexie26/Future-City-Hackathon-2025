@@ -20,24 +20,33 @@ const ChatBot = ({ result, onApply }) => {
 
             switch (result.status) {
                 case 'green':
+                    const greenText = result.connection_type === 'feed_in' 
+                        ? `Hi! 🎉 Great news! Your ${result.kw_requested}kW **solar feed-in** connection is **feasible**! The grid has sufficient capacity to accept your renewable energy. Your application can be processed quickly!\n\n**Next Step:** Submit your application to start feeding clean energy into the grid!`
+                        : `Hi! 🎉 Great news! Your ${result.kw_requested}kW **power connection** is **feasible**! The grid has sufficient capacity for your consumption needs. Your application can be processed quickly!\n\n**Next Step:** I recommend submitting your application now to reserve your spot!`;
                     return {
                         ...baseGreeting,
-                        text: `Hi! 🎉 Great news! Your grid connection for ${result.kw_requested}kW is **feasible**. The capacity is available and your application can be processed quickly!\n\n**Next Step:** I recommend submitting your application now to reserve your spot!`,
+                        text: greenText,
                         type: 'text',
                         buttons: [{ label: 'Apply Now', action: 'apply', icon: CheckCircle }]
                     };
                 
                 case 'yellow':
+                    const yellowText = result.connection_type === 'feed_in'
+                        ? `Hello! ⚠️ Your ${result.kw_requested}kW **solar feed-in** request requires a **detailed review**. The grid has limited capacity to accept additional renewable generation. Expected timeline: ${result.timeline || '2-4 weeks'}. Our team will evaluate grid reinforcement options.`
+                        : `Hello! ⚠️ Your ${result.kw_requested}kW **power consumption** request requires a **detailed review**. The grid has limited capacity. Expected timeline: ${result.timeline || '2-4 weeks'}. I recommend submitting an application so our team can evaluate your specific case.`;
                     return {
                         ...baseGreeting,
-                        text: `Hello! ⚠️ Your request for ${result.kw_requested}kW requires a **detailed review**. The grid has limited capacity. Expected timeline: ${result.timeline || '2-4 weeks'}. I recommend submitting an application so our team can evaluate your specific case.`,
+                        text: yellowText,
                         type: 'text'
                     };
                 
                 case 'red':
+                    const redText = result.connection_type === 'feed_in'
+                        ? `Hi there. ⛔ Unfortunately, the grid cannot currently accept ${result.kw_requested}kW of **solar feed-in**. The local grid is at capacity for renewable generation. **Grid expansion** would be needed, which typically takes ${result.timeline || '6-12 months'}. However, there may be alternative solutions!\n\nWould you like me to show you some better alternatives?`
+                        : `Hi there. ⛔ Unfortunately, the grid doesn't have sufficient capacity for ${result.kw_requested}kW of **power consumption**. **Grid expansion** would be needed, which typically takes ${result.timeline || '6-12 months'}. However, there may be alternative solutions!\n\nWould you like me to show you some better alternatives?`;
                     return {
                         ...baseGreeting,
-                        text: `Hi there. ⛔ Unfortunately, the grid doesn't have sufficient capacity for ${result.kw_requested}kW. **Grid expansion** would be needed, which typically takes ${result.timeline || '6-12 months'}. However, there may be alternative solutions!\n\nWould you like me to show you some better alternatives?`,
+                        text: redText,
                         type: 'text',
                         buttons: [{ label: 'Yes, Show Alternatives', action: 'show-alternatives', icon: Sparkles }]
                     };
@@ -52,21 +61,6 @@ const ChatBot = ({ result, onApply }) => {
         };
 
         const initialMessages = [getInitialGreeting()];
-
-        // Add green recommendations if available
-        if (result.recommendations && result.recommendations.length > 0) {
-            const recsText = result.recommendations.map((rec, idx) => 
-                `${idx + 1}. **${rec.title}**\n   ${rec.description}${rec.savings ? `\n   💰 Savings: ${rec.savings}` : ''}`
-            ).join('\n\n');
-
-            initialMessages.push({
-                id: Date.now() + 1,
-                text: `🌱 **Personalized Green Recommendations:**\n\n${recsText}`,
-                sender: 'bot',
-                type: 'text',
-                timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
-            });
-        }
 
         setMessages(initialMessages);
     }, [result]);
@@ -120,13 +114,22 @@ const ChatBot = ({ result, onApply }) => {
                 }];
             });
         } else if (action === 'alternatives' || action === 'show-alternatives') {
-            const altMessage = `🔄 **Better Alternative Solutions:**\n\n` +
-                `1. **Reduce Power Demand:** Scale down to ${Math.floor(result.remaining_safe * 0.8)}kW to fit within available capacity\n` +
-                `2. **Different Location:** Try nearby addresses with better grid availability\n` +
-                `3. **Phased Installation:** Start with ${Math.floor(result.remaining_safe * 0.8)}kW now, expand when grid upgrades\n` +
-                `4. **Energy Storage:** Add battery storage to reduce peak grid demand\n` +
-                `5. **Time-of-Use Planning:** Schedule high loads during off-peak hours\n\n` +
-                `💡 I'm here to answer any questions you have about these alternatives! Just type your question below.`;
+            const isFeedIn = result.connection_type === 'feed_in';
+            const altMessage = isFeedIn
+                ? `🔄 **Better Alternative Solutions for Solar Feed-In:**\n\n` +
+                  `1. **Reduce System Size:** Scale down to ${Math.floor(result.remaining_safe * 0.8)}kW solar installation to fit available grid capacity\n` +
+                  `2. **Battery Storage:** Install battery storage to store excess energy instead of feeding into grid\n` +
+                  `3. **Different Location:** Check nearby addresses with better grid capacity for feed-in\n` +
+                  `4. **Self-Consumption Focus:** Maximize on-site consumption (EV charging, heat pumps) to reduce feed-in\n` +
+                  `5. **Phased Installation:** Start with ${Math.floor(result.remaining_safe * 0.8)}kW now, expand when grid upgrades\n\n` +
+                  `💡 I'm here to answer any questions about these solar alternatives! Just type your question below.`
+                : `🔄 **Better Alternative Solutions for Power Consumption:**\n\n` +
+                  `1. **Reduce Power Demand:** Scale down to ${Math.floor(result.remaining_safe * 0.8)}kW to fit within available capacity\n` +
+                  `2. **Different Location:** Try nearby addresses with better grid availability\n` +
+                  `3. **Phased Installation:** Start with ${Math.floor(result.remaining_safe * 0.8)}kW now, expand when grid upgrades\n` +
+                  `4. **Energy Storage:** Add battery storage to reduce peak grid demand\n` +
+                  `5. **Time-of-Use Planning:** Schedule high loads during off-peak hours\n\n` +
+                  `💡 I'm here to answer any questions you have about these alternatives! Just type your question below.`;
             
             // Remove buttons and add alternatives in single update
             setMessages(prev => {
@@ -197,6 +200,31 @@ const ChatBot = ({ result, onApply }) => {
                 type: 'text',
                 timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
             }]);
+            return;
+        }
+
+        if (lowerMessage.includes('recommend') || lowerMessage.includes('green') || lowerMessage.includes('eco') || lowerMessage.includes('suggestion')) {
+            if (result.recommendations && result.recommendations.length > 0) {
+                const recsText = result.recommendations.map((rec, idx) => 
+                    `${idx + 1}. **${rec.title}**\n   ${rec.description}${rec.savings ? `\n   💰 Savings: ${rec.savings}` : ''}`
+                ).join('\n\n');
+
+                setMessages(prev => [...prev, {
+                    id: Date.now(),
+                    text: `🌱 **Personalized Green Recommendations:**\n\n${recsText}`,
+                    sender: 'bot',
+                    type: 'text',
+                    timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+                }]);
+            } else {
+                setMessages(prev => [...prev, {
+                    id: Date.now(),
+                    text: `I don't have specific green recommendations for your current request, but I can help with other aspects of your grid connection!`,
+                    sender: 'bot',
+                    type: 'text',
+                    timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+                }]);
+            }
             return;
         }
 

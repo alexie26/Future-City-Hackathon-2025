@@ -535,3 +535,31 @@ google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found fo
 2025-11-23 10:49:15,196 - main - INFO - [1763887755.19642] Requesting grid data from manager
 2025-11-23 10:49:15,348 - grid_data - WARNING - UW UW_KETER not found for MV request
 2025-11-23 10:49:15,348 - main - INFO - [1763887755.19642] Successfully processed request. Station: UW_KETER, Status: red
+2025-11-23 10:54:14,724 - main - INFO - Retrieved 649 stations
+2025-11-23 10:54:14,818 - main - INFO - Retrieved 649 stations
+2025-11-23 10:55:00,871 - main - INFO - [1763888100.87167] Received request: lat=49.1450304, lon=9.2230835, kw=20.0, type=load
+2025-11-23 10:55:00,872 - main - INFO - [1763888100.87167] Requesting grid data from manager
+2025-11-23 10:55:01,134 - main - INFO - [1763888100.87167] Successfully processed request. Station: 01TS0015, Status: green
+2025-11-23 10:59:39,588 - main - INFO - [1763888379.5884] Received request: lat=49.1450304, lon=9.2230835, kw=20.0, type=feed_in
+2025-11-23 10:59:39,588 - main - INFO - [1763888379.5884] Requesting grid data from manager
+2025-11-23 10:59:39,755 - main - INFO - [1763888379.5884] Successfully processed request. Station: 01TS0015, Status: green
+2025-11-23 11:00:23,927 - main - INFO - Retrieved 649 stations
+2025-11-23 11:00:23,998 - main - INFO - Retrieved 649 stations
+2025-11-23 11:01:04,997 - main - INFO - Retrieved 649 stations
+2025-11-23 11:01:05,069 - main - INFO - Retrieved 649 stations
+2025-11-23 11:03:26,238 - main - INFO - [1763888606.238033] Received request: lat=49.1423735, lon=9.2225257, kw=2000.0, type=load
+2025-11-23 11:03:26,238 - main - INFO - [1763888606.238033] Requesting grid data from manager
+2025-11-23 11:03:26,416 - grid_data - WARNING - UW UW_KETER not found for MV request
+2025-11-23 11:03:26,417 - main - INFO - [1763888606.238033] Successfully processed request. Station: UW_KETER, Status: red
+2025-11-23 11:03:42,124 - main - INFO - [1763888622.124451] Received request: lat=49.1423735, lon=9.2225257, kw=20.0, type=load
+2025-11-23 11:03:42,125 - main - INFO - [1763888622.124451] Requesting grid data from manager
+2025-11-23 11:03:42,284 - main - INFO - [1763888622.124451] Successfully processed request. Station: 01TS0210, Status: green
+2025-11-23 11:03:56,399 - main - INFO - Retrieved 649 stations
+2025-11-23 11:03:56,477 - main - INFO - Retrieved 649 stations
+2025-11-23 11:04:03,918 - main - INFO - [1763888643.918602] Received request: lat=49.1423735, lon=9.2225257, kw=20.0, type=load
+2025-11-23 11:04:03,919 - main - INFO - [1763888643.918602] Requesting grid data from manager
+2025-11-23 11:04:04,103 - main - INFO - [1763888643.918602] Successfully processed request. Station: 01TS0210, Status: green
+2025-11-23 11:06:03,110 - main - INFO - [1763888763.110826] Received request: lat=49.1423735, lon=9.2225257, kw=2000.0, type=load
+2025-11-23 11:06:03,111 - main - INFO - [1763888763.110826] Requesting grid data from manager
+2025-11-23 11:06:03,379 - grid_data - WARNING - UW UW_KETER not found for MV request
+2025-11-23 11:06:03,380 - main - INFO - [1763888763.110826] Successfully processed request. Station: UW_KETER, Status: red

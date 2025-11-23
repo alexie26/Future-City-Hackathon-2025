@@ -69,17 +69,6 @@ const ResultCard = ({ result, onApply }) => {
                 </div>
             </div>
 
-            {/* Apply Button - Hide for red status */}
-            {result.status !== 'red' && result.status !== 'not_feasible' && (
-                <button
-                    onClick={onApply}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2"
-                >
-                    Apply for Connection
-                    <ArrowRightCircle className="w-5 h-5" />
-                </button>
-            )}
-
             {/* Eco Score */}
             {result.eco_score !== undefined && (
                 <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4">
