@@ -21,11 +21,16 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
     const [showBot, setShowBot] = useState(true);
     const searchTimeout = useRef(null);
     const suggestionsRef = useRef(null);
+    const resultRef = useRef(null);
 
-    // Auto-expand when result arrives
+    // Auto-expand and scroll when result arrives
     useEffect(() => {
         if (result) {
             setExpanded(true);
+            // Smooth scroll to results after a brief delay to ensure DOM is updated
+            setTimeout(() => {
+                resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
         }
     }, [result]);
 
@@ -162,7 +167,9 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
                     )}
 
                     {result && !loading && !error && (
-                        <ResultCard result={result} onApply={handleApply} lang={lang} />
+                        <div ref={resultRef}>
+                            <ResultCard result={result} onApply={handleApply} lang={lang} />
+                        </div>
                     )}
 
                     {/* ChatBot Assistant - appears after results */}
