@@ -7,7 +7,7 @@ import ResultCard from './ResultCard';
 import ApplicationModal from './ApplicationModal';
 import ChatBot from './ChatBot';
 
-const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, insightsLoading, insightsError, onLoadInsights }) => {
+const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, insightsLoading, insightsError, onLoadInsights, lang = 'en', onToggleLang }) => {
     const [address, setAddress] = useState('');
     const [kw, setKw] = useState('');
     const [type, setType] = useState('load'); // 'load' or 'feed_in'
@@ -137,10 +137,10 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
     return (
         <>
             <div className="absolute top-0 left-0 w-96 max-h-screen overflow-y-auto bg-white shadow-2xl z-[5000] rounded-r-2xl">
-                <Hero />
+                <Hero lang={lang} onToggleLang={onToggleLang} />
 
                 <div className="p-6 space-y-6">
-                    <InputCard onCheck={onCheck} />
+                    <InputCard onCheck={onCheck} lang={lang} />
 
                     {loading && (
                         <div className="flex items-center justify-center p-8">
@@ -160,7 +160,7 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
                     )}
 
                     {result && !loading && !error && (
-                        <ResultCard result={result} onApply={handleApply} />
+                        <ResultCard result={result} onApply={handleApply} lang={lang} />
                     )}
 
                     {/* ChatBot Assistant - appears after results */}
@@ -173,7 +173,9 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
                             >
                                 <div className="flex items-center gap-2">
                                     <MessageCircle className="w-5 h-5 text-blue-600" />
-                                    <span className="font-semibold text-gray-800">💬 Chat with AI Assistant</span>
+                                    <span className="font-semibold text-gray-800">
+                                        {lang === 'de' ? '💬 Mit KI-Assistent chatten' : '💬 Chat with AI Assistant'}
+                                    </span>
                                 </div>
                                 {showBot ? (
                                     <ChevronUp className="w-5 h-5 text-gray-600" />

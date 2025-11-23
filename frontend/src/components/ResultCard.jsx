@@ -2,7 +2,7 @@ import React from 'react';
 import { CheckCircle, XCircle, AlertCircle, Leaf, Clock, ArrowRightCircle, Zap } from 'lucide-react';
 import RecommendationCard from './RecommendationCard';
 
-const ResultCard = ({ result, onApply }) => {
+const ResultCard = ({ result, onApply, lang = 'en' }) => {
     const statusConfig = {
         green: {
             icon: CheckCircle,

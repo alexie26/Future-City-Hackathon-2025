@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Layers, ChevronDown, ChevronUp } from 'lucide-react';
 
-const LayersMenu = ({ activeLayers = [], onLayerChange }) => {
+const LayersMenu = ({ activeLayers = [], onLayerChange, lang = 'en' }) => {
     const [isExpanded, setIsExpanded] = useState(true);
 
     const layers = [
-        { id: 'voltage-regions', label: 'Voltage Regions' },
-        { id: 'stations', label: 'Grid Stations' }
+        { id: 'voltage-regions', label: lang === 'de' ? 'Spannungsregionen' : 'Voltage Regions' },
+        { id: 'stations', label: lang === 'de' ? 'Netzstationen' : 'Grid Stations' }
     ];
 
     return (

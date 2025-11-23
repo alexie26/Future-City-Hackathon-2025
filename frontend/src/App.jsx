@@ -40,6 +40,10 @@ const App = () => {
 
   const [lang, setLang] = useState('en');
 
+  const toggleLang = () => {
+    setLang(prev => prev === 'en' ? 'de' : 'en');
+  };
+
   const [insights, setInsights] = useState(null);
   const [insightsLoading, setInsightsLoading] = useState(false);
   const [insightsError, setInsightsError] = useState(null);
@@ -279,6 +283,7 @@ const App = () => {
           stationLocation={stationLocation}
           allStations={allStations}
           activeLayers={activeLayers}
+          lang={lang}
         />
       </div>
       {/* Overlay Menu (Left) */}

@@ -30,7 +30,7 @@ function ChangeView({ center, zoom }) {
 // Default center (Heilbronn)
 const defaultCenter = [49.1427, 9.2109];
 
-const MapView = ({ userLocation, stationLocation, allStations = [], activeLayers = [] }) => {
+const MapView = ({ userLocation, stationLocation, allStations = [], activeLayers = [], lang = 'en' }) => {
     const center = userLocation || defaultCenter;
     const zoom = userLocation ? 15 : 13;
 
@@ -45,7 +45,7 @@ const MapView = ({ userLocation, stationLocation, allStations = [], activeLayers
             // Filter out duplicate coordinates to prevent Voronoi errors
             const seen = new Set();
             const uniqueStations = allStations.filter(s => {
-                if (!s || !s.lat || !s.lon || !s.remaining_capacity) {
+                if (!s || typeof s.lat !== 'number' || typeof s.lon !== 'number' || typeof s.remaining_capacity !== 'number') {
                     console.warn("Invalid station data:", s);
                     return false;
                 }
