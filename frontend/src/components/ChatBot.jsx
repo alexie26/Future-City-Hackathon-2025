@@ -22,8 +22,9 @@ const ChatBot = ({ result, onApply }) => {
                 case 'green':
                     return {
                         ...baseGreeting,
-                        text: `Hi! 🎉 Great news! Your grid connection for ${result.kw_requested}kW is **feasible**. The capacity is available and your application can be processed quickly!`,
-                        type: 'text'
+                        text: `Hi! 🎉 Great news! Your grid connection for ${result.kw_requested}kW is **feasible**. The capacity is available and your application can be processed quickly!\n\n**Next Step:** I recommend submitting your application now to reserve your spot!`,
+                        type: 'text',
+                        buttons: [{ label: 'Apply Now', action: 'apply', icon: CheckCircle }]
                     };
                 
                 case 'yellow':
@@ -36,8 +37,9 @@ const ChatBot = ({ result, onApply }) => {
                 case 'red':
                     return {
                         ...baseGreeting,
-                        text: `Hi there. ⛔ Unfortunately, the grid doesn't have sufficient capacity for ${result.kw_requested}kW. **Grid expansion** would be needed, which typically takes ${result.timeline || '6-12 months'}. However, there may be alternative solutions!`,
-                        type: 'text'
+                        text: `Hi there. ⛔ Unfortunately, the grid doesn't have sufficient capacity for ${result.kw_requested}kW. **Grid expansion** would be needed, which typically takes ${result.timeline || '6-12 months'}. However, there may be alternative solutions!\n\nWould you like me to show you some better alternatives?`,
+                        type: 'text',
+                        buttons: [{ label: 'Yes, Show Alternatives', action: 'show-alternatives', icon: Sparkles }]
                     };
                 
                 default:
@@ -117,13 +119,14 @@ const ChatBot = ({ result, onApply }) => {
                     timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
                 }];
             });
-        } else if (action === 'alternatives') {
-            const altMessage = `🔄 **Alternative Options:**\n\n` +
-                `1. **Reduce Power:** Consider scaling down your installation to fit available capacity\n` +
-                `2. **Different Location:** Check nearby addresses with better grid capacity\n` +
-                `3. **Phased Installation:** Start with partial capacity now, expand later\n` +
-                `4. **Grid Expansion:** Apply for connection and participate in grid upgrade costs\n\n` +
-                `Would you like to submit an application to discuss these options with our team?`;
+        } else if (action === 'alternatives' || action === 'show-alternatives') {
+            const altMessage = `🔄 **Better Alternative Solutions:**\n\n` +
+                `1. **Reduce Power Demand:** Scale down to ${Math.floor(result.remaining_safe * 0.8)}kW to fit within available capacity\n` +
+                `2. **Different Location:** Try nearby addresses with better grid availability\n` +
+                `3. **Phased Installation:** Start with ${Math.floor(result.remaining_safe * 0.8)}kW now, expand when grid upgrades\n` +
+                `4. **Energy Storage:** Add battery storage to reduce peak grid demand\n` +
+                `5. **Time-of-Use Planning:** Schedule high loads during off-peak hours\n\n` +
+                `💡 I'm here to answer any questions you have about these alternatives! Just type your question below.`;
             
             // Remove buttons and add alternatives in single update
             setMessages(prev => {
@@ -135,7 +138,6 @@ const ChatBot = ({ result, onApply }) => {
                     text: altMessage,
                     sender: 'bot',
                     type: 'text',
-                    buttons: [{ label: 'Yes, Apply Now', action: 'apply', icon: CheckCircle }],
                     timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
                 }];
             });

@@ -504,3 +504,34 @@ google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found fo
 2025-11-23 10:17:08,482 - main - INFO - [1763885828.482834] Received request: lat=49.1423735, lon=9.2225257, kw=20.0, type=load
 2025-11-23 10:17:08,483 - main - INFO - [1763885828.482834] Requesting grid data from manager
 2025-11-23 10:17:08,611 - main - INFO - [1763885828.482834] Successfully processed request. Station: 01TS0210, Status: green
+2025-11-23 10:36:30,912 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 10:36:30,913 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 10:36:30,930 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 10:36:30,934 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 10:36:30,935 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 10:36:30,938 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 10:36:30,942 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 10:36:30,942 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 10:36:31,002 - main - INFO - Retrieved 649 stations
+2025-11-23 10:36:31,133 - main - INFO - Retrieved 649 stations
+2025-11-23 10:39:07,482 - main - INFO - [1763887147.482028] Received request: lat=49.1423767, lon=9.2223934, kw=20.0, type=load
+2025-11-23 10:39:07,482 - main - INFO - [1763887147.482028] Requesting grid data from manager
+2025-11-23 10:39:07,669 - main - INFO - [1763887147.482028] Successfully processed request. Station: 01TS0210, Status: green
+2025-11-23 10:43:59,188 - main - INFO - Retrieved 649 stations
+2025-11-23 10:43:59,265 - main - INFO - Retrieved 649 stations
+2025-11-23 10:44:08,735 - main - INFO - [1763887448.735731] Received request: lat=49.1423767, lon=9.2223934, kw=20.0, type=load
+2025-11-23 10:44:08,736 - main - INFO - [1763887448.735731] Requesting grid data from manager
+2025-11-23 10:44:08,901 - main - INFO - [1763887448.735731] Successfully processed request. Station: 01TS0210, Status: green
+2025-11-23 10:44:34,781 - main - INFO - [1763887474.781845] Received request: lat=49.1423767, lon=9.2223934, kw=2099.0, type=load
+2025-11-23 10:44:34,782 - main - INFO - [1763887474.781845] Requesting grid data from manager
+2025-11-23 10:44:34,965 - grid_data - WARNING - UW UW_KETER not found for MV request
+2025-11-23 10:44:34,966 - main - INFO - [1763887474.781845] Successfully processed request. Station: UW_KETER, Status: red
+2025-11-23 10:48:57,116 - main - INFO - Retrieved 649 stations
+2025-11-23 10:48:57,194 - main - INFO - Retrieved 649 stations
+2025-11-23 10:49:06,812 - main - INFO - [1763887746.812168] Received request: lat=49.1450304, lon=9.2230835, kw=20.0, type=load
+2025-11-23 10:49:06,812 - main - INFO - [1763887746.812168] Requesting grid data from manager
+2025-11-23 10:49:07,029 - main - INFO - [1763887746.812168] Successfully processed request. Station: 01TS0015, Status: green
+2025-11-23 10:49:15,196 - main - INFO - [1763887755.19642] Received request: lat=49.1450304, lon=9.2230835, kw=200.0, type=load
+2025-11-23 10:49:15,196 - main - INFO - [1763887755.19642] Requesting grid data from manager
+2025-11-23 10:49:15,348 - grid_data - WARNING - UW UW_KETER not found for MV request
+2025-11-23 10:49:15,348 - main - INFO - [1763887755.19642] Successfully processed request. Station: UW_KETER, Status: red

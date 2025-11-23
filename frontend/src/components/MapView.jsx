@@ -262,13 +262,6 @@ const MapView = ({ userLocation, stationLocation, allStations = [], activeLayers
                     <Popup>Your Location</Popup>
                 </CircleMarker>
             )}
-
-            {/* Nearest Station (Highlighted) */}
-            {stationLocation && (
-                <Marker position={stationLocation}>
-                    <Popup>Nearest Station</Popup>
-                </Marker>
-            )}
         </MapContainer>
     );
 };

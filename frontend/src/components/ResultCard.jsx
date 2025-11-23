@@ -69,8 +69,8 @@ const ResultCard = ({ result, onApply }) => {
                 </div>
             </div>
 
-            {/* Apply Button - Visible only if feasible or review needed */}
-            {result.status !== 'not_feasible' && (
+            {/* Apply Button - Hide for red status */}
+            {result.status !== 'red' && result.status !== 'not_feasible' && (
                 <button
                     onClick={onApply}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2"
