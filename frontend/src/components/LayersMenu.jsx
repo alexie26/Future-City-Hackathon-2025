@@ -83,43 +83,47 @@ const LayersMenu = ({ layers, onLayerChange }) => {
 
                         {/* Heatmap Sub-settings */}
                         {layers.heatmap.enabled && (
-                            <div className="mt-3 space-y-2 pl-2 border-l-2 border-teal-300">
+                            <div className="mt-2 pl-6 space-y-2">
                                 {/* Voltage Level Setting */}
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-600 mb-1">Voltage Level</label>
-                                    <div className="flex gap-2">
-                                        {['LV', 'MV', 'HV'].map((level) => (
-                                            <button
-                                                key={level}
-                                                onClick={() => updateHeatmapSetting('voltageLevel', level)}
-                                                className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${layers.heatmap.settings.voltageLevel === level
-                                                        ? 'bg-teal-600 text-white shadow-sm'
-                                                        : 'bg-white text-gray-600 hover:bg-gray-100'
-                                                    }`}
-                                            >
-                                                {level}
-                                            </button>
-                                        ))}
-                                    </div>
+                                    <label htmlFor="voltage-level-select" className="block text-xs font-medium text-gray-600 mb-1">
+                                        Voltage Level
+                                    </label>
+                                    <select
+                                        id="voltage-level-select"
+                                        name="voltageLevel"
+                                        value={layers.heatmap.settings.voltageLevel}
+                                        onChange={(e) => onLayerChange('heatmap', true, {
+                                            ...layers.heatmap.settings,
+                                            voltageLevel: e.target.value
+                                        })}
+                                        className="w-full text-xs border rounded p-1"
+                                    >
+                                        <option value="LV">Low Voltage</option>
+                                        <option value="MV">Medium Voltage</option>
+                                        <option value="HV">High Voltage</option>
+                                    </select>
                                 </div>
 
                                 {/* Type Setting */}
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-600 mb-1">Type</label>
-                                    <div className="flex gap-2">
-                                        {['Loads', 'Generators'].map((type) => (
-                                            <button
-                                                key={type}
-                                                onClick={() => updateHeatmapSetting('type', type)}
-                                                className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${layers.heatmap.settings.type === type
-                                                        ? 'bg-teal-600 text-white shadow-sm'
-                                                        : 'bg-white text-gray-600 hover:bg-gray-100'
-                                                    }`}
-                                            >
-                                                {type}
-                                            </button>
-                                        ))}
-                                    </div>
+                                    <label htmlFor="type-select" className="block text-xs font-medium text-gray-600 mb-1">
+                                        Type
+                                    </label>
+                                    <select
+                                        id="type-select"
+                                        name="type"
+                                        value={layers.heatmap.settings.type}
+                                        onChange={(e) => onLayerChange('heatmap', true, {
+                                            ...layers.heatmap.settings,
+                                            type: e.target.value
+                                        })}
+                                        className="w-full text-xs border rounded p-1"
+                                    >
+                                        <option value="Loads">Loads</option>
+                                        <option value="Generation">Generation</option>
+                                        <option value="Capacity">Capacity</option>
+                                    </select>
                                 </div>
                             </div>
                         )}

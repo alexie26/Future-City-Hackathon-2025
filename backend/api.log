@@ -30,3 +30,114 @@
 2025-11-23 00:19:21,780 - main - INFO - Retrieved 649 stations
 2025-11-23 00:19:47,316 - main - INFO - Retrieved 649 stations
 2025-11-23 00:19:47,376 - main - INFO - Retrieved 649 stations
+2025-11-23 01:04:33,137 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 01:04:33,137 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 01:04:33,441 - grid_data - INFO - Loading stations from /home/hichem/Future-City-Hackathon-2025/backend/data/Kapa Stationen.csv
+2025-11-23 01:04:33,447 - grid_data - INFO - Loading substations from /home/hichem/Future-City-Hackathon-2025/backend/data/Kapa Umspannwerke.csv
+2025-11-23 01:04:33,450 - grid_data - INFO - Loading locations from /home/hichem/Future-City-Hackathon-2025/backend/data/tabelle1.csv
+2025-11-23 01:04:33,456 - grid_data - INFO - Loading topology from /home/hichem/Future-City-Hackathon-2025/backend/data/tabelle3.csv
+2025-11-23 01:04:33,463 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 01:04:33,463 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 01:04:50,216 - main - INFO - Retrieved 649 stations
+2025-11-23 01:04:50,310 - main - INFO - Retrieved 649 stations
+2025-11-23 01:05:08,771 - main - INFO - [1763852708.771511] Received request: lat=49.1460617, lon=9.2331181, kw=10.0, type=load
+2025-11-23 01:05:08,771 - main - INFO - [1763852708.771511] Requesting grid data from manager
+2025-11-23 01:05:08,945 - main - INFO - [1763852708.771511] Successfully processed request. Station: 01TS0435, Status: green
+2025-11-23 01:06:56,774 - main - ERROR - ❌ Unexpected error loading stations: ['Installierte Trafoleistung', 'Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7']
+Traceback (most recent call last):
+  File "/home/hichem/Future-City-Hackathon-2025/backend/main.py", line 67, in <module>
+    stations_df = stations_df.dropna(subset=capacity_cols)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/pandas/core/frame.py", line 6418, in dropna
+    raise KeyError(np.array(subset)[check].tolist())
+KeyError: ['Installierte Trafoleistung', 'Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7']
+2025-11-23 01:06:56,796 - main - ERROR - ❌ Failed to initialize grid manager: unterminated string literal (detected at line 359) (grid_data.py, line 359)
+Traceback (most recent call last):
+  File "/home/hichem/Future-City-Hackathon-2025/backend/main.py", line 104, in <module>
+    from grid_data import GridDataManager
+  File "/home/hichem/Future-City-Hackathon-2025/backend/grid_data.py", line 359
+    remaining = float(row['Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7'])ed'
+                                                                                     ^
+SyntaxError: unterminated string literal (detected at line 359)
+2025-11-23 01:08:29,670 - main - ERROR - ❌ Unexpected error loading stations: ['Installierte Trafoleistung', 'Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7']
+Traceback (most recent call last):
+  File "/home/hichem/Future-City-Hackathon-2025/backend/main.py", line 67, in <module>
+    stations_df = stations_df.dropna(subset=capacity_cols)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/pandas/core/frame.py", line 6418, in dropna
+    raise KeyError(np.array(subset)[check].tolist())
+KeyError: ['Installierte Trafoleistung', 'Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7']
+2025-11-23 01:08:29,690 - main - ERROR - ❌ Failed to initialize grid manager: unterminated string literal (detected at line 376) (grid_data.py, line 376)
+Traceback (most recent call last):
+  File "/home/hichem/Future-City-Hackathon-2025/backend/main.py", line 104, in <module>
+    from grid_data import GridDataManager
+  File "/home/hichem/Future-City-Hackathon-2025/backend/grid_data.py", line 376
+    remaining = float(row['Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7'])ed'
+                                                                                     ^
+SyntaxError: unterminated string literal (detected at line 376)
+2025-11-23 01:09:51,181 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 01:09:51,184 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 01:09:51,408 - grid_data - INFO - Loading stations from /home/hichem/Future-City-Hackathon-2025/backend/data/Kapa Stationen.csv
+2025-11-23 01:09:51,418 - grid_data - WARNING - Filtered out 120 stations with missing/invalid capacity data
+2025-11-23 01:09:51,418 - grid_data - INFO - Loading substations from /home/hichem/Future-City-Hackathon-2025/backend/data/Kapa Umspannwerke.csv
+2025-11-23 01:09:51,420 - grid_data - INFO - Loading locations from /home/hichem/Future-City-Hackathon-2025/backend/data/tabelle1.csv
+2025-11-23 01:09:51,424 - grid_data - INFO - Loading topology from /home/hichem/Future-City-Hackathon-2025/backend/data/tabelle3.csv
+2025-11-23 01:09:51,432 - grid_data - INFO - Successfully loaded data: 640 stations, 11 substations
+2025-11-23 01:09:51,433 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 01:10:14,731 - main - INFO - Retrieved 624 stations
+2025-11-23 01:10:14,821 - main - INFO - Retrieved 624 stations
+2025-11-23 01:10:44,227 - main - INFO - [1763853044.227103] Received request: lat=49.1460617, lon=9.2331181, kw=10.0, type=load
+2025-11-23 01:10:44,227 - main - INFO - [1763853044.227103] Requesting grid data from manager
+2025-11-23 01:10:44,381 - main - INFO - [1763853044.227103] Successfully processed request. Station: 01TS0435, Status: green
+2025-11-23 01:11:58,159 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 01:11:58,159 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 01:11:58,410 - grid_data - INFO - Loading stations from /home/hichem/Future-City-Hackathon-2025/backend/data/Kapa Stationen.csv
+2025-11-23 01:11:58,423 - grid_data - WARNING - Filtered out 120 stations with missing/invalid capacity data
+2025-11-23 01:11:58,423 - grid_data - INFO - Loading substations from /home/hichem/Future-City-Hackathon-2025/backend/data/Kapa Umspannwerke.csv
+2025-11-23 01:11:58,425 - grid_data - INFO - Loading locations from /home/hichem/Future-City-Hackathon-2025/backend/data/tabelle1.csv
+2025-11-23 01:11:58,431 - grid_data - INFO - Loading topology from /home/hichem/Future-City-Hackathon-2025/backend/data/tabelle3.csv
+2025-11-23 01:11:58,443 - grid_data - INFO - Successfully loaded data: 640 stations, 11 substations
+2025-11-23 01:11:58,443 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 01:12:18,346 - main - INFO - Retrieved 624 stations
+2025-11-23 01:12:18,444 - main - INFO - Retrieved 624 stations
+2025-11-23 01:13:05,826 - main - INFO - [1763853185.826307] Received request: lat=49.146264, lon=9.2258246, kw=10.0, type=load
+2025-11-23 01:13:05,826 - main - INFO - [1763853185.826307] Requesting grid data from manager
+2025-11-23 01:13:05,925 - main - INFO - [1763853185.826307] Successfully processed request. Station: 01TS0474, Status: green
+2025-11-23 01:13:26,727 - main - INFO - Retrieved 624 stations
+2025-11-23 01:13:26,805 - main - INFO - Retrieved 624 stations
+2025-11-23 01:14:51,830 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 01:14:51,831 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 01:14:51,980 - grid_data - INFO - Loading stations from /home/hichem/Future-City-Hackathon-2025/backend/data/Kapa Stationen.csv
+2025-11-23 01:14:51,988 - grid_data - WARNING - Filtered out 120 stations with missing/invalid capacity data
+2025-11-23 01:14:51,988 - grid_data - INFO - Loading substations from /home/hichem/Future-City-Hackathon-2025/backend/data/Kapa Umspannwerke.csv
+2025-11-23 01:14:51,990 - grid_data - INFO - Loading locations from /home/hichem/Future-City-Hackathon-2025/backend/data/tabelle1.csv
+2025-11-23 01:14:51,995 - grid_data - INFO - Loading topology from /home/hichem/Future-City-Hackathon-2025/backend/data/tabelle3.csv
+2025-11-23 01:14:52,003 - grid_data - INFO - Successfully loaded data: 640 stations, 11 substations
+2025-11-23 01:14:52,004 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 01:15:08,617 - main - INFO - Retrieved 624 stations
+2025-11-23 01:15:08,682 - main - INFO - Retrieved 624 stations
+2025-11-23 01:16:02,595 - main - INFO - [1763853362.595199] Received request: lat=49.1460617, lon=9.2331181, kw=10.0, type=load
+2025-11-23 01:16:02,595 - main - INFO - [1763853362.595199] Requesting grid data from manager
+2025-11-23 01:16:02,702 - main - INFO - [1763853362.595199] Successfully processed request. Station: 01TS0435, Status: green
+2025-11-23 01:16:29,471 - main - INFO - [1763853389.471069] Received request: lat=49.1460617, lon=9.2331181, kw=50.0, type=load
+2025-11-23 01:16:29,471 - main - INFO - [1763853389.471069] Requesting grid data from manager
+2025-11-23 01:16:29,596 - main - INFO - [1763853389.471069] Successfully processed request. Station: 01TS0435, Status: green
+2025-11-23 01:16:36,757 - main - INFO - [1763853396.757012] Received request: lat=49.1460617, lon=9.2331181, kw=80.0, type=load
+2025-11-23 01:16:36,757 - main - INFO - [1763853396.757012] Requesting grid data from manager
+2025-11-23 01:16:36,867 - main - INFO - [1763853396.757012] Successfully processed request. Station: 01TS0435, Status: green
+2025-11-23 01:16:41,732 - main - INFO - [1763853401.732504] Received request: lat=49.1460617, lon=9.2331181, kw=300.0, type=load
+2025-11-23 01:16:41,732 - main - INFO - [1763853401.732504] Requesting grid data from manager
+2025-11-23 01:16:41,847 - main - INFO - [1763853401.732504] Successfully processed request. Station: 01TS0435, Status: green
+2025-11-23 01:16:54,483 - main - INFO - [1763853414.483237] Received request: lat=49.1460617, lon=9.2331181, kw=10000.0, type=load
+2025-11-23 01:16:54,483 - main - INFO - [1763853414.483237] Requesting grid data from manager
+2025-11-23 01:16:54,578 - main - INFO - [1763853414.483237] Successfully processed request. Station: 01TS0435, Status: red
+2025-11-23 01:17:24,008 - main - INFO - Retrieved 624 stations
+2025-11-23 01:17:24,053 - main - INFO - Retrieved 624 stations
+2025-11-23 01:17:26,715 - main - INFO - Retrieved 624 stations
+2025-11-23 01:17:26,769 - main - INFO - Retrieved 624 stations
+2025-11-23 01:17:28,239 - main - INFO - Retrieved 624 stations
+2025-11-23 01:17:28,288 - main - INFO - Retrieved 624 stations
+2025-11-23 01:18:25,930 - main - INFO - Retrieved 624 stations
+2025-11-23 01:18:25,969 - main - INFO - Retrieved 624 stations
+2025-11-23 01:19:24,878 - main - INFO - Retrieved 624 stations
+2025-11-23 01:19:24,947 - main - INFO - Retrieved 624 stations

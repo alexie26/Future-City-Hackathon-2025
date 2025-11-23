@@ -33,6 +33,9 @@ class GridDataManager:
             if self.stations_df.empty:
                 raise ValueError("Stations data file is empty")
             
+            # Initial count for logging
+            initial_count = len(self.stations_df)
+            
             # Clean data: remove 'kW' if present and convert to float
             cols_to_clean = ['Installierte Trafoleistung', 'PV-Leistung an ONS', 
                              'Übrige Trafokapazität', 'Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7']
@@ -43,6 +46,20 @@ class GridDataManager:
                         self.stations_df[col] = self.stations_df[col].astype(str).str.replace('kW', '', case=False).str.replace(',', '.').astype(float)
                 else:
                     logger.warning(f"Column {col} not found in stations data")
+
+            # Filter out stations with missing or invalid capacity data
+            required_capacity_cols = ['Installierte Trafoleistung', 'Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7']
+            self.stations_df = self.stations_df.dropna(subset=required_capacity_cols)
+            
+            # Remove stations with zero or negative installed capacity
+            self.stations_df = self.stations_df[
+                (self.stations_df['Installierte Trafoleistung'] > 0) & 
+                (self.stations_df['Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7'] >= 0)
+            ]
+            
+            filtered_count = initial_count - len(self.stations_df)
+            if filtered_count > 0:
+                logger.warning(f"Filtered out {filtered_count} stations with missing/invalid capacity data")
 
             # Load Substations
             logger.info(f"Loading substations from {substations_path}")
@@ -93,7 +110,13 @@ class GridDataManager:
                 # Skip rows with missing coordinates or capacity
                 if pd.isna(row['Breitengrad']) or pd.isna(row['Längengrad']):
                     continue
+                
+                # Skip rows with missing or invalid capacity data
                 if pd.isna(row['Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7']):
+                    continue
+                if pd.isna(row['Installierte Trafoleistung']):
+                    continue
+                if row['Installierte Trafoleistung'] <= 0:
                     continue
                     
                 lat_val = row['Breitengrad']
@@ -332,6 +355,14 @@ class GridDataManager:
         stations = []
         for index, row in self.stations_df.iterrows():
             if pd.notna(row['Breitengrad']) and pd.notna(row['Längengrad']):
+                # Skip stations with missing or invalid capacity data
+                if pd.isna(row['Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7']):
+                    continue
+                if pd.isna(row['Installierte Trafoleistung']):
+                    continue
+                if row['Installierte Trafoleistung'] <= 0:
+                    continue
+                
                 # Check if coordinates are swapped (Heilbronn is approx Lat 49, Lon 9)
                 lat = row['Breitengrad']
                 lon = row['Längengrad']
@@ -342,11 +373,7 @@ class GridDataManager:
 
                 # Determine status based on remaining capacity (simple heuristic)
                 # Green: > 100kW remaining, Yellow: > 0kW, Red: <= 0kW
-                remaining = row['Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7']
-                
-                # Handle NaN values which cause JSON serialization errors
-                if pd.isna(remaining):
-                    remaining = 0.0
+                remaining = float(row['Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7'])
                 
                 status = 'green'
                 if remaining <= 0:

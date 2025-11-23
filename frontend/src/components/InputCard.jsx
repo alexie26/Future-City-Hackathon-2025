@@ -43,8 +43,8 @@ const InputCard = ({ onCheck }) => {
                     viewbox: '9.0,49.0,9.5,49.3', // Heilbronn bounding box
                 },
                 headers: {
-                    'Accept-Language': 'de',
-                    'User-Agent': 'FutureCityHackathon/1.0'
+                    'Accept-Language': 'de'
+                    // Removed User-Agent header - browsers block it for security
                 },
                 timeout: 5000
             });
@@ -157,9 +157,11 @@ const InputCard = ({ onCheck }) => {
     return (
         <div className="bg-white rounded-xl shadow-lg p-6 space-y-6">
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                <label htmlFor="address-input" className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                 <div className="relative">
                     <input
+                        id="address-input"
+                        name="address"
                         ref={inputRef}
                         type="text"
                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
@@ -168,9 +170,10 @@ const InputCard = ({ onCheck }) => {
                         onChange={handleAddressChange}
                         onFocus={handleFocus}
                         onBlur={handleBlur}
-                        autoComplete="off"
+                        autoComplete="street-address"
+                        aria-label="Enter address in Heilbronn"
                     />
-                    <Search className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
+                    <Search className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" aria-hidden="true" />
                     
                     {/* Loading indicator */}
                     {searchLoading && (
@@ -238,29 +241,35 @@ const InputCard = ({ onCheck }) => {
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Connection Type</label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="block text-sm font-medium text-gray-700 mb-2" role="group" aria-labelledby="connection-type-label">
+                    <span id="connection-type-label">Connection Type</span>
+                </div>
+                <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-labelledby="connection-type-label">
                     <button
                         type="button"
+                        role="radio"
+                        aria-checked={type === 'consumer'}
                         onClick={() => setType('consumer')}
                         className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all ${type === 'consumer'
                                 ? 'border-blue-600 bg-blue-50 text-blue-700'
                                 : 'border-gray-200 hover:border-gray-300 text-gray-600'
                             }`}
                     >
-                        <BatteryCharging className="w-6 h-6 mb-1" />
+                        <BatteryCharging className="w-6 h-6 mb-1" aria-hidden="true" />
                         <span className="text-sm font-medium">Consumer</span>
                         <span className="text-xs text-gray-500">EV, Heat Pump</span>
                     </button>
                     <button
                         type="button"
+                        role="radio"
+                        aria-checked={type === 'producer'}
                         onClick={() => setType('producer')}
                         className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all ${type === 'producer'
                                 ? 'border-green-600 bg-green-50 text-green-700'
                                 : 'border-gray-200 hover:border-gray-300 text-gray-600'
                             }`}
                     >
-                        <Sun className="w-6 h-6 mb-1" />
+                        <Sun className="w-6 h-6 mb-1" aria-hidden="true" />
                         <span className="text-sm font-medium">Producer</span>
                         <span className="text-xs text-gray-500">Solar PV</span>
                     </button>
@@ -268,22 +277,30 @@ const InputCard = ({ onCheck }) => {
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="power-input" className="block text-sm font-medium text-gray-700 mb-1">
                     Expected Power (kW)
                     <span className="text-xs text-gray-500 ml-2">e.g., 11 kW for home EV charger</span>
                 </label>
                 <input
+                    id="power-input"
+                    name="power"
                     type="number"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     placeholder="e.g. 11, 50, 200"
                     value={kw}
                     onChange={(e) => setKw(e.target.value)}
+                    min="0"
+                    max="10000"
+                    step="0.1"
+                    aria-label="Expected power in kilowatts"
+                    autoComplete="off"
                 />
             </div>
 
             <button
                 onClick={handleSubmit}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md hover:shadow-lg transform active:scale-95"
+                aria-label="Get Eco Recommendations"
             >
                 Get Eco Recommendations
             </button>

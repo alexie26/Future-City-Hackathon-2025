@@ -62,13 +62,16 @@ try:
     # Remove rows with missing coordinates
     stations_df = stations_df.dropna(subset=['Breitengrad', 'Längengrad'])
     
+    # NOTE: Do NOT validate capacity columns here - tabelle1.csv only has coordinates
+    # Capacity validation happens in GridDataManager which loads Kapa Stationen.csv
+    
     # NOTE: Do NOT validate coordinate ranges here as the data uses WGS84 coordinates
     # The grid_data manager handles coordinate validation properly
     # Heilbronn coordinates are approximately: lat=49.14, lon=9.22
     
     removed_count = initial_count - len(stations_df)
     if removed_count > 0:
-        logger.warning(f"Removed {removed_count} stations with invalid/missing coordinates")
+        logger.warning(f"Removed {removed_count} stations with invalid/missing coordinates or capacity")
     
     if len(stations_df) == 0:
         raise ValueError("No valid stations found after filtering")
