@@ -24,6 +24,7 @@ const Hero = ({ lang = 'en', onToggleLang }) => {
                     type="button"
                     onClick={onToggleLang}
                     className="px-3 py-1 rounded-full bg-white/90 border border-blue-100 text-xs font-medium text-blue-700 shadow-sm hover:bg-blue-50"
+                    aria-label={lang === 'de' ? 'Switch to English' : 'Auf Deutsch umschalten'}
                 >
                     {lang === 'de' ? 'EN' : 'DE'}
                 </button>

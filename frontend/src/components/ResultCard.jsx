@@ -37,7 +37,7 @@ const ResultCard = ({ result, lang = 'en' }) => {
                         {result.message}
                     </h3>
                     <p className="text-sm text-gray-600 mt-1">
-                        {lang === 'de' ? 'Station' : 'Station'}: {result.station_id} • {lang === 'de' ? 'Entfernung' : 'Distance'}: {result.distance_km} km
+                        Station: {result.station_id} • {lang === 'de' ? 'Entfernung' : 'Distance'}: {result.distance_km} km
                     </p>
                 </div>
             </div>

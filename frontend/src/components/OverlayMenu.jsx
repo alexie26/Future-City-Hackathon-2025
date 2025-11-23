@@ -128,7 +128,7 @@ const OverlayMenu = ({ onCheck, result, loading, error, insights, insightsLoadin
                     <div className="flex items-center justify-center p-8">
                         <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
                         <span className="ml-3 text-gray-600">
-                            {lang === 'de' ? 'Analysiere Netzkapazität…' : 'Analyzing grid capacity...'}
+                            {lang === 'de' ? 'Analysiere Netzkapazität...' : 'Analyzing grid capacity...'}
                         </span>
                     </div>
                 )}
@@ -158,7 +158,7 @@ const OverlayMenu = ({ onCheck, result, loading, error, insights, insightsLoadin
                                     className="w-full py-2 rounded-lg text-sm font-medium border border-blue-200 text-blue-700 hover:bg-blue-50 disabled:opacity-60 disabled:cursor-not-allowed"
                                 >
                                     {insightsLoading
-                                        ? (lang === 'de' ? 'Lade anonyme Planungs-Insights…' : 'Loading anonymous planning insights…')
+                                        ? (lang === 'de' ? 'Lade anonyme Planungs-Insights...' : 'Loading anonymous planning insights...')
                                         : (lang === 'de' ? 'Anonyme Planungs-Insights anzeigen' : 'Show anonymous planning insights')}
                                 </button>
 

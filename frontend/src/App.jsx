@@ -138,9 +138,9 @@ function App() {
           ? `Keine Verbindung zum Backend-Server unter ${baseUrl}. Bitte prüfen, ob der Server läuft.`
           : `Cannot connect to backend server at ${baseUrl}. Please ensure the backend is running.`);
       } else {
-        setError(err.message || (lang === 'de'
-          ? 'Ein unerwarteter Fehler ist aufgetreten. Bitte später erneut versuchen.'
-          : 'An unexpected error occurred. Please try again.'));
+        setError(lang === 'de'
+          ? `Ein unerwarteter Fehler ist aufgetreten${err.message ? `: ${err.message}` : '. Bitte später erneut versuchen.'}`
+          : `An unexpected error occurred${err.message ? `: ${err.message}` : '. Please try again.'}`);
       }
     } finally {
       setLoading(false);

@@ -6,7 +6,7 @@ import pandas as pd
 import math
 import logging
 import os
-from collections import Counter
+from collections import Counter, deque
 from datetime import datetime
 
 # Configure logging
@@ -59,7 +59,8 @@ from grid_data import GridDataManager
 grid_manager = GridDataManager()
 
 # In-memory store for anonymous usage events (reset on restart)
-usage_events: List[Dict[str, Any]] = []
+# Limited to 10,000 most recent events to prevent memory issues
+usage_events: deque = deque(maxlen=10000)
 
 # Capacity limits (kW) based on TAB MS regulations
 CAPACITY_LIMITS = {
@@ -280,8 +281,8 @@ def get_insights_summary():
 
         peak_hour = hour_counts.most_common(1)[0][0] if hour_counts else None
         peak_day_index = day_counts.most_common(1)[0][0] if day_counts else None
-        day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-        peak_day = day_names[peak_day_index] if peak_day_index is not None else None
+        # Return ISO weekday number (0=Monday, 6=Sunday) instead of localized day names
+        peak_day = peak_day_index if peak_day_index is not None else None
 
         return {
             "total_checks": total,

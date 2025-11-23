@@ -349,7 +349,7 @@ class GridDataManager:
                 benefits = [
                     "Replace gas/oil heating",
                     "Lower running costs",
-                    "Reduce CO2 emissions by 60%",
+                    "Reduce CO₂ emissions by 60%",
                 ]
 
             recommendations.append({
