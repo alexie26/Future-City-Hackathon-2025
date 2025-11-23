@@ -1,8 +1,10 @@
 import React from 'react';
 import { CheckCircle, XCircle, AlertCircle, Leaf, Clock, ArrowRightCircle, Zap } from 'lucide-react';
 import RecommendationCard from './RecommendationCard';
+import { getTranslation, translateBackendText } from '../translations';
 
-const ResultCard = ({ result, onApply }) => {
+const ResultCard = ({ result, onApply, lang = 'en' }) => {
+    const t = (key) => getTranslation(lang, key);
     const statusConfig = {
         green: {
             icon: CheckCircle,
@@ -34,7 +36,7 @@ const ResultCard = ({ result, onApply }) => {
                 <StatusIcon className={`${config.color} w-8 h-8 flex-shrink-0`} />
                 <div className="flex-1">
                     <h3 className={`${config.color} font-bold text-lg`}>
-                        {result.message}
+                        {translateBackendText(result.message, lang)}
                     </h3>
                 </div>
             </div>
@@ -45,27 +47,27 @@ const ResultCard = ({ result, onApply }) => {
                 <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
                     <div className="flex items-center gap-2 mb-1">
                         <Clock className="w-4 h-4 text-gray-500" />
-                        <span className="text-xs font-semibold text-gray-500 uppercase">Est. Timeline</span>
+                        <span className="text-xs font-semibold text-gray-500 uppercase">{t('result_timeline')}</span>
                     </div>
-                    <p className="font-medium text-gray-900">{result.timeline || "Unknown"}</p>
+                    <p className="font-medium text-gray-900">{result.timeline || t('result_unknown')}</p>
                 </div>
 
                 {/* Voltage Level */}
                 <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
                     <div className="flex items-center gap-2 mb-1">
                         <Zap className="w-4 h-4 text-gray-500" />
-                        <span className="text-xs font-semibold text-gray-500 uppercase">Voltage Level</span>
+                        <span className="text-xs font-semibold text-gray-500 uppercase">{t('result_voltage')}</span>
                     </div>
-                    <p className="font-medium text-gray-900">{result.grid_level || "Niederspannung"}</p>
+                    <p className="font-medium text-gray-900">{translateBackendText(result.grid_level, lang) || t('result_low_voltage')}</p>
                 </div>
 
                 {/* Next Steps */}
                 <div className="bg-gray-50 rounded-lg p-3 border border-gray-100 md:col-span-2">
                     <div className="flex items-center gap-2 mb-1">
                         <ArrowRightCircle className="w-4 h-4 text-gray-500" />
-                        <span className="text-xs font-semibold text-gray-500 uppercase">Next Steps</span>
+                        <span className="text-xs font-semibold text-gray-500 uppercase">{t('result_next_steps')}</span>
                     </div>
-                    <p className="font-medium text-gray-900">{result.next_steps || "Contact support"}</p>
+                    <p className="font-medium text-gray-900">{translateBackendText(result.next_steps, lang) || t('result_contact_support')}</p>
                 </div>
             </div>
 
@@ -75,7 +77,7 @@ const ResultCard = ({ result, onApply }) => {
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                             <Leaf className="w-5 h-5 text-green-600" />
-                            <span className="font-semibold text-gray-900">Eco-Friendliness Score</span>
+                            <span className="font-semibold text-gray-900">{t('result_eco_score')}</span>
                         </div>
                         <span className="text-2xl font-bold text-green-600">
                             {result.eco_score}/100
@@ -93,7 +95,7 @@ const ResultCard = ({ result, onApply }) => {
             {/* Recommendation */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-sm text-gray-700">
-                    {result.recommendation}
+                    {translateBackendText(result.recommendation, lang)}
                 </p>
             </div>
         </div>

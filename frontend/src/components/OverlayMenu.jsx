@@ -6,8 +6,10 @@ import InputCard from './InputCard';
 import ResultCard from './ResultCard';
 import ApplicationModal from './ApplicationModal';
 import ChatBot from './ChatBot';
+import { getTranslation } from '../translations';
 
-const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, insightsLoading, insightsError, onLoadInsights }) => {
+const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, insightsLoading, insightsError, onLoadInsights, lang = 'en' }) => {
+    const t = (key) => getTranslation(lang, key);
     const [address, setAddress] = useState('');
     const [kw, setKw] = useState('');
     const [type, setType] = useState('load'); // 'load' or 'feed_in'
@@ -137,15 +139,15 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
     return (
         <>
             <div className="absolute top-0 left-0 w-96 max-h-screen overflow-y-auto bg-white shadow-2xl z-[5000] rounded-r-2xl">
-                <Hero />
+                <Hero lang={lang} />
 
                 <div className="p-6 space-y-6">
-                    <InputCard onCheck={onCheck} />
+                    <InputCard onCheck={onCheck} lang={lang} />
 
                     {loading && (
                         <div className="flex items-center justify-center p-8">
                             <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-                            <span className="ml-3 text-gray-600">Analyzing grid capacity...</span>
+                            <span className="ml-3 text-gray-600">{t('overlay_loading')}</span>
                         </div>
                     )}
 
@@ -153,14 +155,14 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
                         <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
                             <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                             <div>
-                                <h4 className="font-semibold text-red-900 mb-1">Error</h4>
+                                <h4 className="font-semibold text-red-900 mb-1">{t('overlay_error')}</h4>
                                 <p className="text-sm text-red-700">{error}</p>
                             </div>
                         </div>
                     )}
 
                     {result && !loading && !error && (
-                        <ResultCard result={result} onApply={handleApply} />
+                        <ResultCard result={result} onApply={handleApply} lang={lang} />
                     )}
 
                     {/* ChatBot Assistant - appears after results */}
@@ -173,7 +175,7 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
                             >
                                 <div className="flex items-center gap-2">
                                     <MessageCircle className="w-5 h-5 text-blue-600" />
-                                    <span className="font-semibold text-gray-800">💬 Chat with AI Assistant</span>
+                                    <span className="font-semibold text-gray-800">💬 {t('overlay_chat')}</span>
                                 </div>
                                 {showBot ? (
                                     <ChevronUp className="w-5 h-5 text-gray-600" />
@@ -184,7 +186,7 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
 
                             {/* ChatBot Component */}
                             {showBot && (
-                                <ChatBot result={result} onApply={handleApply} />
+                                <ChatBot result={result} onApply={handleApply} lang={lang} />
                             )}
                         </div>
                     )}
@@ -195,6 +197,7 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 initialData={modalData}
+                lang={lang}
             />
         </>
     );

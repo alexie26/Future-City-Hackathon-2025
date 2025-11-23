@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bot, Send, CheckCircle, AlertCircle, XCircle, Sparkles } from 'lucide-react';
 import axios from 'axios';
+import { getTranslation } from '../translations';
 
-const ChatBot = ({ result, onApply }) => {
+const ChatBot = ({ result, onApply, lang = 'en' }) => {
+    const t = (key) => getTranslation(lang, key);
     const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState('');
     const messagesEndRef = useRef(null);
@@ -28,8 +30,8 @@ const ChatBot = ({ result, onApply }) => {
                         text: greenText,
                         type: 'text',
                         buttons: [
-                            { label: 'Apply Now', action: 'apply', icon: CheckCircle },
-                            { label: 'Green Suggestions', action: 'show-suggestions', icon: Sparkles }
+                            { label: t('chat_apply_now'), action: 'apply', icon: CheckCircle },
+                            { label: t('chat_green_suggestions'), action: 'show-suggestions', icon: Sparkles }
                         ]
                     };
                 
@@ -51,7 +53,7 @@ const ChatBot = ({ result, onApply }) => {
                         ...baseGreeting,
                         text: redText,
                         type: 'text',
-                        buttons: [{ label: 'Yes, Show Alternatives', action: 'show-alternatives', icon: Sparkles }]
+                        buttons: [{ label: t('chat_show_alternatives'), action: 'show-alternatives', icon: Sparkles }]
                     };
                 
                 default:
@@ -66,7 +68,7 @@ const ChatBot = ({ result, onApply }) => {
         const initialMessages = [getInitialGreeting()];
 
         setMessages(initialMessages);
-    }, [result]);
+    }, [result, lang]);
 
     // Auto-scroll to bottom when messages change
     useEffect(() => {
@@ -87,7 +89,7 @@ const ChatBot = ({ result, onApply }) => {
                 });
                 return [...updated, {
                     id: Date.now(),
-                    text: '✅ Opening application form for you!',
+                    text: t('chat_opening_form'),
                     sender: 'bot',
                     type: 'text',
                     timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
@@ -387,20 +389,20 @@ const ChatBot = ({ result, onApply }) => {
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        placeholder="Ask me anything..."
+                        placeholder={t('chat_placeholder')}
                         className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     />
                     <button
                         onClick={handleSendMessage}
                         disabled={inputValue.trim() === ''}
                         className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg px-4 py-2 transition-colors flex items-center justify-center"
-                        aria-label="Send message"
+                        aria-label={t('chat_send')}
                     >
                         <Send className="w-5 h-5" />
                     </button>
                 </div>
                 <p className="text-xs text-gray-500 mt-2 text-center">
-                    Ask about timeline, costs, documents, or next steps
+                    {t('chat_helper')}
                 </p>
             </div>
         </div>

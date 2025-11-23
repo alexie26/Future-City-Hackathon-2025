@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Layers, ChevronDown, ChevronUp } from 'lucide-react';
+import { getTranslation } from '../translations';
 
-const LayersMenu = ({ activeLayers = [], onLayerChange }) => {
+const LayersMenu = ({ activeLayers = [], onLayerChange, lang = 'en' }) => {
     const [isExpanded, setIsExpanded] = useState(true);
+    const t = (key) => getTranslation(lang, key);
 
     const layers = [
-        { id: 'lv', label: 'Low Voltage (LV)' },
-        { id: 'mv', label: 'Medium Voltage (MV)' },
-        { id: 'hv', label: 'High Voltage (HV)' }
+        { id: 'lv', label: t('layers_lv') },
+        { id: 'mv', label: t('layers_mv') },
+        { id: 'hv', label: t('layers_hv') }
     ];
 
     return (
@@ -19,7 +21,7 @@ const LayersMenu = ({ activeLayers = [], onLayerChange }) => {
             >
                 <div className="flex items-center gap-2">
                     <Layers className="w-5 h-5 text-gray-700" />
-                    <h2 className="font-bold text-gray-900">Voltage Layers</h2>
+                    <h2 className="font-bold text-gray-900">{t('layers_title')}</h2>
                 </div>
                 {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-500" />}
             </button>

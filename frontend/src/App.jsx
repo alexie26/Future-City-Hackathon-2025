@@ -42,6 +42,13 @@ const App = () => {
   const [insightsLoading, setInsightsLoading] = useState(false);
   const [insightsError, setInsightsError] = useState(null);
   const [apiError, setApiError] = useState(null);
+  
+  // Language state
+  const [lang, setLang] = useState('en');
+  
+  const toggleLang = () => {
+    setLang(prev => prev === 'en' ? 'de' : 'en');
+  };
 
   useEffect(() => {
     // Fetch all stations on load with retry logic
@@ -260,6 +267,14 @@ const App = () => {
 
   return (
     <div className="h-screen w-screen relative font-sans overflow-hidden">
+      {/* Language Toggle Button */}
+      <button
+        onClick={toggleLang}
+        className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[2000] bg-white hover:bg-gray-50 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-lg border border-gray-200 transition-all flex items-center gap-2"
+      >
+        {lang === 'en' ? '🇬🇧 EN' : '🇩🇪 DE'}
+      </button>
+
       {/* API Error Banner */}
       {apiError && (
         <div className="absolute top-0 left-0 right-0 bg-red-600 text-white px-4 py-2 text-sm z-50 flex items-center justify-between">
@@ -291,12 +306,14 @@ const App = () => {
         insightsLoading={insightsLoading}
         insightsError={insightsError}
         onLoadInsights={handleLoadInsights}
+        lang={lang}
       />
 
       {/* Layers Menu (Right) */}
       <LayersMenu
         activeLayers={activeLayers}
         onLayerChange={handleLayerChange}
+        lang={lang}
       />
     </div>
   );

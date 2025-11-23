@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { Search, Home, Sun, BatteryCharging } from 'lucide-react';
+import { getTranslation } from '../translations';
 
-const InputCard = ({ onCheck }) => {
+const InputCard = ({ onCheck, lang = 'en' }) => {
+    const t = (key) => getTranslation(lang, key);
     const [address, setAddress] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -157,13 +159,13 @@ const InputCard = ({ onCheck }) => {
     return (
         <div className="bg-white rounded-xl shadow-lg p-6 space-y-6">
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('input_address')}</label>
                 <div className="relative">
                     <input
                         ref={inputRef}
                         type="text"
                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                        placeholder="Enter address in Heilbronn..."
+                        placeholder={t('input_address_placeholder')}
                         value={address}
                         onChange={handleAddressChange}
                         onFocus={handleFocus}
@@ -184,13 +186,13 @@ const InputCard = ({ onCheck }) => {
                         <ul className="absolute z-10 left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-lg">
                             {searchLoading && suggestions.length === 0 && (
                                 <li className="px-4 py-3 text-sm text-gray-500 text-center">
-                                    Searching...
+                                    {t('input_searching')}
                                 </li>
                             )}
                             
                             {!searchLoading && suggestions.length === 0 && address.length >= 3 && (
                                 <li className="px-4 py-3 text-sm text-gray-500 text-center">
-                                    {searchError || 'No addresses found. Try a different search.'}
+                                    {searchError || t('input_no_results')}
                                 </li>
                             )}
                             
@@ -238,7 +240,7 @@ const InputCard = ({ onCheck }) => {
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Connection Type</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('input_connection_type')}</label>
                 <div className="grid grid-cols-2 gap-3">
                     <button
                         type="button"
@@ -249,8 +251,8 @@ const InputCard = ({ onCheck }) => {
                             }`}
                     >
                         <BatteryCharging className="w-6 h-6 mb-1" />
-                        <span className="text-sm font-medium">Consumer</span>
-                        <span className="text-xs text-gray-500">EV, Heat Pump</span>
+                        <span className="text-sm font-medium">{t('input_consumer')}</span>
+                        <span className="text-xs text-gray-500">{t('input_consumer_desc')}</span>
                     </button>
                     <button
                         type="button"
@@ -261,21 +263,21 @@ const InputCard = ({ onCheck }) => {
                             }`}
                     >
                         <Sun className="w-6 h-6 mb-1" />
-                        <span className="text-sm font-medium">Producer</span>
-                        <span className="text-xs text-gray-500">Solar PV</span>
+                        <span className="text-sm font-medium">{t('input_producer')}</span>
+                        <span className="text-xs text-gray-500">{t('input_producer_desc')}</span>
                     </button>
                 </div>
             </div>
 
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Expected Power (kW)
-                    <span className="text-xs text-gray-500 ml-2">e.g., 11 kW for home EV charger</span>
+                    {t('input_power')}
+                    <span className="text-xs text-gray-500 ml-2">{t('input_power_hint')}</span>
                 </label>
                 <input
                     type="number"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                    placeholder="e.g. 11, 50, 200"
+                    placeholder={t('input_power_placeholder')}
                     value={kw}
                     onChange={(e) => setKw(e.target.value)}
                 />
@@ -285,7 +287,7 @@ const InputCard = ({ onCheck }) => {
                 onClick={handleSubmit}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md hover:shadow-lg transform active:scale-95"
             >
-                Get Eco Recommendations
+                {t('input_button')}
             </button>
         </div>
     );
