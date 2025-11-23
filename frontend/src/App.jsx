@@ -3,6 +3,7 @@ import axios from 'axios';
 import OverlayMenu from './components/OverlayMenu';
 import LayersMenu from './components/LayersMenu';
 import MapView from './components/MapView';
+import ChatBot from './components/ChatBot';
 import { CheckCircle, XCircle, ChevronDown, ChevronUp } from 'lucide-react';
 
 // Add retry utility
@@ -298,6 +299,9 @@ const App = () => {
         activeLayers={activeLayers}
         onLayerChange={handleLayerChange}
       />
+
+      {/* ChatBot (Bottom-Right) */}
+      <ChatBot />
     </div>
   );
 }

@@ -269,3 +269,10 @@
 2025-11-23 02:54:09,502 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
 2025-11-23 02:54:09,502 - main - INFO - ✅ Grid manager initialized successfully
 2025-11-23 02:54:09,616 - main - INFO - Retrieved 649 stations
+2025-11-23 07:49:52,568 - main - INFO - Retrieved 649 stations
+2025-11-23 07:49:52,638 - main - INFO - Retrieved 649 stations
+2025-11-23 08:17:28,045 - main - INFO - [1763878648.045622] Received request: lat=49.1411398, lon=9.2178421, kw=58.0, type=load
+2025-11-23 08:17:28,045 - main - INFO - [1763878648.045622] Requesting grid data from manager
+2025-11-23 08:17:28,212 - main - INFO - [1763878648.045622] Successfully processed request. Station: 01TS0817, Status: yellow
+2025-11-23 08:17:55,468 - main - INFO - Retrieved 649 stations
+2025-11-23 08:17:55,550 - main - INFO - Retrieved 649 stations
