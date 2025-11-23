@@ -36,6 +36,7 @@ const App = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [allStations, setAllStations] = useState([]);
   const [activeLayers, setActiveLayers] = useState([]); // Array of active layers
+  const [lastRequest, setLastRequest] = useState(null); // Store last request for application form
 
   const [insights, setInsights] = useState(null);
   const [insightsLoading, setInsightsLoading] = useState(false);
@@ -82,7 +83,10 @@ const App = () => {
     setLoading(true);
     setError(null);
     setResult(null);
-    setUserLocation(null);
+    setInsights(null);
+
+    // Save request data for the application form
+    setLastRequest({ address, type, kw });
     setStationLocation(null);
 
     try {
@@ -280,6 +284,7 @@ const App = () => {
       <OverlayMenu
         onCheck={handleCheck}
         result={result}
+        lastRequest={lastRequest}
         loading={loading}
         error={error}
         insights={insights}

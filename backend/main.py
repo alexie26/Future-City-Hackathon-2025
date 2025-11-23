@@ -430,6 +430,26 @@ async def get_voltage_regions():
         ]
     }
 
+class ApplicationRequest(BaseModel):
+    name: str
+    email: str
+    phone: str
+    address: str
+    kw_requested: float
+    type: str
+    comments: Optional[str] = None
+
+@app.post("/submit-application")
+async def submit_application(application: ApplicationRequest):
+    # In a real app, this would save to a DB or send an email
+    logger.info(f"Received application from {application.name} for {application.kw_requested}kW at {application.address}")
+    
+    return {
+        "status": "success",
+        "message": "Application received successfully! We will contact you shortly.",
+        "application_id": f"APP-{int(datetime.utcnow().timestamp())}"
+    }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

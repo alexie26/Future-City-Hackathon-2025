@@ -2,7 +2,7 @@ import React from 'react';
 import { CheckCircle, XCircle, AlertCircle, Leaf, Clock, ArrowRightCircle, Zap } from 'lucide-react';
 import RecommendationCard from './RecommendationCard';
 
-const ResultCard = ({ result }) => {
+const ResultCard = ({ result, onApply }) => {
     const statusConfig = {
         green: {
             icon: CheckCircle,
@@ -68,6 +68,15 @@ const ResultCard = ({ result }) => {
                     <p className="font-medium text-gray-900">{result.next_steps || "Contact support"}</p>
                 </div>
             </div>
+
+            {/* Apply Button - Always Visible */}
+            <button
+                onClick={onApply}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2"
+            >
+                {result.status === 'not_feasible' ? 'Contact Support' : 'Apply for Connection'}
+                <ArrowRightCircle className="w-5 h-5" />
+            </button>
 
             {/* Eco Score */}
             {result.eco_score !== undefined && (

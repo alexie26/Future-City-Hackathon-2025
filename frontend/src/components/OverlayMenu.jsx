@@ -4,8 +4,9 @@ import axios from 'axios';
 import Hero from './Hero';
 import InputCard from './InputCard';
 import ResultCard from './ResultCard';
+import ApplicationModal from './ApplicationModal';
 
-const OverlayMenu = ({ onCheck, result, loading, error, insights, insightsLoading, insightsError, onLoadInsights }) => {
+const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, insightsLoading, insightsError, onLoadInsights }) => {
     const [address, setAddress] = useState('');
     const [kw, setKw] = useState('');
     const [type, setType] = useState('load'); // 'load' or 'feed_in'
@@ -117,35 +118,57 @@ const OverlayMenu = ({ onCheck, result, loading, error, insights, insightsLoadin
         setSelectedCoordinates(null); // Clear stored coordinates when manually typing
     };
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalData, setModalData] = useState(null);
+
+    const handleApply = () => {
+        if (lastRequest) {
+            setModalData({
+                address: lastRequest.address,
+                kw: lastRequest.kw,
+                type: lastRequest.type
+            });
+            setIsModalOpen(true);
+        }
+    };
+
     return (
-        <div className="absolute top-0 left-0 w-96 max-h-screen overflow-y-auto bg-white shadow-2xl z-10 rounded-r-2xl">
-            <Hero />
-            
-            <div className="p-6 space-y-6">
-                <InputCard onCheck={onCheck} />
+        <>
+            <div className="absolute top-0 left-0 w-96 max-h-screen overflow-y-auto bg-white shadow-2xl z-[5000] rounded-r-2xl">
+                <Hero />
 
-                {loading && (
-                    <div className="flex items-center justify-center p-8">
-                        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-                        <span className="ml-3 text-gray-600">Analyzing grid capacity...</span>
-                    </div>
-                )}
+                <div className="p-6 space-y-6">
+                    <InputCard onCheck={onCheck} />
 
-                {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-                        <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                            <h4 className="font-semibold text-red-900 mb-1">Error</h4>
-                            <p className="text-sm text-red-700">{error}</p>
+                    {loading && (
+                        <div className="flex items-center justify-center p-8">
+                            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                            <span className="ml-3 text-gray-600">Analyzing grid capacity...</span>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {result && !loading && !error && (
-                    <ResultCard result={result} />
-                )}
+                    {error && (
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+                            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                            <div>
+                                <h4 className="font-semibold text-red-900 mb-1">Error</h4>
+                                <p className="text-sm text-red-700">{error}</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {result && !loading && !error && (
+                        <ResultCard result={result} onApply={handleApply} />
+                    )}
+                </div>
             </div>
-        </div>
+
+            <ApplicationModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                initialData={modalData}
+            />
+        </>
     );
 };
 
