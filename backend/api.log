@@ -487,3 +487,15 @@ google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found fo
 2025-11-23 09:37:48,173 - main - INFO - [1763883468.173485] Received request: lat=49.1411233, lon=9.218109, kw=20.0, type=load
 2025-11-23 09:37:48,173 - main - INFO - [1763883468.173485] Requesting grid data from manager
 2025-11-23 09:37:48,344 - main - INFO - [1763883468.173485] Successfully processed request. Station: 01TS0853, Status: green
+2025-11-23 09:51:35,630 - main - INFO - Retrieved 649 stations
+2025-11-23 09:51:35,753 - main - INFO - Retrieved 649 stations
+2025-11-23 10:12:50,613 - main - INFO - [1763885570.613466] Received request: lat=49.1411398, lon=9.2178421, kw=29.0, type=load
+2025-11-23 10:12:50,613 - main - INFO - [1763885570.613466] Requesting grid data from manager
+2025-11-23 10:12:50,815 - main - INFO - [1763885570.613466] Successfully processed request. Station: 01TS0817, Status: green
+2025-11-23 10:13:17,948 - main - INFO - [1763885597.948808] Received request: lat=49.1411398, lon=9.2178421, kw=2999.0, type=load
+2025-11-23 10:13:17,949 - main - INFO - [1763885597.948808] Requesting grid data from manager
+2025-11-23 10:13:18,153 - grid_data - WARNING - UW UW_BADHN not found for MV request
+2025-11-23 10:13:18,153 - main - INFO - [1763885597.948808] Successfully processed request. Station: UW_BADHN, Status: red
+2025-11-23 10:14:24,499 - main - INFO - [1763885664.499115] Received request: lat=49.1411398, lon=9.2178421, kw=22.0, type=load
+2025-11-23 10:14:24,499 - main - INFO - [1763885664.499115] Requesting grid data from manager
+2025-11-23 10:14:24,681 - main - INFO - [1763885664.499115] Successfully processed request. Station: 01TS0817, Status: green

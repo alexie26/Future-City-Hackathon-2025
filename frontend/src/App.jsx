@@ -295,7 +295,7 @@ const App = () => {
 
       {/* Layers Menu (Right) */}
       <LayersMenu
-        selectedLayer={activeLayers}
+        activeLayers={activeLayers}
         onLayerChange={handleLayerChange}
       />
     </div>

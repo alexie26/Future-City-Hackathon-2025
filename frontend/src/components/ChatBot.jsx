@@ -23,33 +23,21 @@ const ChatBot = ({ result, onApply }) => {
                     return {
                         ...baseGreeting,
                         text: `Hi! 🎉 Great news! Your grid connection for ${result.kw_requested}kW is **feasible** at station ${result.station_id}. The capacity is available and your application can be processed quickly!`,
-                        type: 'text',
-                        buttons: [
-                            { label: 'Apply Now', action: 'apply', icon: CheckCircle },
-                            { label: 'View Details', action: 'details', icon: Sparkles }
-                        ]
+                        type: 'text'
                     };
                 
                 case 'yellow':
                     return {
                         ...baseGreeting,
                         text: `Hello! ⚠️ Your request for ${result.kw_requested}kW requires a **detailed review**. The grid has limited capacity at station ${result.station_id}. Expected timeline: ${result.timeline || '2-4 weeks'}. I recommend submitting an application so our team can evaluate your specific case.`,
-                        type: 'text',
-                        buttons: [
-                            { label: 'Apply for Review', action: 'apply', icon: AlertCircle },
-                            { label: 'Learn More', action: 'info', icon: Sparkles }
-                        ]
+                        type: 'text'
                     };
                 
                 case 'red':
                     return {
                         ...baseGreeting,
                         text: `Hi there. ⛔ Unfortunately, the grid at station ${result.station_id} doesn't have sufficient capacity for ${result.kw_requested}kW. **Grid expansion** would be needed, which typically takes ${result.timeline || '6-12 months'}. However, there may be alternative solutions!`,
-                        type: 'text',
-                        buttons: [
-                            { label: 'Contact Support', action: 'apply', icon: XCircle },
-                            { label: 'View Alternatives', action: 'alternatives', icon: Sparkles }
-                        ]
+                        type: 'text'
                     };
                 
                 default:
