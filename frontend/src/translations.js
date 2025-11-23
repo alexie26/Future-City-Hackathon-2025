@@ -66,6 +66,7 @@ export const translations = {
         chat_green_suggestions: 'Green Suggestions',
         chat_show_alternatives: 'Yes, Show Alternatives',
         chat_opening_form: '✅ Opening application form for you!',
+        chat_error: 'Sorry, I encountered an error. Please try again or use the quick action buttons above.',
 
         // Backend message translations
         backend_connection_feasible: 'Connection feasible. Sufficient capacity available.',
@@ -144,6 +145,7 @@ export const translations = {
         chat_green_suggestions: 'Grüne Vorschläge',
         chat_show_alternatives: 'Ja, Alternativen zeigen',
         chat_opening_form: '✅ Antragsformular wird geöffnet!',
+        chat_error: 'Entschuldigung, es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder verwenden Sie die Schnellaktions-Buttons oben.',
 
         // Backend message translations
         backend_connection_feasible: 'Anschluss machbar. Ausreichende Kapazität verfügbar.',

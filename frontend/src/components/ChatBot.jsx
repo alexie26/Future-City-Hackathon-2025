@@ -300,7 +300,7 @@ const ChatBot = ({ result, onApply, lang = 'en' }) => {
             console.error('Chat error:', error);
             setMessages(prev => [...prev, {
                 id: Date.now(),
-                text: 'Sorry, I encountered an error. Please try again or use the quick action buttons above.',
+                text: t('chat_error'),
                 sender: 'bot',
                 type: 'text',
                 timestamp: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })

@@ -41,8 +41,8 @@ const ResultCard = ({ result, onApply, lang = 'en' }) => {
                 </div>
             </div>
 
-            {/* Grid Details (Timeline, Next Steps, Voltage) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {/* Grid Details (Timeline, Next Steps) */}
+            <div className="grid grid-cols-1 gap-3">
                 {/* Timeline */}
                 <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
                     <div className="flex items-center gap-2 mb-1">
@@ -52,17 +52,8 @@ const ResultCard = ({ result, onApply, lang = 'en' }) => {
                     <p className="font-medium text-gray-900">{result.timeline || t('result_unknown')}</p>
                 </div>
 
-                {/* Voltage Level */}
-                <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
-                    <div className="flex items-center gap-2 mb-1">
-                        <Zap className="w-4 h-4 text-gray-500" />
-                        <span className="text-xs font-semibold text-gray-500 uppercase">{t('result_voltage')}</span>
-                    </div>
-                    <p className="font-medium text-gray-900">{translateBackendText(result.grid_level, lang) || t('result_low_voltage')}</p>
-                </div>
-
                 {/* Next Steps */}
-                <div className="bg-gray-50 rounded-lg p-3 border border-gray-100 md:col-span-2">
+                <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
                     <div className="flex items-center gap-2 mb-1">
                         <ArrowRightCircle className="w-4 h-4 text-gray-500" />
                         <span className="text-xs font-semibold text-gray-500 uppercase">{t('result_next_steps')}</span>
