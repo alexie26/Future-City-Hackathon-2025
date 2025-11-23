@@ -37,7 +37,11 @@ const LayersMenu = ({ activeLayers = [], onLayerChange }) => {
                                 <button
                                     onClick={() => onLayerChange(layer.id)}
                                     className={`relative w-11 h-6 rounded-full transition-colors ${
-                                        isActive ? 'bg-teal-500' : 'bg-gray-200'
+                                        isActive 
+                                            ? layer.id === 'lv' ? 'bg-green-500' 
+                                            : layer.id === 'mv' ? 'bg-yellow-500' 
+                                            : 'bg-red-500'
+                                            : 'bg-gray-200'
                                     }`}
                                 >
                                     <div
