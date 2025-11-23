@@ -34,7 +34,7 @@ function App() {
   const [stationLocation, setStationLocation] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [allStations, setAllStations] = useState([]);
-  const [activeLayer, setActiveLayer] = useState(null); // No layer active by default
+  const [activeLayers, setActiveLayers] = useState([]); // Array of active layers
 
   const [insights, setInsights] = useState(null);
   const [insightsLoading, setInsightsLoading] = useState(false);
@@ -68,7 +68,13 @@ function App() {
   }, []);
 
   const handleLayerChange = (layerId) => {
-    setActiveLayer(layerId);
+    setActiveLayers(prev => {
+      if (prev.includes(layerId)) {
+        return prev.filter(id => id !== layerId); // Remove if already active
+      } else {
+        return [...prev, layerId]; // Add if not active
+      }
+    });
   };
 
   const handleCheck = async ({ address, type, kw, technology = "Other" }) => {
@@ -265,7 +271,7 @@ function App() {
           userLocation={userLocation}
           stationLocation={stationLocation}
           allStations={allStations}
-          activeLayer={activeLayer}
+          activeLayers={activeLayers}
         />
       </div>
 
@@ -283,7 +289,7 @@ function App() {
 
       {/* Layers Menu (Right) */}
       <LayersMenu
-        activeLayer={activeLayer}
+        activeLayers={activeLayers}
         onLayerChange={handleLayerChange}
       />
     </div>

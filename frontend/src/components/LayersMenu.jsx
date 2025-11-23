@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Layers, ChevronDown, ChevronUp } from 'lucide-react';
 
-const LayersMenu = ({ activeLayer, onLayerChange }) => {
+const LayersMenu = ({ activeLayers = [], onLayerChange }) => {
     const [isExpanded, setIsExpanded] = useState(true);
 
     const layers = [
@@ -27,23 +27,26 @@ const LayersMenu = ({ activeLayer, onLayerChange }) => {
             {/* Layer Controls */}
             {isExpanded && (
                 <div className="p-4 space-y-3">
-                    {layers.map(layer => (
-                        <div key={layer.id} className="flex items-center justify-between">
-                            <span className={`text-sm ${activeLayer === layer.id ? 'font-medium text-gray-900' : 'text-gray-600'}`}>
-                                {layer.label}
-                            </span>
-                            <button
-                                onClick={() => onLayerChange(activeLayer === layer.id ? null : layer.id)}
-                                className={`relative w-11 h-6 rounded-full transition-colors ${activeLayer === layer.id ? 'bg-teal-500' : 'bg-gray-200'
-                                    }`}
-                            >
-                                <div
-                                    className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform ${activeLayer === layer.id ? 'translate-x-5' : 'translate-x-0'
+                    {layers.map(layer => {
+                        const isActive = activeLayers.includes(layer.id);
+                        return (
+                            <div key={layer.id} className="flex items-center justify-between">
+                                <span className={`text-sm ${isActive ? 'font-medium text-gray-900' : 'text-gray-600'}`}>
+                                    {layer.label}
+                                </span>
+                                <button
+                                    onClick={() => onLayerChange(layer.id)}
+                                    className={`relative w-11 h-6 rounded-full transition-colors ${isActive ? 'bg-teal-500' : 'bg-gray-200'
                                         }`}
-                                />
-                            </button>
-                        </div>
-                    ))}
+                                >
+                                    <div
+                                        className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform ${isActive ? 'translate-x-5' : 'translate-x-0'
+                                            }`}
+                                    />
+                                </button>
+                            </div>
+                        );
+                    })}
                 </div>
             )}
         </div>

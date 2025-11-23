@@ -46,3 +46,10 @@
 2025-11-23 00:53:01,556 - main - INFO - [1763851981.303458] Successfully processed request. Station: 01TS0853, Status: green
 2025-11-23 00:54:25,451 - main - INFO - Retrieved 649 stations
 2025-11-23 00:54:25,589 - main - INFO - Retrieved 649 stations
+2025-11-23 01:07:05,613 - main - INFO - [1763852825.613807] Received request: lat=49.1411233, lon=9.218109, kw=48.0, type=feed_in
+2025-11-23 01:07:05,614 - main - INFO - [1763852825.613807] Requesting grid data from manager
+2025-11-23 01:07:05,992 - main - INFO - [1763852825.613807] Successfully processed request. Station: 01TS0853, Status: green
+2025-11-23 01:08:06,006 - main - INFO - Retrieved 649 stations
+2025-11-23 01:08:06,135 - main - INFO - Retrieved 649 stations
+2025-11-23 01:18:51,178 - main - INFO - Retrieved 649 stations
+2025-11-23 01:18:51,334 - main - INFO - Retrieved 649 stations
