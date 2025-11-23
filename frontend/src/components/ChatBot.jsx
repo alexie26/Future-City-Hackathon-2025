@@ -316,6 +316,22 @@ const ChatBot = ({ result, onApply }) => {
                 <div ref={messagesEndRef} />
             </div>
 
+            {/* Application Button - Only shown when status is green */}
+            {result.status === 'green' && onApply && (
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 border-t border-green-200 p-4">
+                    <button
+                        onClick={onApply}
+                        className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2"
+                    >
+                        <CheckCircle className="w-5 h-5" />
+                        Apply for Connection
+                    </button>
+                    <p className="text-xs text-center text-gray-600 mt-2">
+                        ✅ Your connection is feasible! Submit your application now.
+                    </p>
+                </div>
+            )}
+
             {/* Chat Input Area */}
             <div className="bg-white border-t border-gray-200 p-4">
                 <div className="flex gap-2">

@@ -69,16 +69,7 @@ const ResultCard = ({ result, onApply, lang = 'en' }) => {
                 </div>
             </div>
 
-            {/* Apply Button - Visible only if feasible or review needed */}
-            {result.status !== 'not_feasible' && (
-                <button
-                    onClick={onApply}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md flex items-center justify-center gap-2"
-                >
-                    Apply for Connection
-                    <ArrowRightCircle className="w-5 h-5" />
-                </button>
-            )}
+            {/* Apply Button - No longer shown here, moved to ChatBot */}
 
             {/* Eco Score */}
             {result.eco_score !== undefined && (

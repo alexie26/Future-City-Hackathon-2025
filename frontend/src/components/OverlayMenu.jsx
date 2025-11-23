@@ -238,6 +238,7 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 initialData={modalData}
+                lang={lang}
             />
         </>
     );
