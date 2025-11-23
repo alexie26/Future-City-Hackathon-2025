@@ -28,7 +28,7 @@ const LayersMenu = ({ activeLayers = [], onLayerChange, lang = 'en' }) => {
 
             {/* Layer Controls */}
             {isExpanded && (
-                <div className="p-4 space-y-3">
+                <div className="p-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
                     {layers.map(layer => {
                         const isActive = activeLayers.includes(layer.id);
                         return (

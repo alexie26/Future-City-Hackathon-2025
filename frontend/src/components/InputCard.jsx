@@ -245,9 +245,9 @@ const InputCard = ({ onCheck, lang = 'en' }) => {
                     <button
                         type="button"
                         onClick={() => setType('consumer')}
-                        className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all ${type === 'consumer'
-                                ? 'border-blue-600 bg-blue-50 text-blue-700'
-                                : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                        className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all duration-200 ${type === 'consumer'
+                                ? 'border-blue-600 bg-blue-50 text-blue-700 scale-105 shadow-md'
+                                : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/30 text-gray-600 hover:scale-105'
                             }`}
                     >
                         <BatteryCharging className="w-6 h-6 mb-1" />
@@ -257,9 +257,9 @@ const InputCard = ({ onCheck, lang = 'en' }) => {
                     <button
                         type="button"
                         onClick={() => setType('producer')}
-                        className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all ${type === 'producer'
-                                ? 'border-green-600 bg-green-50 text-green-700'
-                                : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                        className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 transition-all duration-200 ${type === 'producer'
+                                ? 'border-green-600 bg-green-50 text-green-700 scale-105 shadow-md'
+                                : 'border-gray-200 hover:border-green-300 hover:bg-green-50/30 text-gray-600 hover:scale-105'
                             }`}
                     >
                         <Sun className="w-6 h-6 mb-1" />
@@ -285,7 +285,8 @@ const InputCard = ({ onCheck, lang = 'en' }) => {
 
             <button
                 onClick={handleSubmit}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md hover:shadow-lg transform active:scale-95"
+                disabled={!address || !kw}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-xl hover:scale-[1.02] active:scale-95"
             >
                 {t('input_button')}
             </button>

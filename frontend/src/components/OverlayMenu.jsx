@@ -150,14 +150,14 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
                     <InputCard onCheck={onCheck} lang={lang} />
 
                     {loading && (
-                        <div className="flex items-center justify-center p-8">
+                        <div className="flex items-center justify-center p-8 animate-in fade-in duration-300">
                             <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-                            <span className="ml-3 text-gray-600">{t('overlay_loading')}</span>
+                            <span className="ml-3 text-gray-600 animate-pulse">{t('overlay_loading')}</span>
                         </div>
                     )}
 
                     {error && (
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3 animate-in fade-in shake duration-500">
                             <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                             <div>
                                 <h4 className="font-semibold text-red-900 mb-1">{t('overlay_error')}</h4>
@@ -167,18 +167,18 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
                     )}
 
                     {result && !loading && !error && (
-                        <div ref={resultRef}>
+                        <div ref={resultRef} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <ResultCard result={result} onApply={handleApply} lang={lang} />
                         </div>
                     )}
 
                     {/* ChatBot Assistant - appears after results */}
                     {result && !loading && !error && (
-                        <div className="mt-6">
+                        <div className="mt-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
                             {/* Bot Toggle Header */}
                             <button
                                 onClick={() => setShowBot(!showBot)}
-                                className="w-full flex items-center justify-between bg-gradient-to-r from-blue-50 to-green-50 border-2 border-blue-200 rounded-lg p-3 mb-3 hover:from-blue-100 hover:to-green-100 transition-all"
+                                className="w-full flex items-center justify-between bg-gradient-to-r from-blue-50 to-green-50 border-2 border-blue-200 rounded-lg p-3 mb-3 hover:from-blue-100 hover:to-green-100 transition-all duration-200 hover:shadow-md hover:scale-[1.01] active:scale-[0.99]"
                             >
                                 <div className="flex items-center gap-2">
                                     <MessageCircle className="w-5 h-5 text-blue-600" />
@@ -193,7 +193,9 @@ const OverlayMenu = ({ onCheck, result, lastRequest, loading, error, insights, i
 
                             {/* ChatBot Component */}
                             {showBot && (
-                                <ChatBot result={result} onApply={handleApply} lang={lang} />
+                                <div className="animate-in fade-in slide-in-from-top-4 duration-300">
+                                    <ChatBot result={result} onApply={handleApply} lang={lang} />
+                                </div>
                             )}
                         </div>
                     )}

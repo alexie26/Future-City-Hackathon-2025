@@ -270,9 +270,9 @@ const App = () => {
       {/* Language Toggle Button */}
       <button
         onClick={toggleLang}
-        className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[2000] bg-white hover:bg-gray-50 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-lg border border-gray-200 transition-all flex items-center gap-2"
+        className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[2000] bg-white hover:bg-gray-50 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl border border-gray-200 transition-all duration-200 flex items-center gap-2 hover:scale-110 active:scale-95"
       >
-        {lang === 'en' ? '🇬🇧 EN' : '🇩🇪 DE'}
+        <span className="transition-all duration-300">{lang === 'en' ? '🇬🇧 EN' : '🇩🇪 DE'}</span>
       </button>
 
       {/* API Error Banner */}
