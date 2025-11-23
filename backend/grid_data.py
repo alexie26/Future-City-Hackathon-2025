@@ -129,108 +129,307 @@ class GridDataManager:
             logger.error(f"Error finding nearest station: {str(e)}", exc_info=True)
             return None, None, None, float('inf')
 
-    def _generate_recommendations(self, remaining_capacity, kw_requested, traffic_light, grid_level):
-        """Generate eco-friendly recommendations based on grid conditions"""
+    def _generate_recommendations(self, remaining_capacity, kw_requested, traffic_light, grid_level, lang: str = "en"):
+        """Generate eco-friendly recommendations based on grid conditions.
+
+        lang: 'en' (default) or 'de' for German UI texts.
+        """
         recommendations = []
         
         capacity_ratio = remaining_capacity / max(kw_requested, 1)
         
         # Solar PV recommendations
         if capacity_ratio > 3:
+            if lang == "de":
+                title = "🌞 Ideal für Solar-PV-Installation"
+                description = (
+                    "Dieser Standort hat eine ausgezeichnete Netzkapazität für Solarenergie. "
+                    "Eine Solaranlage kann helfen, Stromkosten zu senken und erneuerbare Energien zu fördern."
+                )
+                benefits = [
+                    "Stromkosten um bis zu 70 % reduzieren",
+                    "Zu Klimazielen beitragen",
+                    "Schnelle Netzanschlussgenehmigung",
+                ]
+            else:
+                title = "🌞 Ideal for Solar PV Installation"
+                description = (
+                    "This location has excellent grid capacity for solar energy. Consider installing solar panels "
+                    "to reduce energy costs and support renewable energy."
+                )
+                benefits = [
+                    "Reduce electricity bills by up to 70%",
+                    "Contribute to climate goals",
+                    "Fast grid connection approval",
+                ]
+
             recommendations.append({
                 "type": "solar",
                 "icon": "sun",
-                "title": "🌞 Ideal for Solar PV Installation",
-                "description": "This location has excellent grid capacity for solar energy. Consider installing solar panels to reduce energy costs and support renewable energy.",
+                "title": title,
+                "description": description,
                 "priority": "high",
-                "benefits": ["Reduce electricity bills by up to 70%", "Contribute to climate goals", "Fast grid connection approval"]
+                "benefits": benefits,
             })
         elif capacity_ratio > 1.5:
+            if lang == "de":
+                title = "☀️ Gutes Solar-PV-Potenzial"
+                description = (
+                    "Eine Solaranlage ist hier gut möglich. Intelligente Wechselrichter werden für eine optimale "
+                    "Netzintegration empfohlen."
+                )
+                benefits = [
+                    "Erneuerbare Energien unterstützen",
+                    "Intelligente Netzintegration möglich",
+                ]
+            else:
+                title = "☀️ Good Solar PV Potential"
+                description = (
+                    "Solar installation is viable here. Smart inverters recommended for optimal grid integration."
+                )
+                benefits = [
+                    "Support renewable energy",
+                    "Smart grid integration available",
+                ]
+
             recommendations.append({
                 "type": "solar",
                 "icon": "sun",
-                "title": "☀️ Good Solar PV Potential",
-                "description": "Solar installation is viable here. Smart inverters recommended for optimal grid integration.",
+                "title": title,
+                "description": description,
                 "priority": "medium",
-                "benefits": ["Support renewable energy", "Smart grid integration available"]
+                "benefits": benefits,
             })
         
         # Battery storage recommendations
         if traffic_light in ["yellow", "red"]:
+            if lang == "de":
+                title = "🔋 Batteriespeicher empfohlen"
+                description = (
+                    "Ein Batteriespeicher hilft, das Netz zu entlasten und eine Notstromversorgung bereitzustellen. "
+                    "Dieses Gebiet profitiert besonders von Lastverschiebung."
+                )
+                benefits = [
+                    "Netzbelastung reduzieren",
+                    "Überschüssige Solarenergie speichern",
+                    "Notstrom bei Ausfällen",
+                    "Lastverschiebung nach Zeittarifen",
+                ]
+            else:
+                title = "🔋 Battery Storage Recommended"
+                description = (
+                    "Adding battery storage would help reduce grid stress and provide backup power. "
+                    "This area would benefit from load balancing."
+                )
+                benefits = [
+                    "Reduce grid stress",
+                    "Store excess solar energy",
+                    "Backup power during outages",
+                    "Time-of-use optimization",
+                ]
+
             recommendations.append({
                 "type": "battery",
                 "icon": "battery",
-                "title": "🔋 Battery Storage Recommended",
-                "description": "Adding battery storage would help reduce grid stress and provide backup power. This area would benefit from load balancing.",
+                "title": title,
+                "description": description,
                 "priority": "high" if traffic_light == "red" else "medium",
-                "benefits": ["Reduce grid stress", "Store excess solar energy", "Backup power during outages", "Time-of-use optimization"]
+                "benefits": benefits,
             })
         elif capacity_ratio > 2:
+            if lang == "de":
+                title = "🔋 Batteriespeicher optional"
+                description = (
+                    "Die Netzkapazität ist gut, aber ein Speicher kann Ihre Solarinvestition maximieren "
+                    "und mehr Unabhängigkeit vom Netz bringen."
+                )
+                benefits = [
+                    "Energieunabhängigkeit",
+                    "Maximaler Ertrag aus der Solaranlage",
+                ]
+            else:
+                title = "🔋 Battery Storage Optional"
+                description = (
+                    "Grid capacity is good, but battery storage can still maximize your solar investment and provide energy independence."
+                )
+                benefits = [
+                    "Energy independence",
+                    "Maximize solar ROI",
+                ]
+
             recommendations.append({
                 "type": "battery",
                 "icon": "battery",
-                "title": "🔋 Battery Storage Optional",
-                "description": "Grid capacity is good, but battery storage can still maximize your solar investment and provide energy independence.",
+                "title": title,
+                "description": description,
                 "priority": "low",
-                "benefits": ["Energy independence", "Maximize solar ROI"]
+                "benefits": benefits,
             })
         
         # EV charging recommendations
         if capacity_ratio > 2 and kw_requested < 100:
+            if lang == "de":
+                title = "🚗 Geeignet für E-Ladung"
+                description = (
+                    "Dieser Standort eignet sich für Ladeinfrastruktur für E-Fahrzeuge. "
+                    "Intelligente Ladesysteme helfen, das Laden in netzdienliche Zeiten zu verschieben."
+                )
+                benefits = [
+                    "Bereit für Schnellladen",
+                    "Intelligentes Laden möglich",
+                    "Netzfreundliche Ladezeiten",
+                ]
+            else:
+                title = "🚗 EV Charging Suitable"
+                description = (
+                    "This location supports EV charging infrastructure. Smart charging systems recommended to optimize grid usage during off-peak hours."
+                )
+                benefits = [
+                    "Fast charging ready",
+                    "Smart charging available",
+                    "Grid-friendly charging schedules",
+                ]
+
             recommendations.append({
                 "type": "ev",
                 "icon": "car",
-                "title": "🚗 EV Charging Suitable",
-                "description": "This location supports EV charging infrastructure. Smart charging systems recommended to optimize grid usage during off-peak hours.",
+                "title": title,
+                "description": description,
                 "priority": "high",
-                "benefits": ["Fast charging ready", "Smart charging available", "Grid-friendly charging schedules"]
+                "benefits": benefits,
             })
         elif capacity_ratio > 1:
+            if lang == "de":
+                title = "⚡ Smartes E-Laden empfohlen"
+                description = (
+                    "E-Laden ist möglich, besonders mit smarter Ladetechnik, um die Netzbelastung "
+                    "in Nebenzeiten zu verschieben."
+                )
+                benefits = [
+                    "Günstigere Tarife in Nebenzeiten",
+                    "Geringere Netzbelastung",
+                ]
+            else:
+                title = "⚡ Smart EV Charging Recommended"
+                description = (
+                    "EV charging is possible with smart charging technology to balance grid load during off-peak hours."
+                )
+                benefits = [
+                    "Off-peak charging discounts",
+                    "Reduced grid impact",
+                ]
+
             recommendations.append({
                 "type": "ev",
                 "icon": "car",
-                "title": "⚡ Smart EV Charging Recommended",
-                "description": "EV charging is possible with smart charging technology to balance grid load during off-peak hours.",
+                "title": title,
+                "description": description,
                 "priority": "medium",
-                "benefits": ["Off-peak charging discounts", "Reduced grid impact"]
+                "benefits": benefits,
             })
         
         # Heat pump recommendations
         if capacity_ratio > 1.5 and grid_level == "Niederspannung":
+            if lang == "de":
+                title = "🌡️ Wärmepumpe geeignet"
+                description = (
+                    "Für den Einbau einer Wärmepumpe wird eine hohe Effizienz erwartet. "
+                    "Dies ist eine sehr gute Alternative zu fossilen Heizsystemen."
+                )
+                benefits = [
+                    "Gas- oder Ölheizung ersetzen",
+                    "Geringere Betriebskosten",
+                    "CO₂-Emissionen um ca. 60 % senken",
+                ]
+            else:
+                title = "🌡️ Heat Pump Suitable"
+                description = (
+                    "High efficiency expected for heat pump installation. This is an excellent alternative to fossil fuel heating."
+                )
+                benefits = [
+                    "Replace gas/oil heating",
+                    "Lower running costs",
+                    "Reduce CO2 emissions by 60%",
+                ]
+
             recommendations.append({
                 "type": "heatpump",
                 "icon": "thermometer",
-                "title": "🌡️ Heat Pump Suitable",
-                "description": "High efficiency expected for heat pump installation. This is an excellent alternative to fossil fuel heating.",
+                "title": title,
+                "description": description,
                 "priority": "high",
-                "benefits": ["Replace gas/oil heating", "Lower running costs", "Reduce CO2 emissions by 60%"]
+                "benefits": benefits,
             })
         
         # Grid-friendly behavior suggestions
         if traffic_light == "yellow":
+            if lang == "de":
+                title = "🌿 Netzfreundliche Verbrauchsmuster"
+                description = (
+                    "Nutzen Sie zeitvariable Tarife und verschieben Sie Lasten in Nebenzeiten, "
+                    "um die Netzstabilität zu unterstützen."
+                )
+                benefits = [
+                    "Niedrigere Stromkosten in Nebenzeiten",
+                    "Unterstützung der Netzstabilität",
+                    "Positive Umwelteffekte",
+                ]
+            else:
+                title = "🌿 Grid-Friendly Consumption Patterns"
+                description = (
+                    "Consider time-of-use optimization and load shifting to off-peak hours to support grid stability."
+                )
+                benefits = [
+                    "Lower electricity rates during off-peak",
+                    "Support grid stability",
+                    "Environmental benefits",
+                ]
+
             recommendations.append({
                 "type": "behavior",
                 "icon": "leaf",
-                "title": "🌿 Grid-Friendly Consumption Patterns",
-                "description": "Consider time-of-use optimization and load shifting to off-peak hours to support grid stability.",
+                "title": title,
+                "description": description,
                 "priority": "medium",
-                "benefits": ["Lower electricity rates during off-peak", "Support grid stability", "Environmental benefits"]
+                "benefits": benefits,
             })
         
         # Community energy recommendations
         if capacity_ratio > 2.5:
+            if lang == "de":
+                title = "👥 Gemeinschaftsenergie-Potenzial"
+                description = (
+                    "Dieses Gebiet eignet sich gut für Gemeinschaftssolar- oder Energieprojekte. "
+                    "Prüfen Sie die Teilnahme an einer lokalen Energieinitiative."
+                )
+                benefits = [
+                    "Erneuerbare Energie gemeinsam nutzen",
+                    "Gemeinschaftliche Kosteneinsparungen",
+                    "Lokale Energie-Resilienz",
+                ]
+            else:
+                title = "👥 Community Energy Potential"
+                description = (
+                    "This area is ideal for community solar or shared energy projects. Consider joining or starting a local energy initiative."
+                )
+                benefits = [
+                    "Share renewable energy",
+                    "Community cost savings",
+                    "Local energy resilience",
+                ]
+
             recommendations.append({
                 "type": "community",
                 "icon": "users",
-                "title": "👥 Community Energy Potential",
-                "description": "This area is ideal for community solar or shared energy projects. Consider joining or starting a local energy initiative.",
+                "title": title,
+                "description": description,
                 "priority": "low",
-                "benefits": ["Share renewable energy", "Community cost savings", "Local energy resilience"]
+                "benefits": benefits,
             })
         
         return recommendations
 
-    def get_station_data(self, lat, lon, kw_requested):
+    def get_station_data(self, lat, lon, kw_requested, lang: str = "en"):
         try:
             nearest_station_id, station_data, nearest_coords, distance = self.find_nearest_station(lat, lon)
             
@@ -357,10 +556,11 @@ class GridDataManager:
             
             # Generate recommendations
             result["recommendations"] = self._generate_recommendations(
-                remaining_capacity, 
-                kw_requested, 
+                remaining_capacity,
+                kw_requested,
                 result["traffic_light"],
-                result["grid_level"]
+                result["grid_level"],
+                lang=lang,
             )
             
             # Add eco-score (0-100) for frontend display

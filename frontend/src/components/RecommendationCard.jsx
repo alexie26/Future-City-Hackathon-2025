@@ -16,7 +16,7 @@ const priorityColors = {
     low: 'border-blue-500 bg-blue-50'
 };
 
-const RecommendationCard = ({ recommendation }) => {
+const RecommendationCard = ({ recommendation, lang = 'en' }) => {
     const Icon = iconMap[recommendation.type] || Leaf;
     const colorClass = priorityColors[recommendation.priority] || priorityColors.low;
 
@@ -35,7 +35,9 @@ const RecommendationCard = ({ recommendation }) => {
                     </p>
                     {recommendation.benefits && recommendation.benefits.length > 0 && (
                         <div className="mt-2">
-                            <p className="text-xs font-medium text-gray-600 mb-1">Benefits:</p>
+                            <p className="text-xs font-medium text-gray-600 mb-1">
+                                {lang === 'de' ? 'Vorteile:' : 'Benefits:'}
+                            </p>
                             <ul className="text-xs text-gray-600 space-y-1">
                                 {recommendation.benefits.map((benefit, idx) => (
                                     <li key={idx} className="flex items-start">

@@ -86,7 +86,9 @@ const ResultCard = ({ result, onApply }) => {
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                             <Leaf className="w-5 h-5 text-green-600" />
-                            <span className="font-semibold text-gray-900">Eco-Friendliness Score</span>
+                            <span className="font-semibold text-gray-900">
+                                {lang === 'de' ? 'Öko-Freundlichkeits-Score' : 'Eco-Friendliness Score'}
+                            </span>
                         </div>
                         <span className="text-2xl font-bold text-green-600">
                             {result.eco_score}/100

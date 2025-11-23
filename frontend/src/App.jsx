@@ -38,6 +38,8 @@ const App = () => {
   const [activeLayers, setActiveLayers] = useState([]); // Array of active layers
   const [lastRequest, setLastRequest] = useState(null); // Store last request for application form
 
+  const [lang, setLang] = useState('en');
+
   const [insights, setInsights] = useState(null);
   const [insightsLoading, setInsightsLoading] = useState(false);
   const [insightsError, setInsightsError] = useState(null);
@@ -279,7 +281,6 @@ const App = () => {
           activeLayers={activeLayers}
         />
       </div>
-
       {/* Overlay Menu (Left) */}
       <OverlayMenu
         onCheck={handleCheck}
@@ -291,12 +292,15 @@ const App = () => {
         insightsLoading={insightsLoading}
         insightsError={insightsError}
         onLoadInsights={handleLoadInsights}
+        lang={lang}
+        onToggleLang={toggleLang}
       />
 
       {/* Layers Menu (Right) */}
       <LayersMenu
         activeLayers={activeLayers}
         onLayerChange={handleLayerChange}
+        lang={lang}
       />
     </div>
   );

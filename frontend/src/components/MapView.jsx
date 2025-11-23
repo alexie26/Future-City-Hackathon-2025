@@ -113,10 +113,12 @@ const MapView = ({ userLocation, stationLocation, allStations = [], activeLayers
     const onEachFeature = (feature, layer) => {
         if (feature.properties) {
             const { id, remaining_capacity } = feature.properties;
+            const zoneLabel = lang === 'de' ? 'Netzgebiet' : 'Grid Zone';
+            const capacityLabel = lang === 'de' ? 'Kapazität' : 'Capacity';
             layer.bindPopup(`
                 <div class="font-sans">
-                    <h3 class="font-bold">Grid Zone: ${id}</h3>
-                    <p>Capacity: ${remaining_capacity} kW</p>
+                    <h3 class="font-bold">${zoneLabel}: ${id}</h3>
+                    <p>${capacityLabel}: ${remaining_capacity} kW</p>
                 </div>
             `);
 
@@ -259,14 +261,14 @@ const MapView = ({ userLocation, stationLocation, allStations = [], activeLayers
                     pathOptions={{ color: 'blue', fillColor: '#2563EB', fillOpacity: 1 }}
                     radius={8}
                 >
-                    <Popup>Your Location</Popup>
+                    <Popup>{lang === 'de' ? 'Ihr Standort' : 'Your Location'}</Popup>
                 </CircleMarker>
             )}
 
             {/* Nearest Station (Highlighted) */}
             {stationLocation && (
                 <Marker position={stationLocation}>
-                    <Popup>Nearest Station</Popup>
+                    <Popup>{lang === 'de' ? 'Nächste Station' : 'Nearest Station'}</Popup>
                 </Marker>
             )}
         </MapContainer>
