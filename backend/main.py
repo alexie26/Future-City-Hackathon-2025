@@ -9,6 +9,10 @@ import os
 import traceback
 from datetime import datetime
 import google.generativeai as genai
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Configure logging with more detail
 logging.basicConfig(
@@ -452,7 +456,9 @@ async def submit_application(application: ApplicationRequest):
     }
 
 # Configure Gemini API
-GEMINI_API_KEY = "AIzaSyDbO4lNinj72M0KkyS29wUQeOJly0bG7O4"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+if not GEMINI_API_KEY:
+    print("WARNING: GEMINI_API_KEY not set. ChatBot will not work.")
 genai.configure(api_key=GEMINI_API_KEY)
 
 class ChatMessage(BaseModel):
