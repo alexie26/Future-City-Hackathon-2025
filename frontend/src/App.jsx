@@ -26,7 +26,8 @@ const retryRequest = async (fn, maxRetries = 3, delay = 1000) => {
   }
 };
 
-function App() {
+const App = () => {
+  // Main App Component
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

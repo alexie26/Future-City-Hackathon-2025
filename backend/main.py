@@ -133,6 +133,9 @@ class FeasibilityResponse(BaseModel):
     station_lon: Optional[float] = None
     eco_score: Optional[int] = None
     recommendations: Optional[List[Dict[str, Any]]] = None
+    timeline: Optional[str] = None
+    next_steps: Optional[str] = None
+    grid_level: Optional[str] = None
 
 def calculate_distance(lat1, lon1, lat2, lon2):
     """Calculate distance in km between two coordinates"""
@@ -289,7 +292,10 @@ async def check_feasibility(request: FeasibilityRequest):
             station_lat=grid_data.get("station_lat"),
             station_lon=grid_data.get("station_lon"),
             eco_score=grid_data.get("eco_score"),
-            recommendations=grid_data.get("recommendations", [])
+            recommendations=grid_data.get("recommendations", []),
+            timeline=grid_data.get("timeline"),
+            next_steps=grid_data.get("next_steps"),
+            grid_level=grid_data.get("grid_level")
         )
         
         return response

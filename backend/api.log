@@ -53,3 +53,85 @@
 2025-11-23 01:08:06,135 - main - INFO - Retrieved 649 stations
 2025-11-23 01:18:51,178 - main - INFO - Retrieved 649 stations
 2025-11-23 01:18:51,334 - main - INFO - Retrieved 649 stations
+2025-11-23 01:24:18,078 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 01:24:18,079 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 01:24:18,130 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 01:24:18,139 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 01:24:18,142 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 01:24:18,150 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 01:24:18,160 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 01:24:18,161 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 01:24:28,639 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 01:24:28,640 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 01:24:28,668 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 01:24:28,674 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 01:24:28,676 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 01:24:28,681 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 01:24:28,689 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 01:24:28,689 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 01:24:31,100 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 01:24:31,101 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 01:24:31,125 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 01:24:31,131 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 01:24:31,132 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 01:24:31,138 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 01:24:31,145 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 01:24:31,145 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 01:27:45,284 - main - INFO - [1763854065.284321] Received request: lat=49.1411233, lon=9.218109, kw=29.0, type=load
+2025-11-23 01:27:45,284 - main - INFO - [1763854065.284321] Requesting grid data from manager
+2025-11-23 01:27:45,655 - main - INFO - [1763854065.284321] Successfully processed request. Station: 01TS0853, Status: green
+2025-11-23 01:28:21,949 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 01:28:21,950 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 01:28:21,978 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 01:28:21,984 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 01:28:21,986 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 01:28:21,992 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 01:28:22,002 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 01:28:22,002 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 01:28:37,775 - main - INFO - Retrieved 649 stations
+2025-11-23 01:28:37,857 - main - INFO - Retrieved 649 stations
+2025-11-23 01:29:46,232 - main - INFO - [1763854186.232429] Received request: lat=49.1411233, lon=9.218109, kw=29.0, type=load
+2025-11-23 01:29:46,232 - main - INFO - [1763854186.232429] Requesting grid data from manager
+2025-11-23 01:29:46,728 - main - INFO - [1763854186.232429] Successfully processed request. Station: 01TS0853, Status: green
+2025-11-23 01:32:02,845 - main - INFO - Retrieved 649 stations
+2025-11-23 01:32:02,953 - main - INFO - Retrieved 649 stations
+2025-11-23 01:32:31,826 - main - INFO - Retrieved 649 stations
+2025-11-23 01:32:31,937 - main - INFO - Retrieved 649 stations
+2025-11-23 01:32:53,010 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 01:32:53,010 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 01:32:53,035 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 01:32:53,041 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 01:32:53,042 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 01:32:53,047 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 01:32:53,055 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 01:32:53,055 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 01:32:58,464 - main - INFO - Retrieved 649 stations
+2025-11-23 01:32:58,613 - main - INFO - Retrieved 649 stations
+2025-11-23 01:33:04,514 - main - INFO - Retrieved 649 stations
+2025-11-23 01:33:04,694 - main - INFO - Retrieved 649 stations
+2025-11-23 01:33:14,433 - main - INFO - [1763854394.433895] Received request: lat=49.1411233, lon=9.218109, kw=29.0, type=load
+2025-11-23 01:33:14,434 - main - INFO - [1763854394.433895] Requesting grid data from manager
+2025-11-23 01:33:14,696 - main - INFO - [1763854394.433895] Successfully processed request. Station: 01TS0853, Status: green
+2025-11-23 01:34:10,883 - main - INFO - [1763854450.883165] Received request: lat=49.1411233, lon=9.218109, kw=29.0, type=feed_in
+2025-11-23 01:34:10,883 - main - INFO - [1763854450.883165] Requesting grid data from manager
+2025-11-23 01:34:11,223 - main - INFO - [1763854450.883165] Successfully processed request. Station: 01TS0853, Status: green
+2025-11-23 01:35:16,721 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 01:35:16,723 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 01:35:16,754 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 01:35:16,761 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 01:35:16,763 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 01:35:16,769 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 01:35:16,779 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 01:35:16,779 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 01:35:18,913 - main - INFO - ✅ Loaded 1073 valid stations successfully
+2025-11-23 01:35:18,913 - main - INFO - Coordinate ranges: lat [9.0906, 9.8952], lon [49.0321, 49.2005]
+2025-11-23 01:35:18,939 - grid_data - INFO - Loading stations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Stationen.csv
+2025-11-23 01:35:18,945 - grid_data - INFO - Loading substations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/Kapa Umspannwerke.csv
+2025-11-23 01:35:18,947 - grid_data - INFO - Loading locations from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle1.csv
+2025-11-23 01:35:18,954 - grid_data - INFO - Loading topology from /home/ali/.gemini/antigravity/scratch/electrify_heilbronn/backend/data/tabelle3.csv
+2025-11-23 01:35:18,963 - grid_data - INFO - Successfully loaded data: 760 stations, 11 substations
+2025-11-23 01:35:18,963 - main - INFO - ✅ Grid manager initialized successfully
+2025-11-23 01:36:09,209 - main - INFO - [1763854569.209544] Received request: lat=49.1411233, lon=9.218109, kw=800.0, type=feed_in
+2025-11-23 01:36:09,210 - main - INFO - [1763854569.209544] Requesting grid data from manager
+2025-11-23 01:36:09,756 - grid_data - WARNING - UW UW_KETER not found for MV request
+2025-11-23 01:36:09,757 - main - INFO - [1763854569.209544] Successfully processed request. Station: UW_KETER, Status: red

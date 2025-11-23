@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, XCircle, AlertCircle, Leaf } from 'lucide-react';
+import { CheckCircle, XCircle, AlertCircle, Leaf, Clock, ArrowRightCircle, Zap } from 'lucide-react';
 import RecommendationCard from './RecommendationCard';
 
 const ResultCard = ({ result }) => {
@@ -36,6 +36,36 @@ const ResultCard = ({ result }) => {
                     <h3 className={`${config.color} font-bold text-lg`}>
                         {result.message}
                     </h3>
+                </div>
+            </div>
+
+            {/* Grid Details (Timeline, Next Steps, Voltage) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {/* Timeline */}
+                <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                    <div className="flex items-center gap-2 mb-1">
+                        <Clock className="w-4 h-4 text-gray-500" />
+                        <span className="text-xs font-semibold text-gray-500 uppercase">Est. Timeline</span>
+                    </div>
+                    <p className="font-medium text-gray-900">{result.timeline || "Unknown"}</p>
+                </div>
+
+                {/* Voltage Level */}
+                <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                    <div className="flex items-center gap-2 mb-1">
+                        <Zap className="w-4 h-4 text-gray-500" />
+                        <span className="text-xs font-semibold text-gray-500 uppercase">Voltage Level</span>
+                    </div>
+                    <p className="font-medium text-gray-900">{result.grid_level || "Niederspannung"}</p>
+                </div>
+
+                {/* Next Steps */}
+                <div className="bg-gray-50 rounded-lg p-3 border border-gray-100 md:col-span-2">
+                    <div className="flex items-center gap-2 mb-1">
+                        <ArrowRightCircle className="w-4 h-4 text-gray-500" />
+                        <span className="text-xs font-semibold text-gray-500 uppercase">Next Steps</span>
+                    </div>
+                    <p className="font-medium text-gray-900">{result.next_steps || "Contact support"}</p>
                 </div>
             </div>
 

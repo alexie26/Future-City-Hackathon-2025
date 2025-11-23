@@ -252,64 +252,110 @@ class GridDataManager:
 
             logger.debug(f"UW_ID: {uw_id}")
 
-            # Base result with station info
-            result = {
-                "nearest_station_id": nearest_station_id,
-                "distance_meters": round(distance, 2),
-                "grid_level": "Niederspannung",
-                "station_lat": nearest_coords[0] if nearest_coords else None,
-                "station_lon": nearest_coords[1] if nearest_coords else None,
-                "max_capacity": float(station_data['Installierte Trafoleistung']),
-                "current_load_pv": float(station_data['PV-Leistung an ONS']),
-                "remaining_raw": float(station_data['Übrige Trafokapazität']),
-                "remaining_safe": float(station_data['Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7'])
-            }
+            # --- SMART LOGIC START ---
             
-            logger.debug(f"Capacity data - remaining_safe: {result['remaining_safe']} kW, requested: {kw_requested} kW")
+            # 1. Determine Voltage Level based on NHF Rules
+            voltage_level = "Niederspannung" # Default
+            voltage_code = "LV"
             
+            if kw_requested < 30:
+                voltage_level = "Niederspannung (Standard)"
+                voltage_code = "LV"
+            elif kw_requested < 135:
+                voltage_level = "Niederspannung (High Load)"
+                voltage_code = "LV"
+            elif kw_requested < 20000: # < 20MW
+                voltage_level = "Mittelspannung"
+                voltage_code = "MV"
+            else:
+                voltage_level = "Hochspannung"
+                voltage_code = "HV"
 
-            # Check if we need to use Mittelspannung (Medium Voltage) - typically for ≥135kW
-            # Or if low voltage doesn't have enough capacity
-            if kw_requested >= 135 or result["remaining_safe"] < kw_requested:
+            # 2. Select Capacity Source based on Voltage Level
+            max_capacity = 0.0
+            remaining_capacity = 0.0
+            current_load_pv = 0.0
+            
+            if voltage_code == "LV":
+                # Use ONS data
+                max_capacity = float(station_data['Installierte Trafoleistung'])
+                current_load_pv = float(station_data['PV-Leistung an ONS'])
+                remaining_capacity = float(station_data['Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7'])
+            else:
+                # Use UW data (MV/HV)
                 if uw_id:
                     uw_row = self.substations_df[self.substations_df['UW'] == uw_id]
-                    
                     if not uw_row.empty:
                         uw_capacity_mw = uw_row.iloc[0]['Verfügbare Einspeisekapazität in MW']
                         uw_capacity_kw = uw_capacity_mw * 1000
-                        
-                        result["grid_level"] = "Mittelspannung"
-                        result["max_capacity"] = uw_capacity_kw
-                        result["remaining_safe"] = uw_capacity_kw 
-                        result["remaining_raw"] = uw_capacity_kw
-                        result["current_load_pv"] = 0
-                        logger.debug(f"Escalated to MV, capacity: {uw_capacity_kw} kW")
-
-            # Calculate traffic light status
-            remaining_capacity = result["remaining_safe"]
-            
-            logger.debug(f"Final remaining_safe: {remaining_capacity}, threshold 70%: {remaining_capacity * 0.7}")
-            
-            if kw_requested <= remaining_capacity * 0.7:
-                result["traffic_light"] = "green"
-                result["status"] = "approved"
-                result["message"] = "Connection is likely feasible with current grid capacity."
-                logger.debug(f"GREEN - {kw_requested} <= {remaining_capacity * 0.7}")
-            elif kw_requested <= remaining_capacity:
-                result["traffic_light"] = "yellow"
-                result["status"] = "review_needed"
-                result["message"] = "Further technical review needed. Please contact our engineering team for detailed assessment."
-                logger.debug(f"YELLOW - {kw_requested} <= {remaining_capacity}")
-            else:
-                result["traffic_light"] = "red"
-                result["status"] = "not_feasible"
-                if result["grid_level"] == "Niederspannung":
-                    result["message"] = "Not feasible with current low voltage capacity. Medium voltage connection or grid expansion may be required."
+                        max_capacity = uw_capacity_kw
+                        remaining_capacity = uw_capacity_kw
+                        current_load_pv = 0 # Not relevant for UW level in this context
+                    else:
+                        # Fallback if UW not found but required
+                        logger.warning(f"UW {uw_id} not found for MV request")
+                        remaining_capacity = 0 # Conservative fallback
                 else:
-                    result["message"] = "Not feasible with current capacity. Significant grid expansion required."
-                logger.debug(f"RED - {kw_requested} > {remaining_capacity}")
+                    remaining_capacity = 0
+
+            # 3. Determine Status (Traffic Light) & Timeline
+            traffic_light = "red"
+            message = ""
+            timeline = ""
+            next_steps = ""
             
-            # Generate recommendations (new feature)
+            # Buffer for green status (10%)
+            safe_buffer = remaining_capacity * 0.1
+            
+            if remaining_capacity < kw_requested:
+                # RED: Not enough capacity
+                traffic_light = "red"
+                message = f"Grid expansion required. Requested {kw_requested} kW exceeds available capacity of {remaining_capacity:.1f} kW."
+                timeline = "6-12+ Months"
+                next_steps = "Contact Grid Planning for expansion assessment."
+            
+            elif voltage_code == "LV" and kw_requested > 30:
+                # YELLOW: Capacity exists, but high load on LV (>30kW) requires check
+                traffic_light = "yellow"
+                message = "Capacity available, but load > 30kW requires technical assessment."
+                timeline = "1-3 Months"
+                next_steps = "Submit 'Netzverträglichkeitsprüfung' (Grid Compatibility Check)."
+                
+            elif remaining_capacity < (kw_requested + safe_buffer):
+                # YELLOW: Capacity exists but is tight (<10% buffer)
+                traffic_light = "yellow"
+                message = "Capacity available but tight. Technical review recommended."
+                timeline = "1-3 Months"
+                next_steps = "Request detailed grid impact study."
+                
+            else:
+                # GREEN: Plenty of capacity
+                traffic_light = "green"
+                message = "Connection feasible. Sufficient capacity available."
+                timeline = "2-4 Weeks"
+                next_steps = "Submit standard connection application online."
+
+            # --- SMART LOGIC END ---
+
+            # Base result
+            result = {
+                "nearest_station_id": nearest_station_id if voltage_code == "LV" else (uw_id or "Unknown UW"),
+                "distance_meters": round(distance, 2),
+                "grid_level": voltage_level,
+                "station_lat": nearest_coords[0] if nearest_coords else None,
+                "station_lon": nearest_coords[1] if nearest_coords else None,
+                "max_capacity": max_capacity,
+                "current_load_pv": current_load_pv,
+                "remaining_raw": remaining_capacity, # Simplified for now
+                "remaining_safe": remaining_capacity,
+                "traffic_light": traffic_light,
+                "status": "approved" if traffic_light == "green" else ("review_needed" if traffic_light == "yellow" else "not_feasible"),
+                "message": message,
+                "timeline": timeline,
+                "next_steps": next_steps
+            }
+            
+            # Generate recommendations
             result["recommendations"] = self._generate_recommendations(
                 remaining_capacity, 
                 kw_requested, 
@@ -317,9 +363,9 @@ class GridDataManager:
                 result["grid_level"]
             )
             
-            # Add eco-score (0-100) for frontend display
+            # Add eco-score
             capacity_percentage = min((remaining_capacity / max(kw_requested, 1)) * 100, 100)
-            result["eco_score"] = int(capacity_percentage * 0.7)  # Scale to 0-70 range, reserve top 30% for perfect conditions
+            result["eco_score"] = int(capacity_percentage * 0.7)
 
             return result
 
