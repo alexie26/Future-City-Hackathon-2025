@@ -9,6 +9,7 @@ import os
 import traceback
 from datetime import datetime
 import google.generativeai as genai
+from collections import Counter
 
 # Configure logging with more detail
 logging.basicConfig(
@@ -538,6 +539,7 @@ class ChatMessage(BaseModel):
     message: str
     conversation_history: Optional[List[Dict[str, str]]] = []
     grid_context: Optional[Dict[str, Any]] = None
+    lang: Literal["en", "de"] = "en"
 
 @app.post("/chat")
 async def chat(chat_request: ChatMessage):
@@ -546,8 +548,24 @@ async def chat(chat_request: ChatMessage):
     Provides guidance on grid connection applications
     """
     try:
-        # System prompt for the assistant
-        system_prompt = """You are an intelligent assistant for Heilbronn's grid connection application system. 
+        # System prompt for the assistant (language-aware)
+        if chat_request.lang == "de":
+            system_prompt = """Du bist ein intelligenter Assistent für Heilbronns Netzanschluss-Antragssystem.
+Deine Rolle ist es, Benutzern zu helfen, den Netzanschlussprozess für ihre elektrischen Installationen zu verstehen und zu navigieren (Solar-PV, E-Auto-Ladegeräte, Wärmepumpen usw.).
+
+Du solltest hilfreiche, genaue Informationen bereitstellen über:
+- Schritte und Anforderungen für Netzanschlussanträge
+- Zeitplan-Erwartungen für verschiedene Spannungsebenen (Niederspannung, Mittelspannung, Hochspannung)
+- Erforderliche Dokumente und technische Spezifikationen
+- Kostenschätzungen und Zuschüsse
+- NHF (Netz Heilbronn-Franken) Vorschriften
+- Technische Anforderungen (TAB, VDE-Normen)
+- Nächste Schritte basierend auf ihren Netzprüfungsergebnissen
+
+Halte Antworten prägnant, freundlich und praktisch. Antworte auf Deutsch und erkläre technische Begriffe klar.
+Wenn der Benutzer eine Netzprüfung durchgeführt hat, nutze diesen Kontext für personalisierte Anleitung."""
+        else:
+            system_prompt = """You are an intelligent assistant for Heilbronn's grid connection application system. 
 Your role is to help users understand and navigate the grid connection process for their electrical installations (Solar PV, EV Chargers, Heat Pumps, etc.).
 
 You should provide helpful, accurate information about:

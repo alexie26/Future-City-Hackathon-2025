@@ -216,7 +216,8 @@ const ChatBot = ({ result, onApply, lang = 'en' }) => {
             const response = await axios.post(`${apiUrl}/chat`, {
                 message: messageText,
                 conversation_history: history,
-                grid_context: result // Pass result data for context
+                grid_context: result, // Pass result data for context
+                lang: lang // Pass current language
             });
 
             setMessages(prev => [...prev, {
