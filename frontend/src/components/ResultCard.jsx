@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, XCircle, AlertCircle, Leaf } from 'lucide-react';
+import { CheckCircle, XCircle, AlertCircle, Leaf, Clock, ArrowRightCircle, Zap } from 'lucide-react';
 import RecommendationCard from './RecommendationCard';
 
 const ResultCard = ({ result, lang = 'en' }) => {

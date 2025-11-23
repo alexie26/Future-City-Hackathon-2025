@@ -451,43 +451,60 @@ class GridDataManager:
 
             logger.debug(f"UW_ID: {uw_id}")
 
-            # Base result with station info
-            result = {
-                "nearest_station_id": nearest_station_id,
-                "distance_meters": round(distance, 2),
-                "grid_level": "Niederspannung",
-                "station_lat": nearest_coords[0] if nearest_coords else None,
-                "station_lon": nearest_coords[1] if nearest_coords else None,
-                "max_capacity": float(station_data['Installierte Trafoleistung']),
-                "current_load_pv": float(station_data['PV-Leistung an ONS']),
-                "remaining_raw": float(station_data['Übrige Trafokapazität']),
-                "remaining_safe": float(station_data['Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7'])
-            }
+            # --- SMART LOGIC START ---
             
-            logger.debug(f"Capacity data - remaining_safe: {result['remaining_safe']} kW, requested: {kw_requested} kW")
+            # 1. Determine Voltage Level based on NHF Rules
+            voltage_level = "Niederspannung" # Default
+            voltage_code = "LV"
             
+            if kw_requested < 30:
+                voltage_level = "Niederspannung (Standard)"
+                voltage_code = "LV"
+            elif kw_requested < 135:
+                voltage_level = "Niederspannung (High Load)"
+                voltage_code = "LV"
+            elif kw_requested < 20000: # < 20MW
+                voltage_level = "Mittelspannung"
+                voltage_code = "MV"
+            else:
+                voltage_level = "Hochspannung"
+                voltage_code = "HV"
 
-            # Check if we need to use Mittelspannung (Medium Voltage) - typically for ≥135kW
-            # Or if low voltage doesn't have enough capacity
-            if kw_requested >= 135 or result["remaining_safe"] < kw_requested:
+            # 2. Select Capacity Source based on Voltage Level
+            max_capacity = 0.0
+            remaining_capacity = 0.0
+            current_load_pv = 0.0
+            
+            if voltage_code == "LV":
+                # Use ONS data
+                max_capacity = float(station_data['Installierte Trafoleistung'])
+                current_load_pv = float(station_data['PV-Leistung an ONS'])
+                remaining_capacity = float(station_data['Übrige Trafokapazität bei Gleichzeitigkeitsfaktor 0,7'])
+            else:
+                # Use UW data (MV/HV)
                 if uw_id:
                     uw_row = self.substations_df[self.substations_df['UW'] == uw_id]
-                    
                     if not uw_row.empty:
                         uw_capacity_mw = uw_row.iloc[0]['Verfügbare Einspeisekapazität in MW']
                         uw_capacity_kw = uw_capacity_mw * 1000
-                        
-                        result["grid_level"] = "Mittelspannung"
-                        result["max_capacity"] = uw_capacity_kw
-                        result["remaining_safe"] = uw_capacity_kw 
-                        result["remaining_raw"] = uw_capacity_kw
-                        result["current_load_pv"] = 0
-                        logger.debug(f"Escalated to MV, capacity: {uw_capacity_kw} kW")
+                        max_capacity = uw_capacity_kw
+                        remaining_capacity = uw_capacity_kw
+                        current_load_pv = 0 # Not relevant for UW level in this context
+                    else:
+                        # Fallback if UW not found but required
+                        logger.warning(f"UW {uw_id} not found for MV request")
+                        remaining_capacity = 0 # Conservative fallback
+                else:
+                    remaining_capacity = 0
 
-            # Calculate traffic light status
-            remaining_capacity = result["remaining_safe"]
+            # 3. Determine Status (Traffic Light) & Timeline
+            traffic_light = "red"
+            message = ""
+            timeline = ""
+            next_steps = ""
             
-            logger.debug(f"Final remaining_safe: {remaining_capacity}, threshold 70%: {remaining_capacity * 0.7}")
+            # Buffer for green status (10%)
+            safe_buffer = remaining_capacity * 0.1
             
             if kw_requested <= remaining_capacity * 0.7:
                 result["traffic_light"] = "green"
@@ -524,7 +541,7 @@ class GridDataManager:
                     )
                 logger.debug(f"RED - {kw_requested} > {remaining_capacity}")
             
-            # Generate recommendations (new feature)
+            # Generate recommendations
             result["recommendations"] = self._generate_recommendations(
                 remaining_capacity,
                 kw_requested,
@@ -534,8 +551,29 @@ class GridDataManager:
             )
             
             # Add eco-score (0-100) for frontend display
-            capacity_percentage = min((remaining_capacity / max(kw_requested, 1)) * 100, 100)
-            result["eco_score"] = int(capacity_percentage * 0.7)  # Scale to 0-70 range, reserve top 30% for perfect conditions
+            # Base score from capacity availability (0-70)
+            capacity_ratio = min(remaining_capacity / max(kw_requested, 1), 2.0) # Cap ratio at 2.0
+            base_score = int((capacity_ratio / 2.0) * 70)
+            
+            # Bonus points for grid-friendly technologies
+            bonus = 0
+            
+            # Bonus for Producers (Solar PV) - they add green energy!
+            # We can infer producer if type is 'feed_in' (need to pass type to this function)
+            # For now, let's assume if it's a "feed_in" request (we need to pass this param)
+            # Since we don't have 'type' here yet, let's use a heuristic or update the signature later.
+            # For now, let's give a bonus if recommendations include Solar.
+            
+            has_solar_rec = any(r['type'] == 'solar' for r in result['recommendations'])
+            if has_solar_rec:
+                bonus += 15
+                
+            # Bonus for flexible loads (EV, Battery, Heat Pump)
+            has_flex_rec = any(r['type'] in ['ev', 'battery', 'heatpump'] for r in result['recommendations'])
+            if has_flex_rec:
+                bonus += 15
+                
+            result["eco_score"] = min(base_score + bonus, 100)
 
             return result
 

@@ -10,6 +10,8 @@ const InputCard = ({ onCheck, lang = 'en' }) => {
     const [type, setType] = useState('consumer');
     const [kw, setKw] = useState('');
     const debounceTimer = useRef(null);
+    const [searchLoading, setSearchLoading] = useState(false);
+    const [searchError, setSearchError] = useState(null);
 
 
     // Fetch suggestions from Nominatim
@@ -17,45 +19,84 @@ const InputCard = ({ onCheck, lang = 'en' }) => {
         // Only fetch if query has at least 3 characters
         if (!query || query.length < 3) {
             setSuggestions([]);
+            setSearchError(null);
             return;
         }
+        
+        setSearchLoading(true);
+        setSearchError(null);
+        
         let searchQuery = query;
         // Only append if not already present
         if (!/heilbronn/i.test(query)) {
             searchQuery += ', Heilbronn, Germany';
         }
+        
         try {
             const res = await axios.get('https://nominatim.openstreetmap.org/search', {
                 params: {
                     q: searchQuery,
                     format: 'json',
                     addressdetails: 1,
-                    limit: 15, // Increased limit for more street options
+                    limit: 20, // Increased limit
+                    bounded: 1, // Stay within bounds
+                    viewbox: '9.0,49.0,9.5,49.3', // Heilbronn bounding box
                 },
                 headers: {
                     'Accept-Language': 'de',
-                    'User-Agent': 'FutureCityHackathon/1.0 (your@email.com)'
+                    'User-Agent': 'FutureCityHackathon/1.0'
                 },
+                timeout: 5000
             });
-            // Filter to only addresses in Heilbronn
+            
+            console.log(`Found ${res.data.length} results for: ${searchQuery}`);
+            
+            // Filter to only addresses in Heilbronn (more lenient)
             const filtered = res.data.filter((s) => {
                 const addr = s.address || {};
-                return (
+                const displayName = s.display_name || '';
+                
+                // Check if Heilbronn is mentioned anywhere
+                const hasHeilbronn = (
                     (addr.city && /heilbronn/i.test(addr.city)) ||
                     (addr.town && /heilbronn/i.test(addr.town)) ||
-                    (addr.village && /heilbronn/i.test(addr.village))
+                    (addr.village && /heilbronn/i.test(addr.village)) ||
+                    (addr.county && /heilbronn/i.test(addr.county)) ||
+                    /heilbronn/i.test(displayName)
                 );
+                
+                // Check coordinates are in Heilbronn area
+                const lat = parseFloat(s.lat);
+                const lon = parseFloat(s.lon);
+                const inBounds = !isNaN(lat) && !isNaN(lon) && 
+                                lat >= 49.0 && lat <= 49.3 && 
+                                lon >= 9.0 && lon <= 9.5;
+                
+                return hasHeilbronn && inBounds;
             });
+            
+            console.log(`Filtered to ${filtered.length} Heilbronn results`);
+            
+            if (filtered.length === 0 && res.data.length > 0) {
+                setSearchError('No results found in Heilbronn area');
+            }
+            
             setSuggestions(filtered);
-            setShowSuggestions(true); // Keep visible after fetching
+            setShowSuggestions(filtered.length > 0); // Only show if we have results
+            
         } catch (err) {
+            console.error('Address search error:', err);
+            setSearchError('Unable to search addresses. Please try again.');
             setSuggestions([]);
+        } finally {
+            setSearchLoading(false);
         }
     };
 
     const handleAddressChange = (e) => {
         const value = e.target.value;
         setAddress(value);
+        setSearchError(null);
         
         // Clear previous timer
         if (debounceTimer.current) {
@@ -64,11 +105,11 @@ const InputCard = ({ onCheck, lang = 'en' }) => {
         
         // Show suggestions dropdown when we have 3+ characters
         if (value.length >= 3) {
-            setShowSuggestions(true); // Show immediately
-            // Debounce the API call by 250ms for smoother typing
+            setShowSuggestions(true); // Show immediately (even if loading)
+            // Debounce the API call by 300ms
             debounceTimer.current = setTimeout(() => {
                 fetchSuggestions(value);
-            }, 250);
+            }, 300);
         } else {
             setShowSuggestions(false);
             setSuggestions([]);
@@ -85,9 +126,11 @@ const InputCard = ({ onCheck, lang = 'en' }) => {
         else if (main && addr.town) main += ', ' + addr.town;
         else if (main && addr.village) main += ', ' + addr.village;
         if (!main) main = suggestion.display_name;
+        
         setAddress(main);
         setShowSuggestions(false);
         setSuggestions([]);
+        setSearchError(null);
     };
 
     const handleBlur = () => {
@@ -130,8 +173,29 @@ const InputCard = ({ onCheck, lang = 'en' }) => {
                         autoComplete="off"
                     />
                     <Search className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
-                    {showSuggestions && suggestions.length > 0 && (
+                    
+                    {/* Loading indicator */}
+                    {searchLoading && (
+                        <div className="absolute right-3 top-2.5">
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                        </div>
+                    )}
+                    
+                    {/* Suggestions dropdown */}
+                    {showSuggestions && (
                         <ul className="absolute z-10 left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-lg">
+                            {searchLoading && suggestions.length === 0 && (
+                                <li className="px-4 py-3 text-sm text-gray-500 text-center">
+                                    Searching...
+                                </li>
+                            )}
+                            
+                            {!searchLoading && suggestions.length === 0 && address.length >= 3 && (
+                                <li className="px-4 py-3 text-sm text-gray-500 text-center">
+                                    {searchError || 'No addresses found. Try a different search.'}
+                                </li>
+                            )}
+                            
                             {suggestions.map((s) => {
                                 const addr = s.address || {};
                                 // Compose a readable address: street + house_number + city
@@ -143,20 +207,34 @@ const InputCard = ({ onCheck, lang = 'en' }) => {
                                 else if (main && addr.village) main += ', ' + addr.village;
                                 // Fallback to display_name if not enough info
                                 if (!main) main = s.display_name;
+                                
+                                // Show additional context
+                                const context = addr.suburb || addr.neighbourhood || '';
+                                
                                 return (
                                     <li
                                         key={s.place_id}
-                                        className="px-4 py-2 hover:bg-blue-100 cursor-pointer text-sm transition-colors"
+                                        className="px-4 py-2 hover:bg-blue-100 cursor-pointer text-sm transition-colors border-b last:border-b-0"
                                         onMouseDown={(e) => {
                                             e.preventDefault();
                                             handleSuggestionClick(s);
                                         }}
                                     >
-                                        {main}
+                                        <div className="font-medium">{main}</div>
+                                        {context && (
+                                            <div className="text-xs text-gray-500">{context}</div>
+                                        )}
                                     </li>
                                 );
                             })}
                         </ul>
+                    )}
+                    
+                    {/* Error message */}
+                    {searchError && !showSuggestions && (
+                        <div className="absolute left-0 right-0 mt-1 text-xs text-red-600">
+                            {searchError}
+                        </div>
                     )}
                 </div>
             </div>

@@ -9,10 +9,14 @@ import os
 from collections import Counter
 from datetime import datetime
 
-# Configure logging
+# Configure logging with more detail
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('api.log'),
+        logging.StreamHandler()
+    ]
 )
 logger = logging.getLogger(__name__)
 
@@ -27,10 +31,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load station data
+# Load station data with robust error handling
 stations_df = pd.DataFrame()
+DATA_LOAD_ERROR = None
+
 try:
     csv_path = os.path.join(os.path.dirname(__file__), 'data', 'tabelle1.csv')
+    
+    if not os.path.exists(csv_path):
+        raise FileNotFoundError(f"Station data file not found at: {csv_path}")
+    
     stations_df = pd.read_csv(csv_path, encoding='utf-8')
     
     # Clean column names
@@ -41,22 +51,52 @@ try:
     
     # Ensure we have the required columns
     required_cols = ['Stationsnummer', 'Breitengrad', 'Längengrad']
-    if all(col in stations_df.columns for col in required_cols):
-        # Remove rows with missing coordinates
-        stations_df = stations_df.dropna(subset=['Breitengrad', 'Längengrad'])
-        logger.info(f"✅ Loaded {len(stations_df)} stations successfully")
-        logger.info(f"Columns: {stations_df.columns.tolist()}")
-        logger.info(f"Sample station: {stations_df.iloc[0].to_dict()}")
-    else:
-        logger.error(f"❌ Missing required columns. Available: {stations_df.columns.tolist()}")
-        stations_df = pd.DataFrame()
+    missing_cols = [col for col in required_cols if col not in stations_df.columns]
+    
+    if missing_cols:
+        raise ValueError(f"Missing required columns: {missing_cols}. Available: {stations_df.columns.tolist()}")
+    
+    # Validate data types and ranges
+    initial_count = len(stations_df)
+    
+    # Remove rows with missing coordinates
+    stations_df = stations_df.dropna(subset=['Breitengrad', 'Längengrad'])
+    
+    # NOTE: Do NOT validate coordinate ranges here as the data uses WGS84 coordinates
+    # The grid_data manager handles coordinate validation properly
+    # Heilbronn coordinates are approximately: lat=49.14, lon=9.22
+    
+    removed_count = initial_count - len(stations_df)
+    if removed_count > 0:
+        logger.warning(f"Removed {removed_count} stations with invalid/missing coordinates")
+    
+    if len(stations_df) == 0:
+        raise ValueError("No valid stations found after filtering")
+    
+    logger.info(f"✅ Loaded {len(stations_df)} valid stations successfully")
+    logger.info(f"Coordinate ranges: lat [{stations_df['Breitengrad'].min():.4f}, {stations_df['Breitengrad'].max():.4f}], lon [{stations_df['Längengrad'].min():.4f}, {stations_df['Längengrad'].max():.4f}]")
+    
+except FileNotFoundError as e:
+    DATA_LOAD_ERROR = str(e)
+    logger.error(f"❌ File not found: {e}")
+except pd.errors.ParserError as e:
+    DATA_LOAD_ERROR = f"CSV parsing error: {str(e)}"
+    logger.error(f"❌ CSV parsing failed: {e}")
+except ValueError as e:
+    DATA_LOAD_ERROR = str(e)
+    logger.error(f"❌ Data validation error: {e}")
 except Exception as e:
-    logger.error(f"❌ Error loading stations: {e}")
-    stations_df = pd.DataFrame()
+    DATA_LOAD_ERROR = f"Unexpected error loading data: {str(e)}"
+    logger.error(f"❌ Unexpected error loading stations: {e}", exc_info=True)
 
-# Initialize Data Manager
-from grid_data import GridDataManager
-grid_manager = GridDataManager()
+# Initialize Data Manager with error handling
+try:
+    from grid_data import GridDataManager
+    grid_manager = GridDataManager()
+    logger.info("✅ Grid manager initialized successfully")
+except Exception as e:
+    logger.error(f"❌ Failed to initialize grid manager: {e}", exc_info=True)
+    grid_manager = None
 
 # In-memory store for anonymous usage events (reset on restart)
 usage_events: List[Dict[str, Any]] = []
@@ -97,6 +137,9 @@ class FeasibilityResponse(BaseModel):
     station_lon: Optional[float] = None
     eco_score: Optional[int] = None
     recommendations: Optional[List[Dict[str, Any]]] = None
+    timeline: Optional[str] = None
+    next_steps: Optional[str] = None
+    grid_level: Optional[str] = None
 
 def calculate_distance(lat1, lon1, lat2, lon2):
     """Calculate distance in km between two coordinates"""
@@ -134,16 +177,29 @@ def calculate_current_load(station_id: str) -> float:
 
 @app.get("/")
 async def root():
-    return {
+    health_status = {
         "message": "Grid Feasibility API", 
         "stations_loaded": len(stations_df),
-        "status": "ready" if len(stations_df) > 0 else "error - no stations loaded"
+        "timestamp": datetime.utcnow().isoformat(),
+        "status": "ready" if len(stations_df) > 0 else "error",
+        "grid_manager": "initialized" if grid_manager else "error"
     }
+    
+    if DATA_LOAD_ERROR:
+        health_status["error"] = DATA_LOAD_ERROR
+        health_status["status"] = "degraded"
+    
+    return health_status
 
 @app.post("/check-feasibility", response_model=FeasibilityResponse)
 async def check_feasibility(request: FeasibilityRequest):
+    request_id = datetime.utcnow().timestamp()
+    logger.info(f"[{request_id}] Received request: lat={request.lat}, lon={request.lon}, kw={request.kw_requested}, type={request.type}")
+    
     try:
-        if stations_df.empty:
+        # Validate system readiness
+        if not grid_manager:
+            logger.error(f"[{request_id}] Grid manager not initialized")
             raise HTTPException(
                 status_code=500,
                 detail="Station data not loaded. Please check server logs."
@@ -163,9 +219,27 @@ async def check_feasibility(request: FeasibilityRequest):
         )
 
         if not grid_data:
+            logger.warning(f"[{request_id}] No nearby station found")
             raise HTTPException(
                 status_code=404,
-                detail="No nearby station found for this location"
+                detail={
+                    "error": "NO_STATION_FOUND",
+                    "message": "No nearby grid station found for this location. Please check coordinates."
+                }
+            )
+        
+        # Validate grid_data structure
+        required_fields = ['traffic_light', 'message', 'nearest_station_id', 'distance_meters']
+        missing_fields = [f for f in required_fields if f not in grid_data]
+        
+        if missing_fields:
+            logger.error(f"[{request_id}] Invalid grid_data structure. Missing: {missing_fields}")
+            raise HTTPException(
+                status_code=500,
+                detail={
+                    "error": "INVALID_RESPONSE",
+                    "message": "Invalid response from grid analysis system"
+                }
             )
 
         # Build response from grid_data
@@ -180,7 +254,10 @@ async def check_feasibility(request: FeasibilityRequest):
             station_lat=grid_data.get("station_lat"),
             station_lon=grid_data.get("station_lon"),
             eco_score=grid_data.get("eco_score"),
-            recommendations=grid_data.get("recommendations", [])
+            recommendations=grid_data.get("recommendations", []),
+            timeline=grid_data.get("timeline"),
+            next_steps=grid_data.get("next_steps"),
+            grid_level=grid_data.get("grid_level")
         )
 
         # Record anonymous usage event for planning insights (non-blocking)
@@ -202,8 +279,17 @@ async def check_feasibility(request: FeasibilityRequest):
 
     except HTTPException:
         raise
+    except ValueError as e:
+        logger.error(f"[{request_id}] Validation error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": "VALIDATION_ERROR",
+                "message": str(e)
+            }
+        )
     except Exception as e:
-        logger.error(f"Unexpected error processing request: {str(e)}", exc_info=True)
+        logger.error(f"[{request_id}] Unexpected error: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail={
@@ -215,9 +301,32 @@ async def check_feasibility(request: FeasibilityRequest):
 @app.get("/stations")
 def get_stations():
     try:
+        if not grid_manager:
+            raise HTTPException(
+                status_code=503,
+                detail={
+                    "error": "SERVICE_UNAVAILABLE",
+                    "message": "Grid data service unavailable"
+                }
+            )
+        
         stations = grid_manager.get_all_stations()
+        
+        if not stations or len(stations) == 0:
+            logger.warning("No stations returned from grid manager")
+            raise HTTPException(
+                status_code=404,
+                detail={
+                    "error": "NO_DATA",
+                    "message": "No station data available"
+                }
+            )
+        
         logger.info(f"Retrieved {len(stations)} stations")
         return stations
+        
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error retrieving stations: {str(e)}", exc_info=True)
         raise HTTPException(
@@ -306,18 +415,53 @@ def get_insights_summary():
 @app.get("/health")
 def health_check():
     try:
-        # Check if data is loaded
-        stations = grid_manager.get_all_stations()
-        return {
+        health = {
             "status": "healthy",
-            "stations_loaded": len(stations),
-            "data_available": len(stations) > 0
+            "timestamp": datetime.utcnow().isoformat(),
+            "components": {}
         }
+        
+        # Check station data
+        health["components"]["station_data"] = {
+            "status": "healthy" if len(stations_df) > 0 else "unhealthy",
+            "count": len(stations_df),
+            "error": DATA_LOAD_ERROR if DATA_LOAD_ERROR else None
+        }
+        
+        # Check grid manager
+        if grid_manager:
+            try:
+                stations = grid_manager.get_all_stations()
+                health["components"]["grid_manager"] = {
+                    "status": "healthy" if len(stations) > 0 else "unhealthy",
+                    "stations_available": len(stations)
+                }
+            except Exception as e:
+                health["components"]["grid_manager"] = {
+                    "status": "unhealthy",
+                    "error": str(e)
+                }
+        else:
+            health["components"]["grid_manager"] = {
+                "status": "unhealthy",
+                "error": "Not initialized"
+            }
+        
+        # Overall status
+        all_healthy = all(
+            comp["status"] == "healthy" 
+            for comp in health["components"].values()
+        )
+        health["status"] = "healthy" if all_healthy else "degraded"
+        
+        return health
+        
     except Exception as e:
-        logger.error(f"Health check failed: {str(e)}")
+        logger.error(f"Health check failed: {str(e)}", exc_info=True)
         return {
             "status": "unhealthy",
-            "error": str(e)
+            "error": str(e),
+            "timestamp": datetime.utcnow().isoformat()
         }
 
 @app.get("/voltage-regions")
@@ -336,6 +480,113 @@ async def get_voltage_regions():
             [[49.08, 9.15], [49.08, 9.18], [49.10, 9.18], [49.10, 9.15]]
         ]
     }
+
+class ApplicationRequest(BaseModel):
+    name: str
+    email: str
+    phone: str
+    address: str
+    kw_requested: float
+    type: str
+    comments: Optional[str] = None
+
+@app.post("/submit-application")
+async def submit_application(application: ApplicationRequest):
+    # In a real app, this would save to a DB or send an email
+    logger.info(f"Received application from {application.name} for {application.kw_requested}kW at {application.address}")
+    
+    return {
+        "status": "success",
+        "message": "Application received successfully! We will contact you shortly.",
+        "application_id": f"APP-{int(datetime.utcnow().timestamp())}"
+    }
+
+# Configure Gemini API
+GEMINI_API_KEY = "AIzaSyDbO4lNinj72M0KkyS29wUQeOJly0bG7O4"
+genai.configure(api_key=GEMINI_API_KEY)
+
+class ChatMessage(BaseModel):
+    message: str
+    conversation_history: Optional[List[Dict[str, str]]] = []
+    grid_context: Optional[Dict[str, Any]] = None
+
+@app.post("/chat")
+async def chat(chat_request: ChatMessage):
+    """
+    Chat endpoint powered by Gemini AI
+    Provides guidance on grid connection applications
+    """
+    try:
+        # System prompt for the assistant
+        system_prompt = """You are an intelligent assistant for Heilbronn's grid connection application system. 
+Your role is to help users understand and navigate the grid connection process for their electrical installations (Solar PV, EV Chargers, Heat Pumps, etc.).
+
+You should provide helpful, accurate information about:
+- Grid connection application steps and requirements
+- Timeline expectations for different voltage levels (Niederspannung, Mittelspannung, Hochspannung)
+- Required documents and technical specifications
+- Cost estimates and subsidies
+- NHF (Netz Heilbronn-Franken) regulations
+- Technical requirements (TAB, VDE standards)
+- Next steps based on their grid check results
+
+Keep responses concise, friendly, and practical. Use German technical terms when appropriate but explain them clearly. 
+If the user has performed a grid check, use that context to provide personalized guidance."""
+
+        # Build context from grid check results if available
+        context_info = ""
+        if chat_request.grid_context:
+            gc = chat_request.grid_context
+            context_info = f"""
+
+Current User Context:
+- Grid Status: {gc.get('status', 'unknown')}
+- Requested Power: {gc.get('kw_requested', 'unknown')} kW
+- Voltage Level: {gc.get('grid_level', 'unknown')}
+- Distance to Station: {gc.get('distance_km', 'unknown')} km
+- Timeline: {gc.get('timeline', 'unknown')}
+- Available Capacity: {gc.get('remaining_safe', 'unknown')} kW
+- Next Steps: {gc.get('next_steps', 'unknown')}"""
+
+        # Build conversation history
+        conversation = []
+        for msg in chat_request.conversation_history[-6:]:  # Last 6 messages for context
+            conversation.append({
+                "role": "user" if msg.get("sender") == "user" else "model",
+                "parts": [msg.get("text", "")]
+            })
+        
+        # Add current message
+        conversation.append({
+            "role": "user",
+            "parts": [chat_request.message]
+        })
+
+        # Initialize Gemini model
+        model = genai.GenerativeModel('gemini-2.0-flash')
+        
+        # Create chat with history
+        chat_session = model.start_chat(history=conversation[:-1])
+        
+        # Generate response with context
+        full_prompt = system_prompt + context_info + "\n\nUser: " + chat_request.message
+        
+        response = chat_session.send_message(full_prompt)
+        
+        return {
+            "response": response.text,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Chat error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "error": "CHAT_ERROR",
+                "message": "Failed to process chat message. Please try again."
+            }
+        )
 
 if __name__ == "__main__":
     import uvicorn

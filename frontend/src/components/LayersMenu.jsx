@@ -3,15 +3,12 @@ import { Layers, ChevronDown, ChevronUp } from 'lucide-react';
 
 const LayersMenu = ({ layers, onLayerChange, lang = 'en' }) => {
     const [isExpanded, setIsExpanded] = useState(true);
-    const [showHeatmapSettings, setShowHeatmapSettings] = useState(true);
 
-    const toggleLayer = (layerId) => {
-        onLayerChange(layerId, !layers[layerId].enabled);
-    };
-
-    const updateHeatmapSetting = (setting, value) => {
-        onLayerChange('heatmap', true, { ...layers.heatmap.settings, [setting]: value });
-    };
+    const layers = [
+        { id: 'lv', label: 'Low Voltage (LV)' },
+        { id: 'mv', label: 'Medium Voltage (MV)' },
+        { id: 'hv', label: 'High Voltage (HV)' }
+    ];
 
     return (
         <div className="absolute z-[1000] top-4 right-4 w-80 bg-white rounded-2xl shadow-xl flex flex-col max-h-[90vh] overflow-hidden">
@@ -137,44 +134,6 @@ const LayersMenu = ({ layers, onLayerChange, lang = 'en' }) => {
                     />
                 </div>
             )}
-        </div>
-    );
-};
-
-// Reusable Toggle Component
-const LayerToggle = ({ label, enabled, onToggle, activeColor = 'gray' }) => {
-    const colors = {
-        gray: {
-            bg: 'bg-gray-300',
-            translate: 'translate-x-5',
-            activeBg: 'bg-gray-400'
-        },
-        teal: {
-            bg: 'bg-teal-500',
-            translate: 'translate-x-5',
-            activeBg: 'bg-teal-600'
-        }
-    };
-
-    const color = enabled ? colors[activeColor === 'teal' ? 'teal' : 'gray'] : colors.gray;
-
-    return (
-        <div className="flex items-center justify-between">
-            <span className={`text-sm ${enabled ? 'font-medium text-gray-900' : 'text-gray-600'}`}>
-                {label}
-            </span>
-            <button
-                onClick={onToggle}
-                className={`relative w-11 h-6 rounded-full transition-colors ${enabled
-                        ? activeColor === 'teal' ? 'bg-teal-500' : 'bg-gray-400'
-                        : 'bg-gray-200'
-                    }`}
-            >
-                <div
-                    className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform ${enabled ? 'translate-x-5' : 'translate-x-0'
-                        }`}
-                />
-            </button>
         </div>
     );
 };

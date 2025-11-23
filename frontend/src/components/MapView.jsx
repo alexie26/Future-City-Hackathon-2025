@@ -64,29 +64,50 @@ const MapView = ({ userLocation, stationLocation, allStations = [], lang = 'en' 
                 uniqueStations.map(station => turf.point([station.lon, station.lat], { ...station }))
             );
 
-            // Create Bounding Box (Heilbronn area approx)
-            const bbox = [9.0, 49.0, 9.4, 49.3]; // [minX, minY, maxX, maxY]
+            // Create Bounding Box (Expanded to avoid visible square edges)
+            const bbox = [8.5, 48.5, 10.0, 49.8]; // [minX, minY, maxX, maxY]
 
-            // Generate Voronoi
+            // Generate Voronoi with large bbox
             const voronoi = turf.voronoi(points, { bbox });
 
-            // IMPORTANT: Map properties back to polygons!
-            // Turf.voronoi preserves the order, so index i corresponds to points.features[i]
-            if (voronoi && voronoi.features) {
-                voronoi.features.forEach((feature, i) => {
-                    if (feature && points.features[i]) {
-                        feature.properties = points.features[i].properties;
-                    }
-                });
-            }
+            // Create a mask from the convex hull of points + buffer
+            // This creates a nice organic shape around the city
+            const hull = turf.convex(points);
+            const mask = turf.buffer(hull, 1.5, { units: 'kilometers' });
 
-            console.log(`Voronoi generated successfully with ${voronoi?.features?.length || 0} polygons`);
-            return voronoi;
+            const clippedFeatures = voronoi.features.map((feature, i) => {
+                if (!feature) return null;
+
+                // Map properties
+                if (points.features[i]) {
+                    feature.properties = points.features[i].properties;
+                }
+
+                try {
+                    // Try to clip with the organic mask
+                    const clipped = turf.intersect(feature, mask);
+                    if (clipped) {
+                        clipped.properties = feature.properties;
+                        return clipped;
+                    }
+                } catch (e) {
+                    console.warn("Clipping failed for feature, using original", e);
+                }
+
+                // Fallback: Return original feature if clipping fails
+                // This ensures we never lose the colors!
+                return feature;
+            }).filter(f => f !== null);
+
+            const finalCollection = turf.featureCollection(clippedFeatures);
+
+            console.log(`Voronoi generated successfully with ${finalCollection.features.length} polygons`);
+            return finalCollection;
         } catch (e) {
             console.error("Voronoi generation failed:", e);
             return null;
         }
-    }, [allStations]);
+    }, [allStations]); // Generate once when stations change
 
     const onEachFeature = (feature, layer) => {
         if (feature.properties) {
@@ -103,16 +124,31 @@ const MapView = ({ userLocation, stationLocation, allStations = [], lang = 'en' 
             layer.on({
                 mouseover: (e) => {
                     const layer = e.target;
-                    layer.setStyle({ fillOpacity: 0.5, weight: 2, color: '#666' });
+                    layer.setStyle({ fillOpacity: 0.6, weight: 2, color: '#666' });
                 },
                 mouseout: (e) => {
                     const layer = e.target;
-                    // Reset style
+                    // Reset to original style based on capacity
                     const capacity = feature.properties.remaining_capacity;
-                    let opacity = 0.2;
-                    if (capacity < 50) opacity = 0.3;
+                    let color, opacity;
 
-                    layer.setStyle({ fillOpacity: opacity, weight: 0 });
+                    if (capacity >= 150) {
+                        color = '#ef4444';
+                        opacity = 0.4;
+                    } else if (capacity >= 50) {
+                        color = '#f59e0b';
+                        opacity = 0.35;
+                    } else {
+                        color = '#10b981';
+                        opacity = 0.3;
+                    }
+
+                    layer.setStyle({
+                        fillColor: color,
+                        fillOpacity: opacity,
+                        weight: 0,
+                        color: 'white'
+                    });
                 }
             });
         }
@@ -120,15 +156,25 @@ const MapView = ({ userLocation, stationLocation, allStations = [], lang = 'en' 
 
     const getStyle = (feature) => {
         const capacity = feature.properties.remaining_capacity;
-        let color = '#10b981'; // Emerald Green
-        let opacity = 0.2;
 
-        if (capacity < 50) {
-            color = '#ef4444'; // Red
+        // Color based on capacity in each region
+        // Green = Low/Weak capacity (<50 kW)
+        // Yellow = Medium capacity (50-150 kW)
+        // Red = High/Strong capacity (>150 kW)
+        let color, opacity;
+
+        if (capacity >= 150) {
+            // High capacity - RED (Strong grid)
+            color = '#ef4444';
+            opacity = 0.4;
+        } else if (capacity >= 50) {
+            // Medium capacity - YELLOW
+            color = '#f59e0b';
+            opacity = 0.35;
+        } else {
+            // Low capacity - GREEN (Weak grid)
+            color = '#10b981';
             opacity = 0.3;
-        } else if (capacity < 150) {
-            color = '#f59e0b'; // Amber
-            opacity = 0.2;
         }
 
         return {
@@ -140,6 +186,35 @@ const MapView = ({ userLocation, stationLocation, allStations = [], lang = 'en' 
         };
     };
 
+    // Filter Voronoi polygons based on active layers
+    const filteredVoronoiPolygons = useMemo(() => {
+        if (!voronoiPolygons || activeLayers.length === 0) return null;
+
+        const filteredFeatures = voronoiPolygons.features.filter(feature => {
+            const capacity = feature.properties.remaining_capacity;
+
+            // Check if feature belongs to any active layer
+            let shouldShow = false;
+
+            if (activeLayers.includes('lv') && capacity < 50) {
+                shouldShow = true;
+            }
+            if (activeLayers.includes('mv') && capacity >= 50 && capacity < 150) {
+                shouldShow = true;
+            }
+            if (activeLayers.includes('hv') && capacity >= 150) {
+                shouldShow = true;
+            }
+
+            return shouldShow;
+        });
+
+        return {
+            ...voronoiPolygons,
+            features: filteredFeatures
+        };
+    }, [voronoiPolygons, activeLayers]);
+
     return (
         <MapContainer center={defaultCenter} zoom={13} className="h-full w-full rounded-xl z-0">
             <ChangeView center={center} zoom={zoom} />
@@ -148,17 +223,18 @@ const MapView = ({ userLocation, stationLocation, allStations = [], lang = 'en' 
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
-            {/* Voronoi Overlay */}
-            {voronoiPolygons && (
+            {/* Voronoi Overlay - Show filtered polygons based on voltage level */}
+            {filteredVoronoiPolygons && activeLayers.length > 0 && (
                 <GeoJSON
-                    data={voronoiPolygons}
+                    key={activeLayers.join(',')} // Re-render when combination changes
+                    data={filteredVoronoiPolygons}
                     style={getStyle}
                     onEachFeature={onEachFeature}
                 />
             )}
 
-            {/* All Stations (Small dots on top) */}
-            {allStations.map((station, index) => (
+            {/* All Stations (Small dots) - DISABLED FOR NOW */}
+            {/* {allStations.map((station, index) => (
                 <CircleMarker
                     key={`station-${index}-${station.lat}-${station.lon}`}
                     center={[station.lat, station.lon]}
@@ -170,7 +246,7 @@ const MapView = ({ userLocation, stationLocation, allStations = [], lang = 'en' 
                     }}
                     radius={2}
                 />
-            ))}
+            ))} */}
 
             {/* User Location (Green dot) */}
             {userLocation && (

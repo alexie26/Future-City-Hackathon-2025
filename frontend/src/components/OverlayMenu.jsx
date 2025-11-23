@@ -4,6 +4,8 @@ import axios from 'axios';
 import Hero from './Hero';
 import InputCard from './InputCard';
 import ResultCard from './ResultCard';
+import ApplicationModal from './ApplicationModal';
+import ChatBot from './ChatBot';
 
 const OverlayMenu = ({ onCheck, result, loading, error, insights, insightsLoading, insightsError, onLoadInsights, lang = 'en', onToggleLang }) => {
     const [address, setAddress] = useState('');
@@ -14,6 +16,7 @@ const OverlayMenu = ({ onCheck, result, loading, error, insights, insightsLoadin
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [searchLoading, setSearchLoading] = useState(false);
     const [selectedCoordinates, setSelectedCoordinates] = useState(null);
+    const [showBot, setShowBot] = useState(true);
     const searchTimeout = useRef(null);
     const suggestionsRef = useRef(null);
 
@@ -117,6 +120,20 @@ const OverlayMenu = ({ onCheck, result, loading, error, insights, insightsLoadin
         setSelectedCoordinates(null); // Clear stored coordinates when manually typing
     };
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalData, setModalData] = useState(null);
+
+    const handleApply = () => {
+        if (lastRequest) {
+            setModalData({
+                address: lastRequest.address,
+                kw: lastRequest.kw,
+                type: lastRequest.type
+            });
+            setIsModalOpen(true);
+        }
+    };
+
     return (
         <div className="absolute top-0 left-0 w-96 max-h-screen overflow-y-auto bg-white shadow-2xl z-10 rounded-r-2xl">
             <Hero lang={lang} onToggleLang={onToggleLang} />
@@ -189,7 +206,13 @@ const OverlayMenu = ({ onCheck, result, loading, error, insights, insightsLoadin
                     </>
                 )}
             </div>
-        </div>
+
+            <ApplicationModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                initialData={modalData}
+            />
+        </>
     );
 };
 
